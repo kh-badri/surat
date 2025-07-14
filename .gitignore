@@ -1,0 +1,46 @@
+# .gitignore untuk Proyek CodeIgniter 4
+
+### LINGKUNGAN & KREDENSIAL ###
+# Jangan pernah unggah file .env ke repository publik!
+# File ini berisi password database dan kunci sensitif lainnya.
+.env
+
+### DIREKTORI SPESIFIK CODEIGNITER 4 ###
+# Direktori 'writable' berisi cache, log, sesi, dan file upload.
+# File-file ini dibuat otomatis dan berbeda di setiap lingkungan.
+/writable/*
+!/writable/.htaccess
+
+# Spark executable
+spark
+
+### DEPENDENSI ###
+# Dependensi PHP yang dikelola oleh Composer
+/vendor/
+
+# Dependensi JavaScript/Node.js yang dikelola oleh npm/yarn
+/node_modules/
+
+### IDE & EDITOR KONFIGURASI ###
+# Pengaturan spesifik untuk IDE (PhpStorm, VSCode, dll.)
+.idea/
+.vscode/
+*.sublime-project
+*.sublime-workspace
+
+### FILE BUATAN SISTEM OPERASI ###
+# File metadata macOS dan Windows
+.DS_Store
+Thumbs.db
+ehthumbs.db
+
+### LOG & FILE SEMENTARA ###
+*.log
+*.tmp
+*.bak
+*.swp
+
+### FILE BUILD ###
+# Direktori untuk hasil build (jika ada)
+/build/
+/dist/

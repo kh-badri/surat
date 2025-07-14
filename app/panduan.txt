@@ -1,0 +1,5 @@
+1.install CI 4
+2.install tailwind 3
+3.Pindahkan file public ke root 
+4.jalankan npm run buil untuk tailwind berjalan otomatis
+5.konfig databse app/config/Database.php
