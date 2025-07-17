@@ -1,0 +1,20 @@
+Persiapan di Laptop (dengan XAMPP)
+1.Instal XAMPP: Pastikan XAMPP sudah terinstal dan berfungsi dengan baik. Anda perlu Apache dan MySQL yang berjalan.
+
+2.Instal Git: Pastikan Git terinstal di laptop kedua Anda. Jika belum, unduh dari git-scm.com dan ikuti panduan instalasinya.
+
+3.Instal Composer: CodeIgniter 4 menggunakan Composer untuk mengelola dependensinya. Unduh dan instal Composer dari getcomposer.org. Pastikan Composer bisa diakses dari Command Prompt/Terminal Anda.
+
+4.Instal Node.js dan npm (untuk Tailwind CSS): Karena Anda menggunakan Tailwind CSS, Anda akan membutuhkan Node.js dan npm untuk mengompilasi ulang CSS. Unduh dari nodejs.org.
+
+
+Langkah Atau Tahapan Instalasi
+
+1.cd C:\xampp\htdocs\   # Untuk Windows
+2.git clone https://github.com/your-username/your-repo-name.git
+3.cd your-repo-name # Masuk ke folder proyek Anda
+4.composer install
+5.npm install
+6.salin .env dari code yang lama
+7.npm run build (untuk compile css)
+8.lalu jalankan dan akses project mu di browser http://localhost/your-repo-name/public/

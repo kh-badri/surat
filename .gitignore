@@ -1,46 +1,48 @@
-# .gitignore untuk Proyek CodeIgniter 4
-
-### LINGKUNGAN & KREDENSIAL ###
-# Jangan pernah unggah file .env ke repository publik!
-# File ini berisi password database dan kunci sensitif lainnya.
-.env
-
-### DIREKTORI SPESIFIK CODEIGNITER 4 ###
-# Direktori 'writable' berisi cache, log, sesi, dan file upload.
-# File-file ini dibuat otomatis dan berbeda di setiap lingkungan.
-/writable/*
-!/writable/.htaccess
-
-# Spark executable
-spark
-
-### DEPENDENSI ###
-# Dependensi PHP yang dikelola oleh Composer
+# CodeIgniter 4 specific ignores
 /vendor/
+/writable/
+# .env
+# .env.testing
 
-# Dependensi JavaScript/Node.js yang dikelola oleh npm/yarn
-/node_modules/
-
-### IDE & EDITOR KONFIGURASI ###
-# Pengaturan spesifik untuk IDE (PhpStorm, VSCode, dll.)
+# Composer and npm
+composer.lock
+npm-debug.log
 .idea/
 .vscode/
-*.sublime-project
-*.sublime-workspace
 
-### FILE BUATAN SISTEM OPERASI ###
-# File metadata macOS dan Windows
+# Node modules (for Tailwind CSS compilation)
+/node_modules/
+/public/css/tailwind.css.map
+/public/build/ # If you use custom build process that generates files here
+
+# Common OS and editor files
 .DS_Store
 Thumbs.db
 ehthumbs.db
+.sass-cache/
+.project
+.settings/
+.buildpath
+*.sublime-project
+*.sublime-workspace
+.directory
 
-### LOG & FILE SEMENTARA ###
-*.log
-*.tmp
-*.bak
-*.swp
-
-### FILE BUILD ###
-# Direktori untuk hasil build (jika ada)
+# Testing and CI
+/.c9/
+/.php_cs.cache
 /build/
-/dist/
+/nbproject/
+
+# Any local configuration files that might contain sensitive info
+/app/Config/Autoload.php
+/app/Config/Database.php
+/app/Config/Constants.php
+/app/Config/Encryption.php
+/app/Config/Modules.php
+/app/Config/Paths.php
+/app/Config/Routing.php
+/app/Config/Services.php
+/app/Config/Validation.php
+
+# If you have specific log files not covered by /writable/
+*.log

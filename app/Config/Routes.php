@@ -18,6 +18,7 @@ $routes->group('', ['filter' => 'auth'], function ($routes) {
     // Resource untuk Wilayah dan Siswa (tetap seperti semula)
     $routes->resource('wilayah');
     $routes->resource('siswa');
+    $routes->resource('bantuan');
 
     // =======================================================
     // >> RUTE UNTUK SELISIH (CRUD) - DIJAGA OLEH GROUP INI <<
