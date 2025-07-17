@@ -12,31 +12,31 @@
                     <tbody>
                         <tr class="border-b border-blue-100 last:border-b-0">
                             <td class="p-4 text-blue-600 w-12 text-center align-top"><i class='fa fa-check-circle text-xl'></i></td>
-                            <td class="p-4 text-sm text-gray-700">Administrator login terlebih dahulu.</td>
+                            <td class="p-4 text-sm text-gray-700">Administrator login terlebih dahulu, Jika belum punya akun silahkan klik register dibawah menu login</td>
                         </tr>
                         <tr class="border-b border-blue-100 last:border-b-0">
                             <td class="p-4 text-blue-600 w-12 text-center align-top"><i class='fa fa-check-circle text-xl'></i></td>
-                            <td class="p-4 text-sm text-gray-700">Pilih menu <strong>Jenis Data</strong> untuk memasukkan data yang tersedia.</td>
+                            <td class="p-4 text-sm text-gray-700">Pilih menu <strong>Data Wilayah</strong> Lakukan input data wilayah</td>
                         </tr>
                         <tr class="border-b border-blue-100 last:border-b-0">
                             <td class="p-4 text-blue-600 w-12 text-center align-top"><i class='fa fa-check-circle text-xl'></i></td>
-                            <td class="p-4 text-sm text-gray-700">Kemudian pilih menu <strong>Data Tenaga Pendidik</strong> untuk menginput jumlah tenaga pendidik per kecamatan dengan memilih tahun dan jenis data, lalu klik <strong>hitung</strong> untuk menampilkan tabel perhitungan hasil distribusi.</td>
+                            <td class="p-4 text-sm text-gray-700">Kemudian pilih menu <strong>Data Siswa</strong> untuk menginput jumlah siswa berdasarkan kecamatan yang ada pada saat ini, klik button <strong>Simpan</strong> Maka nilai probabilitas, nilai cdf dan batas ri akan terisi omatis berdasrkan rumus yang telah ditentukan</td>
                         </tr>
                         <tr class="border-b border-blue-100 last:border-b-0">
                             <td class="p-4 text-blue-600 w-12 text-center align-top"><i class='fa fa-check-circle text-xl'></i></td>
-                            <td class="p-4 text-sm text-gray-700">Setelah muncul tabel, klik <strong>simpan</strong> untuk menyimpan data persediaan tenaga pendidik. Setelah tersimpan, akan muncul tabel kebutuhan tenaga pendidik.</td>
+                            <td class="p-4 text-sm text-gray-700">Input data guru pada menu <strong>Data Tenaga Pendidik</strong> Sesuai dengan kecamatan dan jumlah yang ada pada saat ini, data ini nantinya diperlukan untuk menentukan perhitungan dihalaman selsih</td>
                         </tr>
                         <tr class="border-b border-blue-100 last:border-b-0">
                             <td class="p-4 text-blue-600 w-12 text-center align-top"><i class='fa fa-check-circle text-xl'></i></td>
-                            <td class="p-4 text-sm text-gray-700">Pilih menu <strong>Bilangan Acak</strong> untuk menghasilkan nilai random yang digunakan dalam prediksi, lalu klik <strong>simpan</strong>. Proses ini hanya dilakukan satu kali.</td>
+                            <td class="p-4 text-sm text-gray-700">Pada menu <strong>Metode Monte Carlo</strong> kita akan menghitung prediksi jumlah siswa pada tahun berikutnya berdasarkan data kecamatan saat ini, <strong>pertama</strong> kita input dulu nilai parameternya yaitu a,c,m,Zo setelah itu klik <strong>Jalankan Prediksi</strong>makan nilai angka acak dan prediksi akan otomatis terisi berdasarkan rumus yang sudah kita tentukan. <strong>Simpan Prediksi </strong> Untuk bisa lanjut ke perhitungan halaman selisih</td>
                         </tr>
                         <tr class="border-b border-blue-100 last:border-b-0">
                             <td class="p-4 text-blue-600 w-12 text-center align-top"><i class='fa fa-check-circle text-xl'></i></td>
-                            <td class="p-4 text-sm text-gray-700">Pilih menu <strong>Hasil Prediksi</strong> untuk melihat hasil akhir estimasi kebutuhan tenaga pendidik. Pilih jenis data yang tersedia, maka hasilnya akan muncul di tabel. Klik <strong>"print"</strong> untuk mencetak laporan atau <strong>"simpan"</strong> untuk menyimpan hasilnya.</td>
+                            <td class="p-4 text-sm text-gray-700">Pilih menu <strong>Data Selisih </strong> untuk mentukan hasil dari selisih ini dari rumus yang ditentukan apakah nilainya positif atau negatif, jika positif maka keternagan nya <strong>Kelebihan</strong> sebaliknya jika negatif maka keterangannya <strong>Kekurangan</strong> </td>
                         </tr>
                         <tr class="border-b border-blue-100 last:border-b-0">
                             <td class="p-4 text-blue-600 w-12 text-center align-top"><i class='fa fa-check-circle text-xl'></i></td>
-                            <td class="p-4 text-sm text-gray-700">Langkah terakhir adalah pilih menu <strong>Grafik</strong> untuk menampilkan grafik dari hasil prediksi yang telah tersimpan.</td>
+                            <td class="p-4 text-sm text-gray-700">Opsional <strong>Dashbord</strong> untuk menampilkan kesimpulan dari data yang telah dihitung</td>
                         </tr>
                     </tbody>
                 </table>
