@@ -7,9 +7,8 @@
 
     <link href="<?= base_url('css/style.css') ?>" rel="stylesheet">
     <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.5.2/css/all.min.css" />
-    <script src="https://cdn.jsdelivr.net/npm/sweetalert2@11"></script>
+
     <style>
-        /* Overlay yang menutupi seluruh halaman */
         #page-loader {
             position: fixed;
             top: 0;
@@ -17,35 +16,27 @@
             width: 100%;
             height: 100%;
             background: #ffffff;
-            /* Latar belakang putih solid */
             z-index: 9999;
             display: flex;
             justify-content: center;
             align-items: center;
-            /* Transisi untuk efek fade-out saat menghilang */
             transition: opacity 0.3s, visibility 0.3s;
         }
 
-        /* Kelas untuk menyembunyikan loader */
         #page-loader.hidden {
             opacity: 0;
             visibility: hidden;
         }
 
-        /* Styling untuk bulatan spinner */
         .spinner {
             border: 8px solid #f3f3f3;
-            /* Warna dasar lingkaran */
             border-top: 8px solid #3b82f6;
-            /* Warna biru untuk bagian yang berputar */
             border-radius: 50%;
             width: 80px;
             height: 80px;
-            animation: spin 2s linear infinite;
-            /* Terapkan animasi berputar */
+            animation: spin 1.5s linear infinite;
         }
 
-        /* Animasi berputar */
         @keyframes spin {
             0% {
                 transform: rotate(0deg);
@@ -63,42 +54,42 @@
     <div id="page-loader">
         <div class="spinner"></div>
     </div>
-    <?= $this->include('layout/navbar') ?>
 
-    <div class="flex">
-        <?= $this->include('layout/sidebar') ?>
+    <div class="flex flex-col min-h-screen">
 
-        <main class="flex-1 p-6">
-            <?= $this->renderSection('content') ?>
-        </main>
+        <?= $this->include('layout/navbar') ?>
+
+        <div class="flex flex-1">
+            <?= $this->include('layout/sidebar') ?>
+
+            <main class="flex-1 p-4 sm:p-6">
+                <?= $this->renderSection('content') ?>
+            </main>
+        </div>
+
+        <?= $this->include('layout/footer') ?>
+
     </div>
 
-    <?= $this->include('layout/footer') ?>
-
-
+    <script src="https://cdn.jsdelivr.net/npm/sweetalert2@11"></script>
     <script>
+        // Sembunyikan page loader setelah halaman dimuat
         window.addEventListener('load', function() {
             document.getElementById('page-loader').classList.add('hidden');
         });
-    </script>
 
-    <?php
-    // Ambil pesan flashdata dari sesi
-    $success = session()->getFlashdata('success');
-    ?>
-    <?php if ($success) : // Jika ada pesan 'success', cetak script SweetAlert 
-    ?>
-        <script>
-            // Panggil SweetAlert
+        // Logika untuk notifikasi SweetAlert dari flashdata
+        <?php if ($success = session()->getFlashdata('success')) : ?>
             Swal.fire({
                 icon: 'success',
-                title: 'Login Sukses',
-                text: '<?= esc($success, 'js') ?>', // Tampilkan pesan dari PHP
-                timer: 2500, // Notifikasi hilang setelah 2.5 detik
+                title: 'Sukses!',
+                text: '<?= esc($success, 'js') ?>',
+                timer: 2500,
                 showConfirmButton: false
             });
-        </script>
-    <?php endif; ?>
+        <?php endif; ?>
+    </script>
+
 </body>
 
 </html>

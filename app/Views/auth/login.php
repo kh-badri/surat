@@ -44,7 +44,7 @@
         <script>
             Swal.fire({
                 icon: 'success',
-                title: 'Registrasi Berhasil!',
+                title: 'Berhasil!',
                 // 3. Gunakan variabel untuk menampilkan pesan
                 text: '<?= esc($successMessage, 'js') ?>',
                 timer: 2000,

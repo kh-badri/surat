@@ -11,7 +11,7 @@
                 <form action="<?= site_url('akun/update_profil') ?>" method="post" enctype="multipart/form-data">
                     <?= csrf_field() ?>
                     <div class="flex items-center space-x-6 mb-6">
-                        <img class="h-24 w-24 rounded-full object-cover" src="<?= base_url('uploads/foto_profil/' . $user['foto']) ?>" alt="Foto Profil">
+                        <img class="h-24 w-24 rounded-full object-cover" src="<?= base_url('/uploads/foto_profil/' . $user['foto']) ?>" alt="Foto Profil">
                         <div>
                             <label for="foto" class="block text-sm font-medium text-gray-700">Ganti Foto</label>
                             <input type="file" name="foto" id="foto" class="mt-1 text-sm text-gray-500 file:mr-4 file:py-2 file:px-4 file:rounded-full file:border-0 file:text-sm file:font-semibold file:bg-blue-50 file:text-blue-700 hover:file:bg-blue-100">
@@ -53,7 +53,7 @@
                         <label for="konfirmasi_password" class="block text-gray-700">Konfirmasi Password Baru</label>
                         <input type="password" name="konfirmasi_password" id="konfirmasi_password" class="w-full px-4 py-2 mt-2 border rounded-md focus:outline-none focus:ring-1 focus:ring-blue-600" required>
                     </div>
-                    <button type="submit" class="w-full bg-gray-700 text-white px-4 py-2 rounded-md hover:bg-gray-800">Ubah Password</button>
+                    <button type="submit" class="w-full bg-blue-600 text-white px-4 py-2 rounded-md hover:bg-blue-700">Ubah Password</button>
                 </form>
             </div>
         </div>

@@ -6,17 +6,11 @@ use App\Models\LoginModel;
 
 class Auth extends BaseController
 {
-    /**
-     * Menampilkan halaman login.
-     */
     public function index()
     {
         return view('auth/login');
     }
 
-    /**
-     * Memproses upaya login dari pengguna.
-     */
     public function login()
     {
         $session = session();
@@ -31,45 +25,32 @@ class Auth extends BaseController
             $session->set([
                 'id'         => $user['id'],
                 'username'   => $user['username'],
+                'foto'       => $user['foto'], // <-- PERBAIKAN PENTING
                 'isLoggedIn' => true
             ]);
 
-            // Tambahkan baris ini untuk mengirim pesan sukses
-            $session->setFlashdata('success', 'Selamat datang kembali!');
-
-            // --- PERBAIKAN DI SINI ---
-            // Arahkan langsung ke halaman dashboard
+            $session->setFlashdata('success', 'Selamat datang kembali, ' . esc($user['username']) . '!');
             return redirect()->to('/dashboard');
         } else {
             $session->setFlashdata('error', 'Username atau Password salah');
             return redirect()->to('/login');
         }
     }
-    /**
-     * Menghancurkan sesi dan mengeluarkan pengguna.
-     */
+
     public function logout()
     {
-        session()->destroy();
         session()->setFlashdata('success', 'Anda berhasil logout.');
+        session()->remove(['id', 'username', 'foto', 'isLoggedIn']); // <-- PERBAIKAN KECIL
         return redirect()->to('/login');
     }
 
-    /**
-     * Menampilkan halaman registrasi.
-     */
     public function register()
     {
         return view('auth/register');
     }
 
-    /**
-     * Memproses data registrasi pengguna baru.
-     */
     public function processRegister()
     {
-        // **PERBAIKAN DI SINI**
-        // Validasi is_unique sekarang memeriksa tabel 'login'
         $rules = [
             'username'         => 'required|is_unique[login.username]|min_length[3]',
             'password'         => 'required|min_length[6]',
@@ -83,7 +64,8 @@ class Auth extends BaseController
         $model = new LoginModel();
         $data = [
             'username' => $this->request->getPost('username'),
-            'password' => password_hash($this->request->getPost('password'), PASSWORD_DEFAULT)
+            'password' => password_hash($this->request->getPost('password'), PASSWORD_DEFAULT),
+            'foto'     => 'default.png' // <-- PERBAIKAN PENTING
         ];
 
         $model->registerUser($data);
