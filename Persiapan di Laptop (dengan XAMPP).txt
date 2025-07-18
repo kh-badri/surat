@@ -1,4 +1,6 @@
-Persiapan di Laptop (dengan XAMPP)
+Persiapan di Laptop (dengan XAMPP) OKE ??
+
+
 1.Instal XAMPP: Pastikan XAMPP sudah terinstal dan berfungsi dengan baik. Anda perlu Apache dan MySQL yang berjalan.
 
 2.Instal Git: Pastikan Git terinstal di laptop kedua Anda. Jika belum, unduh dari git-scm.com dan ikuti panduan instalasinya.
