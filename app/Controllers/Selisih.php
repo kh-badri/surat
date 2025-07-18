@@ -93,14 +93,16 @@ class Selisih extends BaseController
         $data_guru = $this->selisihModel->getGuruById($id_jumlah_guru);
         $jumlah_guru = $data_guru ? $data_guru['jumlah'] : 0;
 
-        // Hitung kebutuhan
-        $kebutuhan = $hasil_prediksi / 20;
+        // Hitung kebutuhan dan bulatkan (LOGIKA DIPERBAIKI)
+        $kebutuhan = round($hasil_prediksi / 20);
 
         // Hitung nilai_selisih
         $nilai_selisih = $kebutuhan - $jumlah_guru;
 
-        // Tentukan keterangan
-        $keterangan = ($nilai_selisih < 0) ? 'kekurangan' : 'kelebihan';
+        // Tentukan keterangan (LOGIKA DIPERBAIKI)
+        // Jika nilai selisih positif (> 0), berarti Kebutuhan > Jumlah Guru, maka statusnya "kekurangan".
+        // Jika negatif atau nol, berarti Kebutuhan <= Jumlah Guru, maka statusnya "kelebihan".
+        $keterangan = ($nilai_selisih > 0) ? 'kekurangan' : 'kelebihan';
 
         $this->selisihModel->save([
             'tahun' => $tahun,
@@ -162,14 +164,16 @@ class Selisih extends BaseController
         $data_guru = $this->selisihModel->getGuruById($id_jumlah_guru);
         $jumlah_guru = $data_guru ? $data_guru['jumlah'] : 0;
 
-        // Hitung kebutuhan
-        $kebutuhan = $hasil_prediksi / 20;
+        // Hitung kebutuhan dan bulatkan (LOGIKA DIPERBAIKI)
+        $kebutuhan = round($hasil_prediksi / 20);
 
         // Hitung nilai_selisih
         $nilai_selisih = $kebutuhan - $jumlah_guru;
 
-        // Tentukan keterangan
-        $keterangan = ($nilai_selisih < 0) ? 'kekurangan' : 'kelebihan';
+        // Tentukan keterangan (LOGIKA DIPERBAIKI)
+        // Jika nilai selisih positif (> 0), berarti Kebutuhan > Jumlah Guru, maka statusnya "kekurangan".
+        // Jika negatif atau nol, berarti Kebutuhan <= Jumlah Guru, maka statusnya "kelebihan".
+        $keterangan = ($nilai_selisih > 0) ? 'kekurangan' : 'kelebihan';
 
         $this->selisihModel->update($id_selisih, [
             'tahun' => $tahun,

@@ -73,7 +73,7 @@
                             <?php
                             // Check if 'nilai_selisih' key exists and is not null
                             if (isset($s['nilai_selisih']) && is_numeric($s['nilai_selisih'])) {
-                                echo number_format($s['nilai_selisih'], 2);
+                                echo number_format($s['nilai_selisih']);
                             } else {
                                 echo 'N/A'; // Or any placeholder you prefer
                             }
