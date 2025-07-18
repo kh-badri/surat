@@ -3,9 +3,9 @@
 
 <div class="container mx-auto p-4">
     <div class="flex justify-between items-center mb-6">
-        <h1 class="text-3xl font-bold text-gray-800">Data Selisih</h1>
+        <h1 class="text-3xl font-bold text-gray-800">Data Kebutuhan</h1>
         <a href="<?= site_url('selisih/new') ?>" class="bg-blue-500 hover:bg-blue-600 text-white font-bold py-2 px-4 rounded-lg shadow-md transition duration-300">
-            Tambah Data Selisih
+            Tambah Data Kebutuhan
         </a>
     </div>
 
@@ -32,7 +32,7 @@
                         Kebutuhan
                     </th>
                     <th class="px-5 py-3 border-b-2 border-gray-200 bg-gray-100 text-left text-xs font-bold text-gray-600 uppercase tracking-wider">
-                        Nilai Selisih
+                        Nilai kebutuhan
                     </th>
                     <th class="px-5 py-3 border-b-2 border-gray-200 bg-gray-100 text-left text-xs font-bold text-gray-600 uppercase tracking-wider">
                         Keterangan

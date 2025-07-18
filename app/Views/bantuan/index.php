@@ -32,7 +32,7 @@
                         </tr>
                         <tr class="border-b border-blue-100 last:border-b-0">
                             <td class="p-4 text-blue-600 w-12 text-center align-top"><i class='fa fa-check-circle text-xl'></i></td>
-                            <td class="p-4 text-sm text-gray-700">Pilih menu <strong>Data Selisih </strong> untuk mentukan hasil dari selisih ini dari rumus yang ditentukan apakah nilainya positif atau negatif, jika positif maka keternagan nya <strong>Kelebihan</strong> sebaliknya jika negatif maka keterangannya <strong>Kekurangan</strong> </td>
+                            <td class="p-4 text-sm text-gray-700">Pilih menu <strong>Data Kebutuhan </strong> untuk mentukan hasil dari Kebutuhan ini dari rumus yang ditentukan apakah nilainya positif atau negatif, jika positif maka keternagan nya <strong>Kelebihan</strong> sebaliknya jika negatif maka keterangannya <strong>Kekurangan</strong> </td>
                         </tr>
                         <tr class="border-b border-blue-100 last:border-b-0">
                             <td class="p-4 text-blue-600 w-12 text-center align-top"><i class='fa fa-check-circle text-xl'></i></td>

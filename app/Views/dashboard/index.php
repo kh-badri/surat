@@ -33,7 +33,7 @@
                         <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M15 12H9m12 0a9 9 0 11-18 0 9 9 0 0118 0z"></path>
                     </svg>
                 </div>
-                <span class="text-sm font-medium text-red-700">Selisih Kekurangan</span>
+                <span class="text-sm font-medium text-red-700">Kebutuhan Kekurangan</span>
                 <span class="font-bold text-lg text-red-800 mt-1"><?= esc($countKekurangan); ?></span>
             </div>
         </a>
@@ -44,7 +44,7 @@
                         <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M12 9v3m0 0v3m0-3h3m-3 0H9m12 0a9 9 0 11-18 0 9 9 0 0118 0z"></path>
                     </svg>
                 </div>
-                <span class="text-sm font-medium text-green-700">Selisih Kelebihan</span>
+                <span class="text-sm font-medium text-green-700">Kebutuhan Kelebihan</span>
                 <span class="font-bold text-lg text-green-800 mt-1"><?= esc($countKelebihan); ?></span>
             </div>
         </a>

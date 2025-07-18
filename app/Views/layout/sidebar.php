@@ -52,7 +52,7 @@
                 <a href="<?= base_url('/selisih') ?>" class=" flex items-center px-4 py-2 rounded-lg transition-colors duration-200 
                     <?= ($active_menu ?? '') === 'selisih' ? 'bg-blue-100 text-blue-600 font-semibold' : 'text-gray-600 hover:bg-gray-100' ?>">
                     <i class="fa-solid fas fa-plus-minus mr-3 w-5 text-center"></i>
-                    <span>Data Selisih</span>
+                    <span>Data Kebutuhan</span>
                 </a>
             </li>
             <li>
