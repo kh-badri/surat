@@ -91,14 +91,21 @@
 
         function calculateSelisih() {
             const hasilPrediksi = parseFloat(hasilPrediksiInput.value) || 0;
-            const jumlahGuru = parseFloat(jumlahGuruSelect.options[jumlahGuruSelect.selectedIndex].text) || 0; // Ambil nilai dari teks opsi
+            // Mengambil nilai jumlah guru dari teks opsi yang dipilih
+            const jumlahGuru = parseFloat(jumlahGuruSelect.options[jumlahGuruSelect.selectedIndex].text) || 0;
 
-            const kebutuhan = hasilPrediksi / 20;
+            // 1. Hitung kebutuhan dan bulatkan dengan pembulatan standar (LOGIKA DIPERBAIKI)
+            const kebutuhan = Math.round(hasilPrediksi / 20);
+
+            // 2. Hitung nilai selisih
             const nilaiSelisih = kebutuhan - jumlahGuru;
-            const keterangan = (nilaiSelisih < 0) ? 'kekurangan' : 'kelebihan';
 
-            kebutuhanInput.value = kebutuhan.toFixed(2);
-            nilaiSelisihInput.value = nilaiSelisih.toFixed(2);
+            // 3. Tentukan keterangan sesuai logika baru (LOGIKA DIPERBAIKI)
+            const keterangan = (nilaiSelisih > 0) ? 'kekurangan' : 'kelebihan';
+
+            // 4. Tampilkan hasil pada input fields
+            kebutuhanInput.value = kebutuhan;
+            nilaiSelisihInput.value = nilaiSelisih;
             keteranganInput.value = keterangan;
         }
 
@@ -114,20 +121,23 @@
             } else {
                 hasilPrediksiInput.value = 0;
             }
-            calculateSelisih(); // Recalculate after fetching
+            // Hitung ulang selisih setiap kali hasil prediksi diambil
+            calculateSelisih();
         }
 
         // Event Listeners
         tahunSelect.addEventListener('change', fetchHasilPrediksi);
         kecamatanSelect.addEventListener('change', fetchHasilPrediksi);
-        jumlahGuruSelect.addEventListener('change', calculateSelisih); // Only recalculate when jumlah guru changes
+        jumlahGuruSelect.addEventListener('change', calculateSelisih);
 
-        // Initial calculations if old values exist (for validation re-display)
+        // Lakukan kalkulasi awal saat halaman dimuat,
+        // berguna jika halaman kembali dimuat setelah validasi gagal
         if (tahunSelect.value && kecamatanSelect.value) {
             fetchHasilPrediksi();
         } else {
-            calculateSelisih(); // Calculate even if no selections made initially
+            calculateSelisih();
         }
     });
 </script>
+
 <?= $this->endSection(); ?>

@@ -28,7 +28,7 @@
                         </tr>
                         <tr class="border-b border-blue-100 last:border-b-0">
                             <td class="p-4 text-blue-600 w-12 text-center align-top"><i class='fa fa-check-circle text-xl'></i></td>
-                            <td class="p-4 text-sm text-gray-700">Pada menu <strong>Metode Monte Carlo</strong> kita akan menghitung prediksi jumlah siswa pada tahun berikutnya berdasarkan data kecamatan saat ini, <strong>pertama</strong> kita input dulu nilai parameternya yaitu a,c,m,Zo setelah itu klik <strong>Jalankan Prediksi</strong>makan nilai angka acak dan prediksi akan otomatis terisi berdasarkan rumus yang sudah kita tentukan. <strong>Simpan Prediksi </strong> Untuk bisa lanjut ke perhitungan halaman selisih</td>
+                            <td class="p-4 text-sm text-gray-700">Pada menu <strong>Metode Monte Carlo</strong> kita akan menghitung prediksi jumlah siswa pada tahun berikutnya berdasarkan data kecamatan saat ini, <strong>pertama</strong> kita input dulu nilai parameternya yaitu a,c,m,Zo setelah itu klik <strong>Jalankan Prediksi </strong> maka nilai angka acak dan prediksi akan otomatis terisi berdasarkan rumus yang sudah kita tentukan. <strong>Simpan Prediksi </strong> Untuk bisa lanjut ke perhitungan halaman selisih</td>
                         </tr>
                         <tr class="border-b border-blue-100 last:border-b-0">
                             <td class="p-4 text-blue-600 w-12 text-center align-top"><i class='fa fa-check-circle text-xl'></i></td>
