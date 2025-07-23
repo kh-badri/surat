@@ -1,10 +1,9 @@
-// tailwind.config.js
 module.exports = {
   content: [
-    "./app/Views/**/*.php",
-    "./app/Views/layout/*.php", // Pastikan ini mencakup semua file view Anda
-    "./app/Controllers/**/*.php", // Jika Anda memiliki kelas Tailwind di controller
-    // ... tambahkan jalur lain jika ada file PHP/JS yang menggunakan kelas Tailwind
+    "./app/**/*.{php,html}",
+    "./resources/**/*.{php,html,js}",
+    "./views/**/*.php",
+    "./**/*.php",
   ],
   theme: {
     extend: {},

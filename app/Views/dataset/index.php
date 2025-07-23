@@ -1,6 +1,7 @@
 <?= $this->extend('layout/layout'); ?>
 <?= $this->section('content'); ?>
 
+
 <div class="container mx-auto px-4 py-8">
     <!-- Header Halaman -->
     <div class="text-center md:text-left mb-8">
@@ -81,12 +82,23 @@
                         <td class="px-4 py-2"><?= esc($row->durasi_tidur) ?></td>
                         <td class="px-4 py-2"><?= esc($row->kualitas_tidur) ?></td>
                         <td class="px-4 py-2 space-x-2">
-                            <a href="<?= site_url('dataset/edit/' . $row->id) ?>" class="text-blue-600 hover:underline">Edit</a>
+                            <!-- Tombol Edit: Kuning (Warning) -->
+                            <a href="<?= site_url('dataset/edit/' . $row->id) ?>"
+                                class="inline-block px-4 py-1.5 rounded-md bg-yellow-500 text-white hover:bg-yellow-600 transition">
+                                Edit
+                            </a>
+
+                            <!-- Tombol Hapus: Merah (Danger) -->
                             <form action="<?= site_url('dataset/delete/' . $row->id) ?>" method="post" class="inline">
                                 <?= csrf_field() ?>
-                                <button type="submit" onclick="return confirm('Yakin ingin menghapus data ini?')" class="text-red-600 hover:underline">Hapus</button>
+                                <button type="submit"
+                                    onclick="return confirm('Yakin ingin menghapus data ini?')"
+                                    class="px-4 py-1.5 rounded-md bg-red-600 text-white hover:bg-red-700 transition">
+                                    Hapus
+                                </button>
                             </form>
                         </td>
+
                     </tr>
                 <?php endforeach ?>
                 <?php if (count($data_tidur) === 0): ?>

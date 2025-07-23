@@ -13,7 +13,7 @@ class GuestFilter implements FilterInterface
         // Jika session 'isLoggedIn' ada (artinya sudah login)
         if (session()->get('isLoggedIn')) {
             // Alihkan ke halaman dashboard
-            return redirect()->to('/dashboard');
+            return redirect()->to('/home');
         }
     }
 

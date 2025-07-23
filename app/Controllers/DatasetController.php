@@ -18,9 +18,15 @@ class DatasetController extends BaseController
     public function index()
     {
         // Menggunakan Model untuk mengambil data
-        $dataTidur = $this->datasetModel->orderBy('tanggal', 'DESC')->findAll();
+        $dataTidur = $this->datasetModel->orderBy('tanggal', 'ASC')->findAll();
 
-        return view('dataset/index', ['data_tidur' => $dataTidur]);
+        // Menyiapkan data untuk dikirim ke view
+        $data = [
+            'data_tidur'  => $dataTidur,
+            'active_menu' => 'dataset' // Menandakan menu 'dataset' sedang aktif
+        ];
+
+        return view('dataset/index', $data);
     }
 
     public function upload()

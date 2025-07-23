@@ -10,7 +10,7 @@ class Home extends BaseController
 
         $data = [
             'title'           => 'Home',
-            'active_menu'     => 'home',
+            'active_menu' => 'home', // Untuk menu aktif di sidebar
 
         ];
 

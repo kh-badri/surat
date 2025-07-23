@@ -57,7 +57,6 @@
 
     <div class="flex flex-col min-h-screen">
 
-        <?= $this->include('layout/navbar') ?>
 
         <div class="flex flex-1">
             <?= $this->include('layout/sidebar') ?>
