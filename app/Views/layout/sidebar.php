@@ -37,7 +37,7 @@
                 <a href="<?= base_url('/analisis') ?>" class="flex items-center gap-3 px-4 py-2.5 rounded-lg transition-all duration-200
                     <?= ($active_menu ?? '') === 'analisis' ? 'bg-amber-700 text-white font-semibold shadow-md' : 'text-black hover:bg-amber-700 hover:text-white' ?>">
                     <i class="fa-solid fa-chart-line w-5 text-center"></i>
-                    <span class="font-medium">Analisis Pola</span>
+                    <span class="font-medium">Analisis Pola Tidur</span>
                 </a>
             </li>
         </ul>
