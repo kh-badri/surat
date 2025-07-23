@@ -8,52 +8,33 @@ use CodeIgniter\Router\RouteCollection;
 
 // --- RUTE YANG WAJIB LOGIN (Dijaga oleh 'auth') ---
 $routes->group('', ['filter' => 'auth'], function ($routes) {
-    $routes->get('/', 'Dashboard::index');
-    $routes->get('dashboard', 'Dashboard::index');
+    $routes->get('/', 'Home::index');
+    $routes->get('home', 'Home::index');
 
+    // Rute untuk halaman Akun
     $routes->get('akun', 'Akun::index');
     $routes->post('akun/update_profil', 'Akun::updateProfil');
     $routes->post('akun/update_sandi', 'Akun::updateSandi');
 
-    // Resource untuk Wilayah dan Siswa (tetap seperti semula)
-    $routes->resource('wilayah');
-    $routes->resource('siswa');
-    $routes->resource('bantuan');
+    // --- RUTE CRUD UNTUK DATASET ---
+    // Menampilkan halaman utama (upload & tabel data)
+    $routes->get('dataset', 'DatasetController::index');
+    // Memproses file yang di-upload
+    $routes->post('dataset/upload', 'DatasetController::upload');
 
-    // =======================================================
-    // >> RUTE UNTUK SELISIH (CRUD) - DIJAGA OLEH GROUP INI <<
-    // Hapus $routes->resource('selisih'); yang duplikat
-    // =======================================================
-    $routes->group('selisih', function ($routes) {
-        $routes->get('/', 'Selisih::index');
-        $routes->get('new', 'Selisih::new');
-        $routes->post('create', 'Selisih::create');
-        $routes->get('edit/(:num)', 'Selisih::edit/$1');
-        $routes->put('update/(:num)', 'Selisih::update/$1');
-        $routes->delete('(:num)', 'Selisih::delete/$1'); // Pastikan ini DELETE method di form
-        $routes->get('get_hasil_prediksi', 'Selisih::get_hasil_prediksi'); // API untuk AJAX
-        $routes->get('get_jumlah_guru', 'Selisih::get_jumlah_guru'); // API untuk AJAX (opsional, tergantung kebutuhan)
-    });
+    // Rute untuk menampilkan form edit data (GET request)
+    $routes->get('dataset/edit/(:num)', 'DatasetController::edit/$1');
+    // Memproses pembaruan data dari form edit (POST request)
+    $routes->post('dataset/update/(:num)', 'DatasetController::update/$1');
+    // Memproses penghapusan data (POST request, sesuai dengan form di view)
+    $routes->post('dataset/delete/(:num)', 'DatasetController::delete/$1');
 
-    // Rute untuk Guru (tetap seperti semula, pastikan konsisten dengan controller Guru)
-    $routes->get('guru/create', 'Guru::create');
-    $routes->post('guru/store', 'Guru::store');
-    $routes->get('guru/edit/(:num)', 'Guru::edit/$1');
-    $routes->post('guru/update/(:num)', 'Guru::update/$1');
-    $routes->get('guru/delete/(:num)', 'Guru::delete/$1'); // Ini juga sebaiknya POST/DELETE method
-    $routes->resource('guru', ['only' => ['index']]); // Jika hanya ingin index dari resource
-
-    // Rute untuk Prediksi (tetap seperti semula)
-    $routes->match(['get', 'post'], 'prediksi', 'Prediksi::index');
-    $routes->post('prediksi/simpan', 'Prediksi::simpan');
-
-    // =======================================================
-    // >> HAPUS RUTE SELISIH YANG DUPLIKAT DI BAWAH INI <<
-    // Karena sudah didefinisikan di dalam group 'selisih' di atas
-    // =======================================================
-    // $routes->get('selisih', 'Selisih::index'); // Hapus
-    // $routes->post('selisih/store', 'Selisih::store'); // Hapus, gunakan 'create' di atas
-    // $routes->get('selisih/delete/(:num)', 'Selisih::delete/$1'); // Hapus, gunakan DELETE method di atas
+    // Catatan: Jika Anda berencana untuk memiliki form input data manual terpisah (bukan upload CSV),
+    // Anda akan memerlukan rute GET untuk menampilkan form dan rute POST untuk memprosesnya.
+    // Contoh:
+    // $routes->get('dataset/new', 'DatasetController::new'); // Untuk menampilkan form tambah data manual
+    // $routes->post('dataset/create', 'DatasetController::create'); // Untuk memproses data baru dari form manual
+    // ---------------------------------
 });
 
 

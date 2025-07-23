@@ -1,8 +1,8 @@
-<nav class="bg-blue-600 text-white p-4 shadow">
+<nav class="bg-amber-700 text-white p-4 shadow">
     <div class="container mx-auto flex justify-between items-center">
 
         <div class="flex items-center">
-            <div class="text-xl font-bold">Monte Carlo App</div>
+            <div class="text-xl font-bold">Pola Tidur App</div>
         </div>
 
         <div>

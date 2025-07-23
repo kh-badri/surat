@@ -4,8 +4,16 @@ namespace App\Controllers;
 
 class Home extends BaseController
 {
-    public function index(): string
+    // 
+    public function index()
     {
-        return view('welcome_message');
+
+        $data = [
+            'title'           => 'Home',
+            'active_menu'     => 'home',
+
+        ];
+
+        return view('home/index', $data);
     }
 }
