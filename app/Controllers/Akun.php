@@ -2,7 +2,8 @@
 
 namespace App\Controllers;
 
-use App\Models\LoginModel;
+use App\Models\LoginModel; // Pastikan model ini mengelola data user/login Anda
+use CodeIgniter\Files\File; // Pastikan ini di-import untuk bekerja dengan file
 
 class Akun extends BaseController
 {
@@ -28,8 +29,9 @@ class Akun extends BaseController
     public function updateProfil()
     {
         $model = new LoginModel();
-        $userId = session()->get('id');
-        $user = $model->find($userId);
+        $session = session(); // Ambil instance session
+        $userId = $session->get('id'); // Ambil ID pengguna dari session
+        $user = $model->find($userId); // Dapatkan data user saat ini dari DB
 
         // Aturan validasi untuk nama dan email
         $rules = [
@@ -39,7 +41,7 @@ class Akun extends BaseController
 
         // Aturan validasi tambahan jika ada file foto yang di-upload
         $foto = $this->request->getFile('foto');
-        if ($foto->isValid() && !$foto->hasMoved()) {
+        if ($foto && $foto->isValid() && !$foto->hasMoved()) { // Periksa keberadaan file sebelum isValid()
             $rules['foto'] = 'max_size[foto,1024]|is_image[foto]|mime_in[foto,image/jpg,image/jpeg,image/png]';
         }
 
@@ -54,17 +56,22 @@ class Akun extends BaseController
         ];
 
         // Proses file foto jika ada yang baru
-        if ($foto->isValid() && !$foto->hasMoved()) {
+        if ($foto && $foto->isValid() && !$foto->hasMoved()) { // Periksa lagi keberadaan dan validitas file
             // Hapus foto lama untuk menghemat ruang, kecuali jika itu foto default
-            if ($user['foto'] != 'default.jpg') {
-                @unlink('uploads/foto_profil/' . $user['foto']);
+            if ($user['foto'] && $user['foto'] != 'default.jpg' && file_exists(FCPATH . 'uploads/foto_profil/' . $user['foto'])) {
+                // Gunakan FCPATH untuk jalur absolut ke root public
+                @unlink(FCPATH . 'uploads/foto_profil/' . $user['foto']);
             }
             $namaFotoBaru = $foto->getRandomName();
-            $foto->move('uploads/foto_profil', $namaFotoBaru);
+            $foto->move(FCPATH . 'uploads/foto_profil', $namaFotoBaru); // Pindahkan file dengan FCPATH
             $dataToSave['foto'] = $namaFotoBaru;
+
+            // --- PENTING: UPDATE SESI DENGAN NAMA FOTO BARU ---
+            $session->set('foto', $namaFotoBaru); // Baris ini akan memperbarui sesi
         }
 
-        $model->save($dataToSave);
+        $model->save($dataToSave); // Simpan perubahan ke database
+
         session()->setFlashdata('success', 'Profil berhasil diperbarui.');
         return redirect()->to('/akun');
     }
@@ -86,7 +93,7 @@ class Akun extends BaseController
         ];
 
         if (!$this->validate($rules)) {
-            return redirect()->to('/akun')->withInput()->with('errors', 'Kolom password tidak boleh kosong');
+            return redirect()->to('/akun')->withInput()->with('errors', 'Kolom password tidak boleh kosong'); // Sebaiknya ambil dari validator
         }
 
         // Verifikasi kecocokan password lama

@@ -8,8 +8,8 @@ use CodeIgniter\Router\RouteCollection;
 
 // --- RUTE YANG WAJIB LOGIN (Dijaga oleh 'auth') ---
 $routes->group('', ['filter' => 'auth'], function ($routes) {
-    $routes->get('/', 'Home::index');
-    $routes->get('home', 'Home::index');
+    $routes->get('/', 'Dashboard::index');
+    $routes->get('dashboard', 'Dashboard::index');
 
     // Rute untuk halaman Akun
     $routes->get('akun', 'Akun::index');

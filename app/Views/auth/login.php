@@ -104,10 +104,12 @@
                 timer: 2000,
                 showConfirmButton: false
             }).then(() => {
-                window.location.href = "<?= base_url('/home') ?>";
+                window.location.href = "<?= base_url('/dashboard') ?>";
             });
         </script>
     <?php endif; ?>
+
+
 
     <?php
     // Ambil pesan flashdata 'error'

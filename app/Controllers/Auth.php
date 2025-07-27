@@ -30,7 +30,7 @@ class Auth extends BaseController
             ]);
 
             $session->setFlashdata('success', 'Selamat datang kembali, ' . esc($user['username']) . '!');
-            return redirect()->to('/home');
+            return redirect()->to('/dashboard');
         } else {
             $session->setFlashdata('error', 'Username atau Password salah');
             return redirect()->to('/login');
