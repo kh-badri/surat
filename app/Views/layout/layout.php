@@ -99,8 +99,8 @@
                         </button>
                     </div>
 
-                    <div class="flex items-center space-x-2">
-                        <img src="<?= base_url('public/tidur.png') ?>" alt="Logo Perusahaan" class="h-12 w-auto">
+                    <div class="flex items-center">
+                        <img src="<?= base_url('public/inmeet-logo.png') ?>" alt="Logo Perusahaan" class="h-12 w-auto">
                         <span class="text-xl font-bold text-amber-600">Ticketing App</span>
                     </div>
                 </div>

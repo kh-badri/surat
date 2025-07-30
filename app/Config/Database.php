@@ -27,8 +27,8 @@ class Database extends Config
     public array $default = [
         'DSN'          => '',
         'hostname'     => 'localhost',
-        'username'     => 'root',
-        'password'     => '',
+        'username'     => 'inmeetn1_ticketing',
+        'password'     => 'ticketing2025',
         'database'     => 'inmeetn1_ticketing',
         'DBDriver'     => 'MySQLi',
         'DBPrefix'     => '',

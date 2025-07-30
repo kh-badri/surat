@@ -1,119 +1,160 @@
 <?= $this->extend('layout/layout') ?>
+
 <?= $this->section('content') ?>
 
-<!-- Hero Section: Pengantar Aplikasi -->
-<div class="relative bg-gradient-to-br from-amber-700 to-amber-500 rounded-2xl p-8 md:p-12 mb-12 shadow-xl text-center overflow-hidden">
-    <!-- Background pattern/overlay (optional, for more depth) -->
-    <div class="absolute inset-0 opacity-10" style="background-image: url('data:image/svg+xml;base64,PHN2ZyB3aWR0aD0iMTAwJSIgaGVpZ2h0PSIxMDAlIiB2aWV3Qm94PSIwIDAgMjAwIDIwMCIgeG1sbnM9Imh0dHA6Ly93d3cudzMub3JnLzIwMDAvc3ZnIj48Y2lyY2xlIGN4PSIxMDAiIGN5PSIxMDAiIHI9IjYwIiBmaWxsPSIjRkZENzAwIiBvcGFjaXR5PSIwLjEiLz48Y2lyY2xlIGN4PSI1MCIgY3k9IjE1MCIgcj0iNDAiIGZpbGw9IiNGRkQ3MDAiIG9wYWNpdHk9IjAuMSIvPjxjaXJjbGUgY3g9IjE1MCIgY3k9IjUwIiByPSIzMCIgZmlsbD0iI0ZGRDcwMCIgb3BhY2l0eT0iMC4xIi8+PC9zdmc+');"></div>
+<div class="container mx-auto px-4 py-8 sm:px-6 lg:px-8">
+    <div class="bg-white shadow-xl rounded-xl p-6 md:p-8 lg:p-10">
 
-    <h1 class="text-3xl md:text-3xl font-bold font-extrabold text-amber-700 leading-tight mb-4 relative z-10">
-        Jelajahi Dunia Tidur Anda dengan Analisis Data
-    </h1>
-    <p class="text-lg text-amber-100 max-w-3xl mx-auto relative z-10">
-        Selamat datang di aplikasi yang dirancang untuk membantu Anda memahami pola waktu tidur melalui kekuatan Time Series Analysis.
-        Dapatkan wawasan mendalam untuk meningkatkan kualitas hidup Anda.
-    </p>
-    <!-- Main Hero SVG - Moon and Stars -->
-    <svg class="w-24 h-24 md:w-32 md:h-32 mx-auto mt-8 text-amber-200 relative z-10 animate-bounce-slow" fill="currentColor" viewBox="0 0 24 24" xmlns="http://www.w3.org/2000/svg">
-        <path d="M12 3a9 9 0 009 9 9 9 0 00-9 9c-4.97 0-9-4.03-9-9s4.03-9 9-9zm0 2a7 7 0 00-7 7 7 7 0 007 7 7 7 0 007-7 7 7 0 00-7-7zM15.5 8.5a.5.5 0 11-1 0 .5.5 0 011 0zM8.5 15.5a.5.5 0 11-1 0 .5.5 0 011 0zM18 12a.5.5 0 11-1 0 .5.5 0 011 0zM6 12a.5.5 0 11-1 0 .5.5 0 011 0zM12 6a.5.5 0 11-1 0 .5.5 0 011 0zM12 18a.5.5 0 11-1 0 .5.5 0 011 0z" />
-    </svg>
-</div>
+        <h2 class="text-3xl font-extrabold text-gray-900 tracking-tight mb-8">Dashboard Overview</h2>
 
-<!-- Bagian Edukasi: Pentingnya Tidur Berkualitas -->
-<div class="bg-white p-6 md:p-8 rounded-xl shadow-lg mb-8 border border-stone-200 hover:shadow-xl transition-shadow duration-300">
-    <h2 class="text-2xl md:text-3xl font-semibold mb-4 text-stone-700 flex items-center">
-        <svg class="w-8 h-8 text-amber-700 mr-3" fill="currentColor" viewBox="0 0 24 24" xmlns="http://www.w3.org/2000/svg">
-            <path d="M12 2C7.03 2 3 6.03 3 11s4.03 9 9 9 9-4.03 9-9-4.03-9-9-9zm0 16c-3.86 0-7-3.14-7-7s3.14-7 7-7 7 3.14 7 7-3.14 7-7 7zM12 6a1 1 0 011 1v4a1 1 0 01-2 0V7a1 1 0 011-1z" />
-            <path d="M12 14a1 1 0 011 1v1a1 1 0 01-2 0v-1a1 1 0 011-1z" />
-        </svg>
-        Pentingnya Tidur Berkualitas
-    </h2>
-    <p class="text-gray-700 leading-relaxed mb-4">
-        Tidur bukan sekadar istirahat, melainkan fondasi penting bagi kesehatan fisik dan mental kita.
-        Tidur yang cukup dan berkualitas berperan krusial dalam memulihkan energi, menguatkan sistem imun,
-        meningkatkan fungsi kognitif seperti memori dan konsentrasi, serta mengatur suasana hati.
-        Kurang tidur kronis dapat berdampak negatif pada produktivitas, kesehatan jantung, metabolisme,
-        dan bahkan meningkatkan risiko berbagai penyakit.
-    </p>
-    <p class="text-gray-700 leading-relaxed">
-        Aplikasi ini dirancang untuk membantu Anda memahami pola tidur Anda sendiri,
-        memberikan wawasan yang dapat membantu Anda mencapai kualitas tidur yang lebih baik.
-    </p>
-</div>
+        <div class="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 gap-6 mb-8">
+            <div class="bg-white rounded-lg shadow-md p-6 border-l-4 border-amber-600
+                        transform transition duration-300 ease-in-out hover:scale-105 hover:shadow-lg hover:bg-amber-50 cursor-pointer">
+                <a href="<?= base_url('customer') ?>" class="block h-full">
+                    <div class="flex items-center justify-between mb-4">
+                        <div>
+                            <p class="text-gray-800 text-sm font-medium">Total Customers</p>
+                            <p class="text-3xl font-bold text-gray-900 mt-1"><?= $totalCustomers ?></p>
+                        </div>
+                        <i class="fa-solid fa-users text-amber-500 text-4xl opacity-50"></i>
+                    </div>
+                    <p class="text-right text-amber-600 hover:text-amber-700 text-xs mt-3 font-semibold">View All &rarr;</p>
+                </a>
+            </div>
 
-<!-- Bagian Edukasi: Memahami Pola Waktu Tidur Anda -->
-<div class="bg-white p-6 md:p-8 rounded-xl shadow-lg mb-8 border border-stone-200 hover:shadow-xl transition-shadow duration-300">
-    <h2 class="text-2xl md:text-3xl font-semibold mb-4 text-stone-700 flex items-center">
-        <svg class="w-8 h-8 text-amber-700 mr-3" fill="currentColor" viewBox="0 0 24 24" xmlns="http://www.w3.org/2000/svg">
-            <path d="M12 2C6.48 2 2 6.48 2 12s4.48 10 10 10 10-4.48 10-10S17.52 2 12 2zm0 18c-4.41 0-8-3.59-8-8s3.59-8 8-8 8 3.59 8 8-3.59 8-8 8zm-1-13h2v6h-2zm0 8h2v2h-2z" />
-        </svg>
-        Memahami Pola Waktu Tidur Anda
-    </h2>
-    <p class="text-gray-700 leading-relaxed mb-4">
-        Pola waktu tidur merujuk pada kebiasaan tidur Anda sehari-hari, termasuk durasi tidur,
-        kualitas tidur (seberapa nyenyak tidur Anda), dan konsistensi jadwal tidur.
-        Setiap orang memiliki pola tidur yang unik, dipengaruhi oleh berbagai faktor seperti gaya hidup,
-        usia, lingkungan, dan kondisi kesehatan.
-    </p>
-    <p class="text-gray-700 leading-relaxed">
-        Dengan melacak dan menganalisis data tidur Anda secara berkala, kita dapat mengidentifikasi
-        tren, anomali, dan kebiasaan yang mungkin tidak Anda sadari. Informasi ini sangat berharga
-        untuk membuat perubahan positif demi tidur yang lebih baik.
-    </p>
-</div>
+            <div class="bg-white rounded-lg shadow-md p-6 border-l-4 border-amber-600
+                        transform transition duration-300 ease-in-out hover:scale-105 hover:shadow-lg hover:bg-amber-50 cursor-pointer">
+                <a href="<?= base_url('petugas') ?>" class="block h-full">
+                    <div class="flex items-center justify-between mb-4">
+                        <div>
+                            <p class="text-gray-800 text-sm font-medium">Total Petugas</p>
+                            <p class="text-3xl font-bold text-gray-900 mt-1"><?= $totalPetugas ?></p>
+                        </div>
+                        <i class="fa-solid fa-screwdriver-wrench text-amber-500 text-4xl opacity-50"></i>
+                    </div>
+                    <p class="text-right text-amber-600 hover:text-amber-700 text-xs mt-3 font-semibold">View All &rarr;</p>
+                </a>
+            </div>
 
-<!-- Bagian Edukasi: Apa itu Time Series Analysis? -->
-<div class="bg-white p-6 md:p-8 rounded-xl shadow-lg mb-8 border border-stone-200 hover:shadow-xl transition-shadow duration-300">
-    <h2 class="text-2xl md:text-3xl font-semibold mb-4 text-stone-700 flex items-center">
-        <svg class="w-8 h-8 text-amber-700 mr-3" fill="currentColor" viewBox="0 0 24 24" xmlns="http://www.w3.org/2000/svg">
-            <path d="M20 2H4c-1.1 0-2 .9-2 2v16c0 1.1.9 2 2 2h16c1.1 0 2-.9 2-2V4c0-1.1-.9-2-2-2zM8 16H4V8h4v8zm6 0h-4V8h4v8zm6 0h-4V8h4v8z" />
-        </svg>
-        Apa itu Time Series Analysis?
-    </h2>
-    <p class="text-gray-700 leading-relaxed mb-4">
-        Time Series Analysis (Analisis Deret Waktu) adalah metode statistik yang digunakan untuk
-        menganalisis data yang dikumpulkan pada interval waktu yang berurutan. Tujuannya adalah
-        untuk memahami pola, tren, dan komponen musiman dalam data tersebut, serta untuk
-        membuat peramalan (prediksi) nilai di masa depan.
-    </p>
-    <p class="text-gray-700 leading-relaxed">
-        Dalam deret waktu, data tidak bersifat independen; nilai saat ini seringkali
-        dipengaruhi oleh nilai-nilai sebelumnya. Analisis deret waktu membantu kita
-        mengungkap hubungan tersembunyi ini dan membuat prediksi yang lebih akurat.
-    </p>
-</div>
+            <div class="bg-white rounded-lg shadow-md p-6 border-l-4 border-amber-600
+                        transform transition duration-300 ease-in-out hover:scale-105 hover:shadow-lg hover:bg-amber-50 cursor-pointer">
+                <a href="<?= base_url('tickets') ?>" class="block h-full">
+                    <div class="flex items-center justify-between mb-4">
+                        <div>
+                            <p class="text-gray-800 text-sm font-medium">Total Tickets</p>
+                            <p class="text-3xl font-bold text-gray-900 mt-1"><?= $totalTickets ?></p>
+                        </div>
+                        <i class="fa-solid fa-ticket text-amber-500 text-4xl opacity-50"></i>
+                    </div>
+                    <p class="text-right text-amber-600 hover:text-amber-700 text-xs mt-3 font-semibold">View All &rarr;</p>
+                </a>
+            </div>
+        </div>
 
-<!-- Bagian Edukasi: Time Series Analysis pada Pola Tidur -->
-<div class="bg-white p-6 md:p-8 rounded-xl shadow-lg border border-stone-200 hover:shadow-xl transition-shadow duration-300">
-    <h2 class="text-2xl md:text-3xl font-semibold mb-4 text-stone-700 flex items-center">
-        <svg class="w-8 h-8 text-amber-700 mr-3" fill="currentColor" viewBox="0 0 24 24" xmlns="http://www.w3.org/2000/svg">
-            <path d="M12 2C6.48 2 2 6.48 2 12s4.48 10 10 10 10-4.48 10-10S17.52 2 12 2zm-1 15h2v-6h-2v6zm0-8h2V7h-2v2z" />
-        </svg>
-        Time Series Analysis pada Pola Tidur
-    </h2>
-    <p class="text-gray-700 leading-relaxed mb-4">
-        Dalam konteks pola waktu tidur, Time Series Analysis menjadi alat yang sangat ampuh.
-        Dengan menerapkan metode ini pada data durasi dan kualitas tidur Anda dari waktu ke waktu,
-        kami dapat:
-    </p>
-    <ul class="list-disc list-inside text-gray-700 leading-relaxed ml-4 mb-4">
-        <li>Mengidentifikasi Tren Jangka Panjang: Apakah durasi tidur Anda cenderung menurun atau meningkat seiring waktu?</li>
-        <li>Mendeteksi Pola Musiman/Periodik: Apakah ada hari-hari tertentu dalam seminggu atau bulan di mana kualitas tidur Anda secara konsisten lebih baik atau lebih buruk?</li>
-        <li>Melakukan Peramalan: Memprediksi durasi atau kualitas tidur Anda di masa depan berdasarkan pola historis.</li>
-        <li>Mengungkap Anomali: Menemukan kejadian tidur yang tidak biasa yang mungkin memerlukan perhatian.</li>
-    </ul>
-    <p class="text-gray-700 leading-relaxed">
-        Dengan wawasan ini, Anda dapat mengambil langkah proaktif untuk meningkatkan kebiasaan tidur Anda
-        dan pada akhirnya, meningkatkan kualitas hidup secara keseluruhan.
-    </p>
-    <div class="mt-8 text-center">
-        <p class="text-lg font-semibold text-stone-800 mb-4">Siap untuk menganalisis pola tidur Anda?</p>
-        <a href="<?= site_url('dataset') ?>" class="inline-block bg-amber-700 text-white font-bold py-3 px-6 rounded-lg hover:bg-amber-800 focus:outline-none focus:ring-2 focus:ring-offset-2 focus:ring-amber-600 transition-transform transform hover:scale-105 mr-4">
-            Upload Dataset Anda
-        </a>
-        <a href="<?= site_url('analisis') ?>" class="inline-block bg-amber-700 text-white font-bold py-3 px-6 rounded-lg hover:bg-amber-800 focus:outline-none focus:ring-2 focus:ring-offset-2 focus:ring-amber-600 transition-transform transform hover:scale-105 mr-4">
-            Mulai Analisis
-        </a>
+        <div class="grid grid-cols-1 lg:grid-cols-2 gap-6 mb-8">
+            <div class="bg-white rounded-lg shadow-md p-6">
+                <h3 class="text-xl font-semibold text-gray-900 mb-4">Tickets by Status</h3>
+                <div class="space-y-4">
+                    <div class="flex justify-between items-center">
+                        <p class="text-gray-800">Open</p>
+                        <span class="px-3 py-1 rounded-full text-sm font-medium bg-blue-100 text-blue-800"><?= $ticketsOpen ?></span>
+                    </div>
+                    <div class="flex justify-between items-center">
+                        <p class="text-gray-800">In Progress</p>
+                        <span class="px-3 py-1 rounded-full text-sm font-medium bg-yellow-100 text-yellow-800"><?= $ticketsProgress ?></span>
+                    </div>
+                    <div class="flex justify-between items-center">
+                        <p class="text-gray-800">Closed</p>
+                        <span class="px-3 py-1 rounded-full text-sm font-medium bg-green-100 text-green-800"><?= $ticketsClosed ?></span>
+                    </div>
+                </div>
+            </div>
+
+            <div class="bg-white rounded-lg shadow-md p-6">
+                <h3 class="text-xl font-semibold text-gray-900 mb-4">Tickets by Priority</h3>
+                <div class="space-y-4">
+                    <div class="flex justify-between items-center">
+                        <p class="text-gray-800">Low</p>
+                        <span class="px-3 py-1 rounded-full text-sm font-medium bg-gray-100 text-gray-800"><?= $priorityLow ?></span>
+                    </div>
+                    <div class="flex justify-between items-center">
+                        <p class="text-gray-800">Medium</p>
+                        <span class="px-3 py-1 rounded-full text-sm font-medium bg-blue-100 text-blue-800"><?= $priorityMedium ?></span>
+                    </div>
+                    <div class="flex justify-between items-center">
+                        <p class="text-gray-800">High</p>
+                        <span class="px-3 py-1 rounded-full text-sm font-medium bg-orange-100 text-orange-800"><?= $priorityHigh ?></span>
+                    </div>
+                    <div class="flex justify-between items-center">
+                        <p class="text-gray-800">Urgent</p>
+                        <span class="px-3 py-1 rounded-full text-sm font-medium bg-red-100 text-red-800"><?= $priorityUrgent ?></span>
+                    </div>
+                </div>
+            </div>
+        </div>
+
+        <div class="bg-white rounded-lg shadow-md p-6">
+            <h3 class="text-xl font-semibold text-gray-900 mb-4">Recent Tickets</h3>
+            <?php if (empty($recentTickets)): ?>
+                <p class="text-gray-700 text-center">No recent tickets.</p>
+            <?php else: ?>
+                <div class="overflow-x-auto">
+                    <table class="min-w-full divide-y divide-gray-200">
+                        <thead class="bg-gray-50">
+                            <tr>
+                                <th class="px-6 py-3 text-left text-xs font-semibold text-gray-700 uppercase tracking-wider">Code</th>
+                                <th class="px-6 py-3 text-left text-xs font-semibold text-gray-700 uppercase tracking-wider">Customer</th>
+                                <th class="px-6 py-3 text-left text-xs font-semibold text-gray-700 uppercase tracking-wider">Keluhan</th>
+                                <th class="px-6 py-3 text-left text-xs font-semibold text-gray-700 uppercase tracking-wider">Status</th>
+                                <th class="px-6 py-3 text-left text-xs font-semibold text-gray-700 uppercase tracking-wider">Priority</th>
+                                <th class="px-6 py-3 text-left text-xs font-semibold text-gray-700 uppercase tracking-wider">Assigned To</th>
+                                <th class="px-6 py-3 text-left text-xs font-semibold text-gray-700 uppercase tracking-wider">Date</th>
+                            </tr>
+                        </thead>
+                        <tbody class="bg-white divide-y divide-gray-200">
+                            <?php foreach ($recentTickets as $ticket): ?>
+                                <tr>
+                                    <td class="px-6 py-4 whitespace-nowrap text-sm font-medium text-amber-700"><?= esc($ticket['code_ticket']) ?></td>
+                                    <td class="px-6 py-4 whitespace-nowrap text-sm text-gray-900">
+                                        <?= esc($ticket['nama_customer_ticket']) ?> <br>
+                                        <span class="text-gray-600 text-xs">HP: <?= esc($ticket['no_hp_customer_ticket']) ?></span>
+                                    </td>
+                                    <td class="px-6 py-4 whitespace-nowrap text-sm text-gray-900"><?= esc($ticket['keluhan']) ?></td>
+                                    <td class="px-6 py-4 whitespace-nowrap text-sm">
+                                        <span class="px-2 inline-flex text-xs leading-5 font-semibold rounded-full
+                                            <?php
+                                            if ($ticket['status'] == 'open') echo 'bg-blue-100 text-blue-800';
+                                            else if ($ticket['status'] == 'progress') echo 'bg-yellow-100 text-yellow-800';
+                                            else if ($ticket['status'] == 'closed') echo 'bg-green-100 text-green-800';
+                                            ?> capitalize">
+                                            <?= esc($ticket['status']) ?>
+                                        </span>
+                                    </td>
+                                    <td class="px-6 py-4 whitespace-nowrap text-sm">
+                                        <span class="px-2 inline-flex text-xs leading-5 font-semibold rounded-full
+                                            <?php
+                                            if ($ticket['prioritas'] == 'low') echo 'bg-gray-100 text-gray-800';
+                                            else if ($ticket['prioritas'] == 'medium') echo 'bg-blue-100 text-blue-800';
+                                            else if ($ticket['prioritas'] == 'high') echo 'bg-orange-100 text-orange-800';
+                                            else if ($ticket['prioritas'] == 'urgent') echo 'bg-red-100 text-red-800';
+                                            ?> capitalize">
+                                            <?= esc($ticket['prioritas']) ?>
+                                        </span>
+                                    </td>
+                                    <td class="px-6 py-4 whitespace-nowrap text-sm text-gray-900">
+                                        <?= esc($ticket['nama_petugas_ticket']) ?> (<?= esc($ticket['role_petugas_ticket']) ?>)
+                                    </td>
+                                    <td class="px-6 py-4 whitespace-nowrap text-sm text-gray-700">
+                                        <?= date('d M Y', strtotime($ticket['created_at'])) ?>
+                                    </td>
+                                </tr>
+                            <?php endforeach; ?>
+                        </tbody>
+                    </table>
+                </div>
+            <?php endif; ?>
+        </div>
+
     </div>
 </div>
 
