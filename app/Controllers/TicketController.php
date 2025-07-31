@@ -301,10 +301,10 @@ class TicketController extends BaseController
 
         $payload = [
             'api_key' => $this->whatsappApiKey,
+            'sender'  => '6282172754545', // Nomor perangkat pengirim dari MPWA V7
             'number'  => $phoneNumber,
             'message' => $message,
             // Tambahkan parameter lain sesuai dokumentasi WhatsApp Gateway Anda
-            // Contoh: 'sender' => 'nama_pengirim_anda',
         ];
 
         $ch = curl_init();
