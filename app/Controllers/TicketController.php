@@ -102,26 +102,29 @@ class TicketController extends BaseController
             $agentPhoneNumber = $dataToSave['no_hp_petugas_ticket']; // Nomor HP petugas yang ditugaskan
 
             // Pesan untuk Pelanggan
-            $customerMessage = "Halo " . $dataToSave['nama_customer_ticket'] . ",\n"
-                . "Tiket Anda berhasil dibuat!\n"
-                . "Kode Tiket: *" . $dataToSave['code_ticket'] . "*\n"
-                . "Keluhan: " . $dataToSave['keluhan'] . "\n"
-                . "Status: " . $dataToSave['status'] . "\n"
-                . "Prioritas: " . $dataToSave['prioritas'] . "\n"
-                . "Petugas yang ditugaskan: " . $dataToSave['nama_petugas_ticket'] . "\n"
-                . "Kami akan segera menindaklanjuti keluhan Anda. Terima kasih.";
+            $customerMessage = "✅ *Tiket Berhasil Dibuat*\n"
+                . "Halo *" . $dataToSave['nama_customer_ticket'] . "*,\n\n"
+                . "Tiket Anda telah berhasil direkam dalam sistem kami.\n"
+                . "Berikut detail tiket Anda:\n"
+                . "• Kode Tiket: *" . $dataToSave['code_ticket'] . "*\n"
+                . "• Keluhan: _" . $dataToSave['keluhan'] . "_\n"
+                . "• Status: *" . $dataToSave['status'] . "*\n"
+                . "• Prioritas: *" . $dataToSave['prioritas'] . "*\n"
+                . "• Petugas Penanganan: *" . $dataToSave['nama_petugas_ticket'] . "*\n\n"
+                . "📍 Kami akan segera memproses keluhan Anda. Terima kasih atas kepercayaannya.";
 
             // Pesan untuk Petugas
-            $agentMessage = "Halo " . $dataToSave['nama_petugas_ticket'] . ",\n"
-                . "Anda mendapatkan tiket baru!\n"
-                . "Kode Tiket: *" . $dataToSave['code_ticket'] . "*\n"
-                . "Pelanggan: " . $dataToSave['nama_customer_ticket'] . "\n"
-                . "No. HP Pelanggan: " . $dataToSave['no_hp_customer_ticket'] . "\n"
-                . "Keluhan: " . $dataToSave['keluhan'] . "\n"
-                . "Deskripsi: " . ($dataToSave['deskripsi'] ?: 'Tidak ada deskripsi tambahan.') . "\n"
-                . "Status: " . $dataToSave['status'] . "\n"
-                . "Prioritas: " . $dataToSave['prioritas'] . "\n"
-                . "Mohon segera ditindaklanjuti.";
+            $agentMessage = "🆕 *Tiket Baru Masuk*\n"
+                . "Halo *" . $dataToSave['nama_petugas_ticket'] . "*,\n\n"
+                . "Anda telah ditugaskan untuk menangani tiket baru dari pelanggan:\n"
+                . "• Kode Tiket: *" . $dataToSave['code_ticket'] . "*\n"
+                . "• Nama Pelanggan: *" . $dataToSave['nama_customer_ticket'] . "*\n"
+                . "• No. HP: _" . $dataToSave['no_hp_customer_ticket'] . "_\n"
+                . "• Keluhan: _" . $dataToSave['keluhan'] . "_\n"
+                . "• Deskripsi Tambahan: " . ($dataToSave['deskripsi'] ?: '_Tidak ada deskripsi tambahan_') . "\n"
+                . "• Status: *" . $dataToSave['status'] . "*\n"
+                . "• Prioritas: *" . $dataToSave['prioritas'] . "*\n\n"
+                . "🚨 Mohon segera ditindaklanjuti melalui sistem tiket. Terima kasih.";
 
             // Kirim pesan ke pelanggan
             $this->sendWhatsAppMessage($customerPhoneNumber, $customerMessage);
@@ -223,22 +226,26 @@ class TicketController extends BaseController
                 $agentPhoneNumber = $dataToUpdate['no_hp_petugas_ticket'];
 
                 // Pesan untuk Pelanggan (jika status/prioritas berubah)
-                $customerUpdateMessage = "Halo " . $dataToUpdate['nama_customer_ticket'] . ",\n"
-                    . "Update Tiket Anda (Kode: *" . $dataToUpdate['code_ticket'] . "*):\n"
-                    . "Status baru: *" . $dataToUpdate['status'] . "*\n"
-                    . "Prioritas baru: *" . $dataToUpdate['prioritas'] . "*\n"
-                    . "Keluhan: " . $dataToUpdate['keluhan'] . "\n"
-                    . "Terima kasih atas kesabaran Anda.";
+                $customerUpdateMessage = "📢 *Pembaruan Tiket Anda*\n"
+                    . "Halo *" . $dataToUpdate['nama_customer_ticket'] . "*,\n\n"
+                    . "Berikut pembaruan status tiket Anda dengan kode *" . $dataToUpdate['code_ticket'] . "*:\n"
+                    . "• Status: *" . $dataToUpdate['status'] . "*\n"
+                    . "• Prioritas: *" . $dataToUpdate['prioritas'] . "*\n\n"
+                    . "📝 Keluhan: _" . $dataToUpdate['keluhan'] . "_\n\n"
+                    . "Terima kasih atas kepercayaan dan kesabaran Anda. Kami akan terus memberikan layanan terbaik.";
 
                 // Pesan untuk Petugas (jika status/prioritas berubah)
-                $agentUpdateMessage = "Halo " . $dataToUpdate['nama_petugas_ticket'] . ",\n"
-                    . "Update Tiket (Kode: *" . $dataToUpdate['code_ticket'] . "*):\n"
-                    . "Status baru: *" . $dataToUpdate['status'] . "*\n"
-                    . "Prioritas baru: *" . $dataToUpdate['prioritas'] . "*\n"
-                    . "Pelanggan: " . $dataToUpdate['nama_customer_ticket'] . "\n"
-                    . "Keluhan: " . $dataToUpdate['keluhan'] . "\n"
-                    . "Deskripsi: " . ($dataToUpdate['deskripsi'] ?: 'Tidak ada deskripsi tambahan.') . "\n"
-                    . "Mohon periksa detail tiket.";
+                $agentUpdateMessage = "📌 *Pembaruan Tiket Pelanggan*\n"
+                    . "Halo *" . $dataToUpdate['nama_petugas_ticket'] . "*,\n\n"
+                    . "Berikut detail tiket yang perlu diperbarui:\n"
+                    . "• Kode Tiket: *" . $dataToUpdate['code_ticket'] . "*\n"
+                    . "• Status: *" . $dataToUpdate['status'] . "*\n"
+                    . "• Prioritas: *" . $dataToUpdate['prioritas'] . "*\n\n"
+                    . "👤 Pelanggan: *" . $dataToUpdate['nama_customer_ticket'] . "*\n"
+                    . "📝 Keluhan: _" . $dataToUpdate['keluhan'] . "_\n"
+                    . "📄 Deskripsi Tambahan: " . ($dataToUpdate['deskripsi'] ?: '_Tidak ada deskripsi tambahan_') . "\n\n"
+                    . "Silakan segera tindak lanjuti melalui dashboard tiket Anda. Terima kasih atas kerja samanya.";
+
 
                 $this->sendWhatsAppMessage($customerPhoneNumber, $customerUpdateMessage);
                 $this->sendWhatsAppMessage($agentPhoneNumber, $agentUpdateMessage);
@@ -301,7 +308,7 @@ class TicketController extends BaseController
 
         $payload = [
             'api_key' => $this->whatsappApiKey,
-            'sender'  => '6282172754545', // Nomor perangkat pengirim dari MPWA V7
+            'sender'  => '6281436069634', // Nomor perangkat pengirim dari MPWA V7
             'number'  => $phoneNumber,
             'message' => $message,
             // Tambahkan parameter lain sesuai dokumentasi WhatsApp Gateway Anda
