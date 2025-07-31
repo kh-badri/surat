@@ -1,21 +1,33 @@
+# ===============================
 # CodeIgniter 4 specific ignores
+# ===============================
 /vendor/
-/writable/cache
-.env
+writable/cache/
+
+# Abaikan semua .env termasuk testing, tapi izinkan .env utama (jika perlu dilacak)
+!.env
 .env.testing
 
-# Composer and npm
+# Abaikan semua .htaccess kecuali yang di root
+**/.htaccess
+!/.htaccess
+
+# Abaikan semua index.php kecuali di root
+**/index.php
+!/index.php
+
+# Composer & npm
 composer.lock
 npm-debug.log
 .idea/
 .vscode/
 
-# Node modules (for Tailwind CSS compilation)
-/node_modules/
-/public/css/tailwind.css.map
-/public/build/ # If you use custom build process that generates files here
+# Node modules (untuk Tailwind CSS)
+node_modules/
+public/css/tailwind.css.map
+public/build/  # Jika ada proses build custom
 
-# Common OS and editor files
+# Common OS/editor files
 .DS_Store
 Thumbs.db
 ehthumbs.db
@@ -28,21 +40,22 @@ ehthumbs.db
 .directory
 
 # Testing and CI
-/.c9/
-/.php_cs.cache
+.c9/
+.php_cs.cache
 /build/
-/nbproject/
+nbproject/
 
-# Any local configuration files that might contain sensitive info
+# Konfigurasi lokal CodeIgniter (berisi info sensitif)
 /app/Config/Autoload.php
-/app/Config/Database.php
 /app/Config/Constants.php
+/app/Config/Database.php
 /app/Config/Encryption.php
 /app/Config/Modules.php
 /app/Config/Paths.php
 /app/Config/Routing.php
 /app/Config/Services.php
 /app/Config/Validation.php
+/app/Config/App.php  # Ditambahkan App.php seperti permintaan
 
-# If you have specific log files not covered by /writable/
+# Log file jika tidak disimpan di writable/logs
 *.log

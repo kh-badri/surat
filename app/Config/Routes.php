@@ -60,5 +60,7 @@ $routes->group('', ['filter' => 'auth'], function ($routes) {
 
         $routes->get('getcustomerdetails/(:num)', 'TicketController::getCustomerDetails/$1');
         $routes->get('getpetugasdetails/(:num)', 'TicketController::getPetugasDetails/$1');
+
+        $routes->post('api/tickets/create', 'Api\TicketController::create');
     });
 });

@@ -17,6 +17,17 @@
             </a>
         </div>
 
+        <?php if (session()->getFlashdata('success')): ?>
+            <div class="bg-green-100 border border-green-400 text-green-700 px-4 py-3 rounded relative mb-4" role="alert">
+                <span class="block sm:inline"><?= session()->getFlashdata('success') ?></span>
+            </div>
+        <?php endif; ?>
+        <?php if (session()->getFlashdata('error')): ?>
+            <div class="bg-red-100 border border-red-400 text-red-700 px-4 py-3 rounded relative mb-4" role="alert">
+                <span class="block sm:inline"><?= session()->getFlashdata('error') ?></span>
+            </div>
+        <?php endif; ?>
+
         <?php if (empty($tickets)): ?>
             <div class="text-center py-10">
                 <svg class="mx-auto h-12 w-12 text-gray-400" fill="none" viewBox="0 0 24 24" stroke="currentColor" aria-hidden="true">
@@ -94,15 +105,11 @@
                                                 <path d="M13.586 3.586a2 2 0 112.828 2.828l-.793.793-2.828-2.828.793-.793zM11.379 5.793L3 14.172V17h2.828l8.38-8.38-2.828-2.829z" />
                                             </svg>
                                         </a>
-                                        <form action="<?= base_url('tickets/delete/' . $ticket['id']) ?>" method="post" class="inline" onsubmit="return confirm('Anda yakin ingin menghapus tiket ini?');">
-                                            <?= csrf_field() ?>
-                                            <input type="hidden" name="_method" value="DELETE">
-                                            <button type="submit" class="text-red-600 hover:text-red-900 transition duration-150 ease-in-out">
-                                                <svg xmlns="http://www.w3.org/2000/svg" class="h-5 w-5" viewBox="0 0 20 20" fill="currentColor">
-                                                    <path fill-rule="evenodd" d="M9 2a1 1 0 00-.894.553L7.382 4H4a1 1 0 000 2v10a2 2 0 002 2h8a2 2 0 002-2V6a1 1 0 100-2h-3.382l-.724-1.447A1 1 0 0011 2H9zM7 8a1 1 0 011-1h4a1 1 0 110 2H8a1 1 0 01-1-1zm6 4a1 1 0 10-2 0v3a1 1 0 102 0v-3z" clip-rule="evenodd" />
-                                                </svg>
-                                            </button>
-                                        </form>
+                                        <button type="button" class="text-red-600 hover:text-red-900 transition duration-150 ease-in-out" onclick="showDeleteModal('<?= base_url('tickets/delete/' . $ticket['id']) ?>')">
+                                            <svg xmlns="http://www.w3.org/2000/svg" class="h-5 w-5" viewBox="0 0 20 20" fill="currentColor">
+                                                <path fill-rule="evenodd" d="M9 2a1 1 0 00-.894.553L7.382 4H4a1 1 0 000 2v10a2 2 0 002 2h8a2 2 0 002-2V6a1 1 0 100-2h-3.382l-.724-1.447A1 1 0 0011 2H9zM7 8a1 1 0 011-1h4a1 1 0 110 2H8a1 1 0 01-1-1zm6 4a1 1 0 10-2 0v3a1 1 0 102 0v-3z" clip-rule="evenodd" />
+                                            </svg>
+                                        </button>
                                     </div>
                                 </td>
                             </tr>
@@ -156,16 +163,12 @@
                                 </svg>
                                 Edit
                             </a>
-                            <form action="<?= base_url('tickets/delete/' . $ticket['id']) ?>" method="post" class="inline" onsubmit="return confirm('Anda yakin ingin menghapus tiket ini?');">
-                                <?= csrf_field() ?>
-                                <input type="hidden" name="_method" value="DELETE">
-                                <button type="submit" class="inline-flex items-center px-3 py-1.5 border border-transparent text-xs font-medium rounded-md shadow-sm text-red-700 bg-red-100 hover:bg-red-200 focus:outline-none focus:ring-2 focus:ring-offset-2 focus:ring-red-500">
-                                    <svg xmlns="http://www.w3.org/2000/svg" class="h-4 w-4 mr-1" viewBox="0 0 20 20" fill="currentColor">
-                                        <path fill-rule="evenodd" d="M9 2a1 1 0 00-.894.553L7.382 4H4a1 1 0 000 2v10a2 2 0 002 2h8a2 2 0 002-2V6a1 1 0 100-2h-3.382l-.724-1.447A1 1 0 0011 2H9zM7 8a1 1 0 011-1h4a1 1 0 110 2H8a1 1 0 01-1-1zm6 4a1 1 0 10-2 0v3a1 1 0 102 0v-3z" clip-rule="evenodd" />
-                                    </svg>
-                                    Hapus
-                                </button>
-                            </form>
+                            <button type="button" class="inline-flex items-center px-3 py-1.5 border border-transparent text-xs font-medium rounded-md shadow-sm text-red-700 bg-red-100 hover:bg-red-200 focus:outline-none focus:ring-2 focus:ring-offset-2 focus:ring-red-500" onclick="showDeleteModal('<?= base_url('tickets/delete/' . $ticket['id']) ?>')">
+                                <svg xmlns="http://www.w3.org/2000/svg" class="h-4 w-4 mr-1" viewBox="0 0 20 20" fill="currentColor">
+                                    <path fill-rule="evenodd" d="M9 2a1 1 0 00-.894.553L7.382 4H4a1 1 0 000 2v10a2 2 0 002 2h8a2 2 0 002-2V6a1 1 0 100-2h-3.382l-.724-1.447A1 1 0 0011 2H9zM7 8a1 1 0 011-1h4a1 1 0 110 2H8a1 1 0 01-1-1zm6 4a1 1 0 10-2 0v3a1 1 0 102 0v-3z" clip-rule="evenodd" />
+                                </svg>
+                                Hapus
+                            </button>
                         </div>
                     </div>
                 <?php endforeach; ?>
@@ -173,5 +176,37 @@
         <?php endif; ?>
     </div>
 </div>
+
+<!-- Delete Confirmation Modal -->
+<div id="deleteModal" class="fixed inset-0 bg-gray-600 bg-opacity-75 flex items-center justify-center z-50 hidden">
+    <div class="bg-white rounded-lg shadow-xl p-6 w-full max-w-sm mx-auto">
+        <h3 class="text-lg font-bold text-gray-900 mb-4">Konfirmasi Hapus</h3>
+        <p class="text-sm text-gray-700 mb-6">Anda yakin ingin menghapus tiket ini? Tindakan ini tidak dapat dibatalkan.</p>
+        <div class="flex justify-end space-x-3">
+            <button type="button" class="px-4 py-2 bg-gray-200 text-gray-800 rounded-md hover:bg-gray-300 transition-colors" onclick="hideDeleteModal()">Batal</button>
+            <form id="deleteForm" method="post" class="inline">
+                <?= csrf_field() ?>
+                <input type="hidden" name="_method" value="DELETE">
+                <button type="submit" class="px-4 py-2 bg-red-600 text-white rounded-md hover:bg-red-700 transition-colors">Hapus</button>
+            </form>
+        </div>
+    </div>
+</div>
+
+<script>
+    let deleteFormAction = ''; // Variable to store the delete URL
+
+    function showDeleteModal(deleteUrl) {
+        deleteFormAction = deleteUrl;
+        document.getElementById('deleteForm').action = deleteFormAction;
+        document.getElementById('deleteModal').classList.remove('hidden');
+    }
+
+    function hideDeleteModal() {
+        document.getElementById('deleteModal').classList.add('hidden');
+        deleteFormAction = ''; // Clear the URL
+        document.getElementById('deleteForm').action = ''; // Clear form action
+    }
+</script>
 
 <?= $this->endSection() ?>
