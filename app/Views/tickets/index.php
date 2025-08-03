@@ -17,17 +17,6 @@
             </a>
         </div>
 
-        <?php if (session()->getFlashdata('success')): ?>
-            <div class="bg-green-100 border border-green-400 text-green-700 px-4 py-3 rounded relative mb-4" role="alert">
-                <span class="block sm:inline"><?= session()->getFlashdata('success') ?></span>
-            </div>
-        <?php endif; ?>
-        <?php if (session()->getFlashdata('error')): ?>
-            <div class="bg-red-100 border border-red-400 text-red-700 px-4 py-3 rounded relative mb-4" role="alert">
-                <span class="block sm:inline"><?= session()->getFlashdata('error') ?></span>
-            </div>
-        <?php endif; ?>
-
         <?php if (empty($tickets)): ?>
             <div class="text-center py-10">
                 <svg class="mx-auto h-12 w-12 text-gray-400" fill="none" viewBox="0 0 24 24" stroke="currentColor" aria-hidden="true">
@@ -105,6 +94,12 @@
                                                 <path d="M13.586 3.586a2 2 0 112.828 2.828l-.793.793-2.828-2.828.793-.793zM11.379 5.793L3 14.172V17h2.828l8.38-8.38-2.828-2.829z" />
                                             </svg>
                                         </a>
+                                        <!-- Export to TXT Button -->
+                                        <button type="button" class="text-gray-600 hover:text-gray-900 transition duration-150 ease-in-out" onclick="showExportModal(<?= esc(json_encode($ticket), 'attr') ?>)">
+                                            <svg xmlns="http://www.w3.org/2000/svg" class="h-5 w-5" viewBox="0 0 20 20" fill="currentColor">
+                                                <path fill-rule="evenodd" d="M.5 9.9a.5.5 0 0 1 .5.5v2.5a.5.5 0 0 0 .5.5h14a.5.5 0 0 0 .5-.5v-2.5a.5.5 0 0 1 1 0v2.5A1.5 1.5 0 0 1 15.5 15h-14A1.5 1.5 0 0 1 0 13.4v-2.5a.5.5 0 0 1 .5-.5zM7.646 11.854a.5.5 0 0 0 .708 0l3-3a.5.5 0 0 0-.708-.708L8.5 10.293V3.5a.5.5 0 0 0-1 0v6.793L5.354 8.146a.5.5 0 1 0-.708.708l3 3z" clip-rule="evenodd" />
+                                            </svg>
+                                        </button>
                                         <button type="button" class="text-red-600 hover:text-red-900 transition duration-150 ease-in-out" onclick="showDeleteModal('<?= base_url('tickets/delete/' . $ticket['id']) ?>')">
                                             <svg xmlns="http://www.w3.org/2000/svg" class="h-5 w-5" viewBox="0 0 20 20" fill="currentColor">
                                                 <path fill-rule="evenodd" d="M9 2a1 1 0 00-.894.553L7.382 4H4a1 1 0 000 2v10a2 2 0 002 2h8a2 2 0 002-2V6a1 1 0 100-2h-3.382l-.724-1.447A1 1 0 0011 2H9zM7 8a1 1 0 011-1h4a1 1 0 110 2H8a1 1 0 01-1-1zm6 4a1 1 0 10-2 0v3a1 1 0 102 0v-3z" clip-rule="evenodd" />
@@ -163,6 +158,13 @@
                                 </svg>
                                 Edit
                             </a>
+                            <!-- Export to TXT Button (Mobile) -->
+                            <button type="button" class="inline-flex items-center px-3 py-1.5 border border-transparent text-xs font-medium rounded-md shadow-sm text-gray-700 bg-gray-100 hover:bg-gray-200 focus:outline-none focus:ring-2 focus:ring-offset-2 focus:ring-gray-500" onclick="showExportModal(<?= esc(json_encode($ticket), 'attr') ?>)">
+                                <svg xmlns="http://www.w3.org/2000/svg" class="h-4 w-4 mr-1" viewBox="0 0 20 20" fill="currentColor">
+                                    <path fill-rule="evenodd" d="M.5 9.9a.5.5 0 0 1 .5.5v2.5a.5.5 0 0 0 .5.5h14a.5.5 0 0 0 .5-.5v-2.5a.5.5 0 0 1 1 0v2.5A1.5 1.5 0 0 1 15.5 15h-14A1.5 1.5 0 0 1 0 13.4v-2.5a.5.5 0 0 1 .5-.5zM7.646 11.854a.5.5 0 0 0 .708 0l3-3a.5.5 0 0 0-.708-.708L8.5 10.293V3.5a.5.5 0 0 0-1 0v6.793L5.354 8.146a.5.5 0 1 0-.708.708l3 3z" clip-rule="evenodd" />
+                                </svg>
+                                Export
+                            </button>
                             <button type="button" class="inline-flex items-center px-3 py-1.5 border border-transparent text-xs font-medium rounded-md shadow-sm text-red-700 bg-red-100 hover:bg-red-200 focus:outline-none focus:ring-2 focus:ring-offset-2 focus:ring-red-500" onclick="showDeleteModal('<?= base_url('tickets/delete/' . $ticket['id']) ?>')">
                                 <svg xmlns="http://www.w3.org/2000/svg" class="h-4 w-4 mr-1" viewBox="0 0 20 20" fill="currentColor">
                                     <path fill-rule="evenodd" d="M9 2a1 1 0 00-.894.553L7.382 4H4a1 1 0 000 2v10a2 2 0 002 2h8a2 2 0 002-2V6a1 1 0 100-2h-3.382l-.724-1.447A1 1 0 0011 2H9zM7 8a1 1 0 011-1h4a1 1 0 110 2H8a1 1 0 01-1-1zm6 4a1 1 0 10-2 0v3a1 1 0 102 0v-3z" clip-rule="evenodd" />
@@ -193,6 +195,18 @@
     </div>
 </div>
 
+<!-- Export to TXT Modal -->
+<div id="exportModal" class="fixed inset-0 bg-gray-600 bg-opacity-75 flex items-center justify-center z-50 hidden">
+    <div class="bg-white rounded-lg shadow-xl p-6 w-full max-w-md mx-auto">
+        <h3 class="text-lg font-bold text-gray-900 mb-4">Detail Tiket (Teks)</h3>
+        <textarea id="exportContent" class="w-full h-64 p-3 border border-gray-300 rounded-md resize-none text-sm font-mono bg-gray-50 focus:outline-none focus:ring-2 focus:ring-amber-500" readonly></textarea>
+        <div class="flex justify-end space-x-3 mt-4">
+            <button type="button" class="px-4 py-2 bg-gray-200 text-gray-800 rounded-md hover:bg-gray-300 transition-colors" onclick="hideExportModal()">Tutup</button>
+            <button type="button" id="copyExportContent" class="px-4 py-2 bg-amber-600 text-white rounded-md hover:bg-amber-700 transition-colors">Salin Teks</button>
+        </div>
+    </div>
+</div>
+
 <script>
     let deleteFormAction = ''; // Variable to store the delete URL
 
@@ -207,6 +221,47 @@
         deleteFormAction = ''; // Clear the URL
         document.getElementById('deleteForm').action = ''; // Clear form action
     }
+
+    // Function to show export modal and populate content
+    function showExportModal(ticketDetails) {
+        let content = `--- Detail Tiket ---\n\n`;
+        content += `Kode Tiket: ${ticketDetails.code_ticket}\n`;
+        content += `Tanggal Dibuat: ${ticketDetails.tanggal_buat}\n`;
+        content += `Keluhan: ${ticketDetails.keluhan}\n`;
+        content += `Deskripsi: ${ticketDetails.deskripsi || 'Tidak ada deskripsi tambahan'}\n`;
+        content += `Status: ${ticketDetails.status}\n`;
+        content += `Prioritas: ${ticketDetails.prioritas}\n\n`;
+        content += `--- Informasi Pelanggan ---\n\n`;
+        content += `Nama Pelanggan: ${ticketDetails.nama_customer_ticket}\n`;
+        content += `No. HP Pelanggan: ${ticketDetails.no_hp_customer_ticket}\n`;
+        content += `Alamat Pelanggan: ${ticketDetails.alamat_customer_ticket}\n\n`;
+        content += `--- Informasi Petugas ---\n\n`;
+        content += `Nama Petugas: ${ticketDetails.nama_petugas_ticket}\n`;
+        content += `No. HP Petugas: ${ticketDetails.no_hp_petugas_ticket}\n`;
+        content += `Role Petugas: ${ticketDetails.role_petugas_ticket}\n`;
+
+        document.getElementById('exportContent').value = content;
+        document.getElementById('exportModal').classList.remove('hidden');
+    }
+
+    // Function to hide export modal
+    function hideExportModal() {
+        document.getElementById('exportModal').classList.add('hidden');
+        document.getElementById('exportContent').value = ''; // Clear content
+    }
+
+    // Copy to clipboard functionality
+    document.getElementById('copyExportContent').addEventListener('click', function() {
+        const exportContent = document.getElementById('exportContent');
+        exportContent.select();
+        document.execCommand('copy'); // Use document.execCommand for broader compatibility in iframes
+        // Optionally, provide feedback to the user
+        const originalText = this.textContent;
+        this.textContent = 'Disalin!';
+        setTimeout(() => {
+            this.textContent = originalText;
+        }, 1500);
+    });
 </script>
 
 <?= $this->endSection() ?>
