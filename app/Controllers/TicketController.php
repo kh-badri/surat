@@ -112,7 +112,7 @@ class TicketController extends BaseController
                 . "• Petugas Penanganan: *" . $dataToSave['nama_petugas_ticket'] . "*\n\n"
                 . "Tim kami akan segera menindaklanjuti keluhan Anda. Kami berkomitmen penuh untuk memberikan solusi terbaik secepatnya. Terima kasih atas kepercayaan Anda kepada layanan kami.\n\n"
                 . "Hormat kami,\n"
-                . "Tim Layanan Pelanggan [Nama ISP Anda]"; // Ganti dengan nama ISP Anda
+                . "Tim Layanan Pelanggan \n Indomedia Solusi Net"; // Ganti dengan nama ISP Anda
 
             // Pesan untuk Petugas (Tiket Baru Masuk)
             $agentMessage = "🔔 *Pemberitahuan: Tiket Layanan Baru Telah Diterbitkan*\n"
@@ -243,7 +243,7 @@ class TicketController extends BaseController
                         . "• Prioritas: *" . $dataToUpdate['prioritas'] . "*\n\n"
                         . "Terima kasih atas kesabaran dan pengertian Anda. Kami akan segera memberikan pembaruan.\n\n"
                         . "Hormat kami,\n"
-                        . "Tim Layanan Pelanggan [Nama ISP Anda]"; // Ganti dengan nama ISP Anda
+                        . "Tim Layanan Pelanggan \n Indomedia Solusi Net"; // Ganti dengan nama ISP Anda
 
                     // Pesan untuk Petugas (Tiket Open)
                     $agentUpdateMessage = "📝 *Pembaruan Status Tiket: Menjadi 'Open'*\n"
@@ -282,7 +282,7 @@ class TicketController extends BaseController
                         . "• Status Akhir: *" . $dataToUpdate['status'] . "*\n\n"
                         . "Terima kasih atas kepercayaan Anda kepada layanan kami. Jika ada hal lain yang perlu dibantu, jangan ragu untuk menghubungi kami kembali.\n\n"
                         . "Hormat kami,\n"
-                        . "Tim Layanan Pelanggan [Nama ISP Anda]"; // Ganti dengan nama ISP Anda
+                        . "Tim Layanan Pelanggan \n Indomedia Solusi Net"; // Ganti dengan nama ISP Anda
 
                     // Pesan untuk Petugas (Tiket Closed)
                     $agentUpdateMessage = "🎉 *Pemberitahuan: Tiket Layanan Telah Ditutup*\n"
