@@ -228,8 +228,12 @@ class TicketController extends BaseController
                 $customerUpdateMessage = "";
                 $agentUpdateMessage = "";
 
+                // Konversi status ke huruf kecil untuk perbandingan yang konsisten
+                $newStatus = strtolower($dataToUpdate['status']);
+                $oldStatus = strtolower($oldTicket['status']);
+
                 // Logika pesan berdasarkan perubahan status
-                if ($dataToUpdate['status'] === 'Open' && $oldTicket['status'] !== 'Open') {
+                if ($newStatus === 'open' && $oldStatus !== 'open') {
                     // Pesan untuk Pelanggan (Tiket Open)
                     $customerUpdateMessage = "🔔 *Pemberitahuan Status Tiket Anda: Dibuka*\n"
                         . "Yth. Bapak/Ibu *" . $dataToUpdate['nama_customer_ticket'] . "*,\n\n"
@@ -250,7 +254,7 @@ class TicketController extends BaseController
                         . "• Status Terbaru: *" . $dataToUpdate['status'] . "*\n"
                         . "• Prioritas: *" . $dataToUpdate['prioritas'] . "*\n\n"
                         . "Mohon segera lakukan peninjauan dan tindak lanjut. Terima kasih.";
-                } elseif ($dataToUpdate['status'] === 'Diproses' && $oldTicket['status'] !== 'Diproses') {
+                } elseif ($newStatus === 'diproses' && $oldStatus !== 'diproses') {
                     // Pesan untuk Pelanggan (Tiket Progress)
                     $customerUpdateMessage = "🛠️ *Pembaruan Status Tiket Anda: Sedang Diproses*\n"
                         . "Yth. Bapak/Ibu *" . $dataToUpdate['nama_customer_ticket'] . "*,\n\n"
@@ -269,7 +273,7 @@ class TicketController extends BaseController
                         . "• Status Terbaru: *" . $dataToUpdate['status'] . "*\n"
                         . "• Prioritas: *" . $dataToUpdate['prioritas'] . "*\n\n"
                         . "Pastikan Anda terus memantau dan memperbarui progres penanganan hingga tiket ini dapat diselesaikan. Terima kasih.";
-                } elseif (($dataToUpdate['status'] === 'Closed' || $dataToUpdate['status'] === 'Selesai') && $oldTicket['status'] !== 'Closed' && $oldTicket['status'] !== 'Selesai') {
+                } elseif (($newStatus === 'closed' || $newStatus === 'selesai') && $oldStatus !== 'closed' && $oldStatus !== 'selesai') {
                     // Pesan untuk Pelanggan (Tiket Closed)
                     $customerUpdateMessage = "✅ *Tiket Layanan Anda Telah Selesai Ditangani*\n"
                         . "Yth. Bapak/Ibu *" . $dataToUpdate['nama_customer_ticket'] . "*,\n\n"
@@ -290,6 +294,7 @@ class TicketController extends BaseController
                         . "Terima kasih atas kerja keras dan kontribusi Anda dalam menyelesaikan tiket ini. Silakan lanjutkan dengan tugas berikutnya.";
                 } else {
                     // Pesan default untuk perubahan status/prioritas lainnya yang tidak spesifik
+                    // Ini akan tetap dikirim jika hanya prioritas yang berubah atau status berubah ke nilai lain yang tidak spesifik di atas
                     $customerUpdateMessage = "📢 *Pembaruan Tiket Anda*\n"
                         . "Halo *" . $dataToUpdate['nama_customer_ticket'] . "*,\n\n"
                         . "Berikut pembaruan status tiket Anda dengan kode *" . $dataToUpdate['code_ticket'] . "*:\n"
