@@ -281,8 +281,8 @@ class TicketController extends BaseController
                         . "• Keluhan: _" . $dataToUpdate['keluhan'] . "_\n"
                         . "• Status Akhir: *" . $dataToUpdate['status'] . "*\n\n"
                         . "Terima kasih atas kepercayaan Anda kepada layanan kami. Jika ada hal lain yang perlu dibantu, jangan ragu untuk menghubungi kami kembali.\n\n"
-                        . "Hormat kami,\n"
-                        . "Tim Layanan Pelanggan \n Indomedia Solusi Net"; // Ganti dengan nama ISP Anda
+                        . "Hormat kami,\n\n"
+                        . "Tim Layanan Pelanggan \n*Indomedia Solusi Net*"; // Ganti dengan nama ISP Anda
 
                     // Pesan untuk Petugas (Tiket Closed)
                     $agentUpdateMessage = "🎉 *Pemberitahuan: Tiket Layanan Telah Ditutup*\n"
@@ -381,7 +381,7 @@ class TicketController extends BaseController
 
         $payload = [
             'api_key' => $this->whatsappApiKey,
-            'sender'  => '6281436069634', // Nomor perangkat pengirim dari MPWA V7
+            'sender'  => '6282124838685', // Nomor perangkat pengirim dari MPWA V7
             'number'  => $phoneNumber,
             'message' => $message,
             // Tambahkan parameter lain sesuai dokumentasi WhatsApp Gateway Anda
