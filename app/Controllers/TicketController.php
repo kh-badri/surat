@@ -19,9 +19,6 @@ class TicketController extends BaseController
     private $whatsappApiUrl = 'https://wa.jasaawak.com/send-message';
     // GANTI DENGAN API KEY WHATSAPP GATEWAY ANDA YANG SEBENARNYA
     private $whatsappApiKey = 'OfZd22KyRNNgDdx0TPeGGF1YWgK3LJ';
-    // GANTI DENGAN NOMOR GRUP WHATSAPP ANDA (contoh: '6281234567890-123456@g.us' atau '6281234567890' jika gateway mendukung nomor biasa untuk grup)
-    // Pastikan format nomor grup sesuai dengan dokumentasi WhatsApp Gateway Anda.
-    private $whatsappGroupNumber = '6282267366082'; // Contoh format Group ID
     // --- END WHATSAPP INTEGRATION CONFIG ---
 
     public function __construct()
@@ -114,8 +111,8 @@ class TicketController extends BaseController
                 . "• Prioritas: *" . $dataToSave['prioritas'] . "*\n"
                 . "• Petugas Penanganan: *" . $dataToSave['nama_petugas_ticket'] . "*\n\n"
                 . "Tim kami akan segera menindaklanjuti keluhan Anda. Kami berkomitmen penuh untuk memberikan solusi terbaik secepatnya. Terima kasih atas kepercayaan Anda kepada layanan kami.\n\n"
-                . "Hormat kami,\n"
-                . "Tim Layanan Pelanggan [Nama ISP Anda]"; // Ganti dengan nama ISP Anda
+                . "Hormat kami,\n\n"
+                . "Tim Layanan Pelanggan \n*Indomedia Solusi Net*"; // Ganti dengan nama ISP Anda
 
             // Pesan untuk Petugas (Tiket Baru Masuk)
             $agentMessage = "🔔 *Pemberitahuan: Tiket Layanan Baru Telah Diterbitkan*\n"
@@ -129,25 +126,10 @@ class TicketController extends BaseController
                 . "• Prioritas: *" . $dataToSave['prioritas'] . "*\n\n"
                 . "Mohon segera lakukan peninjauan dan tindak lanjut sesuai prosedur operasional standar. Akses detail lengkap melalui dashboard sistem tiket. Terima kasih atas dedikasi Anda.";
 
-            // Pesan untuk Grup (Tiket Baru Masuk)
-            $groupMessage = "🚨 *NOTIFIKASI GRUP: Tiket Layanan Baru*\n"
-                . "Tiket baru telah dibuat dengan detail:\n"
-                . "• Kode Tiket: *" . $dataToSave['code_ticket'] . "*\n"
-                . "• Pelanggan: *" . $dataToSave['nama_customer_ticket'] . "*\n"
-                . "• Keluhan: _" . $dataToSave['keluhan'] . "_\n"
-                . "• Petugas Ditugaskan: *" . $dataToSave['nama_petugas_ticket'] . "*\n"
-                . "• Status: *" . $dataToSave['status'] . "*\n"
-                . "• Prioritas: *" . $dataToSave['prioritas'] . "*\n\n"
-                . "Mohon perhatian dari tim terkait untuk memantau dan mendukung penanganan tiket ini.";
-
             // Kirim pesan ke pelanggan
             $this->sendWhatsAppMessage($customerPhoneNumber, $customerMessage);
             // Kirim pesan ke petugas
             $this->sendWhatsAppMessage($agentPhoneNumber, $agentMessage);
-            // Kirim pesan ke grup (jika nomor grup diatur)
-            if (!empty($this->whatsappGroupNumber)) {
-                $this->sendWhatsAppMessage($this->whatsappGroupNumber, $groupMessage);
-            }
             // --- END WHATSAPP INTEGRATION ---
 
         } else {
@@ -245,7 +227,6 @@ class TicketController extends BaseController
 
                 $customerUpdateMessage = "";
                 $agentUpdateMessage = "";
-                $groupUpdateMessage = "";
 
                 // Konversi status ke huruf kecil untuk perbandingan yang konsisten
                 $newStatus = strtolower($dataToUpdate['status']);
@@ -261,8 +242,8 @@ class TicketController extends BaseController
                         . "• Status Terbaru: *" . $dataToUpdate['status'] . "*\n"
                         . "• Prioritas: *" . $dataToUpdate['prioritas'] . "*\n\n"
                         . "Terima kasih atas kesabaran dan pengertian Anda. Kami akan segera memberikan pembaruan.\n\n"
-                        . "Hormat kami,\n"
-                        . "Tim Layanan Pelanggan [Nama ISP Anda]"; // Ganti dengan nama ISP Anda
+                        . "Hormat kami,\n\n"
+                        . "Tim Layanan Pelanggan \n*Indomedia Solusi Net*"; // Ganti dengan nama ISP Anda
 
                     // Pesan untuk Petugas (Tiket Open)
                     $agentUpdateMessage = "📝 *Pembaruan Status Tiket: Menjadi 'Open'*\n"
@@ -273,15 +254,6 @@ class TicketController extends BaseController
                         . "• Status Terbaru: *" . $dataToUpdate['status'] . "*\n"
                         . "• Prioritas: *" . $dataToUpdate['prioritas'] . "*\n\n"
                         . "Mohon segera lakukan peninjauan dan tindak lanjut. Terima kasih.";
-
-                    // Pesan untuk Grup (Tiket Open)
-                    $groupUpdateMessage = "📊 *Pembaruan Status Grup: Tiket Dibuka*\n"
-                        . "Tiket *" . $dataToUpdate['code_ticket'] . "* (Pelanggan: *" . $dataToUpdate['nama_customer_ticket'] . "*) telah diubah statusnya menjadi *'Open'*.\n"
-                        . "Keluhan: _" . $dataToUpdate['keluhan'] . "_\n"
-                        . "Prioritas: *" . $dataToUpdate['prioritas'] . "*\n"
-                        . "Petugas: *" . $dataToUpdate['nama_petugas_ticket'] . "*\n\n"
-                        . "Mohon pantau progressnya.";
-
                 } elseif ($newStatus === 'diproses' && $oldStatus !== 'diproses') {
                     // Pesan untuk Pelanggan (Tiket Progress)
                     $customerUpdateMessage = "🛠️ *Pembaruan Status Tiket Anda: Sedang Diproses*\n"
@@ -301,15 +273,6 @@ class TicketController extends BaseController
                         . "• Status Terbaru: *" . $dataToUpdate['status'] . "*\n"
                         . "• Prioritas: *" . $dataToUpdate['prioritas'] . "*\n\n"
                         . "Pastikan Anda terus memantau dan memperbarui progres penanganan hingga tiket ini dapat diselesaikan. Terima kasih.";
-
-                    // Pesan untuk Grup (Tiket Progress)
-                    $groupUpdateMessage = "📈 *Pembaruan Status Grup: Tiket Diproses*\n"
-                        . "Tiket *" . $dataToUpdate['code_ticket'] . "* (Pelanggan: *" . $dataToUpdate['nama_customer_ticket'] . "*) telah diubah statusnya menjadi *'Diproses'*.\n"
-                        . "Keluhan: _" . $dataToUpdate['keluhan'] . "_\n"
-                        . "Prioritas: *" . $dataToUpdate['prioritas'] . "*\n"
-                        . "Petugas: *" . $dataToUpdate['nama_petugas_ticket'] . "*\n\n"
-                        . "Tim sedang dalam penanganan. Mohon dukungan dan pantau progresnya.";
-
                 } elseif (($newStatus === 'closed' || $newStatus === 'selesai') && $oldStatus !== 'closed' && $oldStatus !== 'selesai') {
                     // Pesan untuk Pelanggan (Tiket Closed)
                     $customerUpdateMessage = "✅ *Tiket Layanan Anda Telah Selesai Ditangani*\n"
@@ -318,8 +281,8 @@ class TicketController extends BaseController
                         . "• Keluhan: _" . $dataToUpdate['keluhan'] . "_\n"
                         . "• Status Akhir: *" . $dataToUpdate['status'] . "*\n\n"
                         . "Terima kasih atas kepercayaan Anda kepada layanan kami. Jika ada hal lain yang perlu dibantu, jangan ragu untuk menghubungi kami kembali.\n\n"
-                        . "Hormat kami,\n"
-                        . "Tim Layanan Pelanggan [Nama ISP Anda]"; // Ganti dengan nama ISP Anda
+                        . "Hormat kami,\n\n"
+                        . "Tim Layanan Pelanggan \n*Indomedia Solusi Net*"; // Ganti dengan nama ISP Anda
 
                     // Pesan untuk Petugas (Tiket Closed)
                     $agentUpdateMessage = "🎉 *Pemberitahuan: Tiket Layanan Telah Ditutup*\n"
@@ -329,14 +292,6 @@ class TicketController extends BaseController
                         . "• Keluhan: _" . $dataToUpdate['keluhan'] . "_\n"
                         . "• Status Akhir: *" . $dataToUpdate['status'] . "*\n\n"
                         . "Terima kasih atas kerja keras dan kontribusi Anda dalam menyelesaikan tiket ini. Silakan lanjutkan dengan tugas berikutnya.";
-
-                    // Pesan untuk Grup (Tiket Closed)
-                    $groupUpdateMessage = "✅ *Pembaruan Status Grup: Tiket Ditutup*\n"
-                        . "Tiket *" . $dataToUpdate['code_ticket'] . "* (Pelanggan: *" . $dataToUpdate['nama_customer_ticket'] . "*) telah *berhasil ditutup*.\n"
-                        . "Keluhan: _" . $dataToUpdate['keluhan'] . "_\n"
-                        . "Prioritas: *" . $dataToUpdate['prioritas'] . "*\n"
-                        . "Petugas: *" . $dataToUpdate['nama_petugas_ticket'] . "*\n\n"
-                        . "Terima kasih atas kerja sama tim dalam penanganan tiket ini.";
                 } else {
                     // Pesan default untuk perubahan status/prioritas lainnya yang tidak spesifik
                     // Ini akan tetap dikirim jika hanya prioritas yang berubah atau status berubah ke nilai lain yang tidak spesifik di atas
@@ -358,14 +313,6 @@ class TicketController extends BaseController
                         . "📝 Keluhan: _" . $dataToUpdate['keluhan'] . "_\n"
                         . "📄 Deskripsi Tambahan: " . ($dataToUpdate['deskripsi'] ?: '_Tidak ada deskripsi tambahan_') . "\n\n"
                         . "Silakan segera tindak lanjuti melalui dashboard tiket Anda. Terima kasih atas kerja samanya.";
-
-                    $groupUpdateMessage = "ℹ️ *Pembaruan Umum Tiket Grup*\n"
-                        . "Ada pembaruan pada tiket *" . $dataToUpdate['code_ticket'] . "* (Pelanggan: *" . $dataToUpdate['nama_customer_ticket'] . "*).\n"
-                        . "Status terbaru: *" . $dataToUpdate['status'] . "*\n"
-                        . "Prioritas terbaru: *" . $dataToUpdate['prioritas'] . "*\n"
-                        . "Keluhan: _" . $dataToUpdate['keluhan'] . "_\n"
-                        . "Petugas: *" . $dataToUpdate['nama_petugas_ticket'] . "*\n\n"
-                        . "Mohon diperhatikan.";
                 }
 
                 // Kirim pesan hanya jika ada pesan yang dibuat
@@ -374,10 +321,6 @@ class TicketController extends BaseController
                 }
                 if (!empty($agentUpdateMessage)) {
                     $this->sendWhatsAppMessage($agentPhoneNumber, $agentUpdateMessage);
-                }
-                // Kirim pesan ke grup (jika nomor grup diatur)
-                if (!empty($this->whatsappGroupNumber) && !empty($groupUpdateMessage)) {
-                    $this->sendWhatsAppMessage($this->whatsappGroupNumber, $groupUpdateMessage);
                 }
             }
             // --- END WHATSAPP INTEGRATION ---
@@ -422,26 +365,23 @@ class TicketController extends BaseController
      * Mengirim pesan ke WhatsApp melalui WhatsApp Gateway API.
      * PENTING: Ganti dengan implementasi API Gateway Anda yang sebenarnya.
      *
-     * @param string $phoneNumber Nomor telepon tujuan (dengan kode negara, cth: "6281234567890" atau Group ID)
+     * @param string $phoneNumber Nomor telepon tujuan (dengan kode negara, cth: "6281234567890")
      * @param string $message Isi pesan yang akan dikirim
      * @return bool True jika pengiriman berhasil dipicu, False jika gagal
      */
     private function sendWhatsAppMessage(string $phoneNumber, string $message): bool
     {
-        // Hapus karakter non-digit jika bukan Group ID (yang mungkin mengandung '@')
-        // Asumsi Group ID memiliki format 'number-g.us'
-        if (strpos($phoneNumber, '@g.us') === false) {
-            $phoneNumber = preg_replace('/[^0-9]/', '', $phoneNumber);
-            // Pastikan nomor diawali dengan kode negara tanpa '+' atau '0' di awal jika gateway memerlukannya
-            // Contoh: jika nomor 0812..., ubah jadi 62812...
-            if (substr($phoneNumber, 0, 1) === '0') {
-                $phoneNumber = '62' . substr($phoneNumber, 1); // Asumsi kode negara Indonesia
-            }
+        // Hapus karakter non-digit dan pastikan format yang benar
+        $phoneNumber = preg_replace('/[^0-9]/', '', $phoneNumber);
+        // Pastikan nomor diawali dengan kode negara tanpa '+' atau '0' di awal jika gateway memerlukannya
+        // Contoh: jika nomor 0812..., ubah jadi 62812...
+        if (substr($phoneNumber, 0, 1) === '0') {
+            $phoneNumber = '62' . substr($phoneNumber, 1); // Asumsi kode negara Indonesia
         }
 
         $payload = [
             'api_key' => $this->whatsappApiKey,
-            'sender'  => '6281436069634', // Nomor perangkat pengirim dari MPWA V7
+            'sender'  => '6282124838685', // Nomor perangkat pengirim dari MPWA V7
             'number'  => $phoneNumber,
             'message' => $message,
             // Tambahkan parameter lain sesuai dokumentasi WhatsApp Gateway Anda
