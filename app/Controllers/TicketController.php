@@ -5,7 +5,7 @@ namespace App\Controllers;
 use App\Controllers\BaseController;
 use App\Models\TicketModel;
 use App\Models\CustomerModel; // Perlu model Customer
-use App\Models\PetugasModel;  // Perlu model Petugas
+use App->Models\PetugasModel;  // Perlu model Petugas
 
 class TicketController extends BaseController
 {
@@ -19,6 +19,9 @@ class TicketController extends BaseController
     private $whatsappApiUrl = 'https://wa.jasaawak.com/send-message';
     // GANTI DENGAN API KEY WHATSAPP GATEWAY ANDA YANG SEBENARNYA
     private $whatsappApiKey = 'OfZd22KyRNNgDdx0TPeGGF1YWgK3LJ';
+    // GANTI DENGAN NOMOR GRUP WHATSAPP ANDA (contoh: '6281234567890-123456@g.us' atau '6281234567890' jika gateway mendukung nomor biasa untuk grup)
+    // Pastikan format nomor grup sesuai dengan dokumentasi WhatsApp Gateway Anda.
+    private $whatsappGroupNumber = ''; // <-- ISI DENGAN GROUP JID ANDA DI SINI
     // --- END WHATSAPP INTEGRATION CONFIG ---
 
     public function __construct()
@@ -48,10 +51,6 @@ class TicketController extends BaseController
 
         // Generate Code Ticket Otomatis
         $codeTicket = 'TKT-' . date('YmdHis') . '-' . random_string('numeric', 4);
-        // Opsional: Loop untuk memastikan keunikan jika sangat khawatir
-        // while($this->ticketModel->where('code_ticket', $codeTicket)->first()){
-        //     $codeTicket = 'TKT-' . date('YmdHis') . '-' . random_string('numeric', 4);
-        // }
 
         $data = [
             'title'       => 'Buat Tiket Baru',
@@ -85,9 +84,22 @@ class TicketController extends BaseController
             'role_petugas_ticket'  => $this->request->getPost('role_petugas_ticket'),
         ];
 
-        // Validasi data
+        // Tambahkan data untuk Petugas 2 jika ada
+        if ($this->request->getPost('petugas_id_2')) {
+            $dataToSave['petugas_id_2'] = $this->request->getPost('petugas_id_2');
+            $dataToSave['nama_petugas_ticket_2'] = $this->request->getPost('nama_petugas_ticket_2');
+            $dataToSave['no_hp_petugas_ticket_2'] = $this->request->getPost('no_hp_petugas_ticket_2');
+            $dataToSave['role_petugas_ticket_2'] = $this->request->getPost('role_petugas_ticket_2');
+        } else {
+            // Pastikan kolom di-NULL-kan jika petugas 2 tidak dipilih
+            $dataToSave['petugas_id_2'] = null;
+            $dataToSave['nama_petugas_ticket_2'] = null;
+            $dataToSave['no_hp_petugas_ticket_2'] = null;
+            $dataToSave['role_petugas_ticket_2'] = null;
+        }
+
+        // Validasi data (Anda mungkin perlu menambahkan aturan validasi untuk petugas_id_2, dll. di TicketModel)
         if (!$this->validate($this->ticketModel->validationRules, $dataToSave, $this->ticketModel->validationMessages)) {
-            // Jika validasi gagal, kembalikan ke form dengan input lama
             return redirect()->back()->withInput();
         }
 
@@ -99,7 +111,7 @@ class TicketController extends BaseController
 
             // --- START WHATSAPP INTEGRATION: Send message on new ticket creation ---
             $customerPhoneNumber = $dataToSave['no_hp_customer_ticket'];
-            $agentPhoneNumber = $dataToSave['no_hp_petugas_ticket']; // Nomor HP petugas yang ditugaskan
+            $agentPhoneNumber = $dataToSave['no_hp_petugas_ticket']; // Nomor HP petugas 1 yang ditugaskan
 
             // Pesan untuk Pelanggan (Tiket Berhasil Dibuat)
             $customerMessage = "✅ *Konfirmasi Pembuatan Tiket Layanan Anda*\n"
@@ -114,7 +126,7 @@ class TicketController extends BaseController
                 . "Hormat kami,\n\n"
                 . "Tim Layanan Pelanggan \n*Indomedia Solusi Net*"; // Ganti dengan nama ISP Anda
 
-            // Pesan untuk Petugas (Tiket Baru Masuk)
+            // Pesan untuk Petugas 1 (Tiket Baru Masuk)
             $agentMessage = "🔔 *Pemberitahuan: Tiket Layanan Baru Telah Diterbitkan*\n"
                 . "Yth. Bapak/Ibu *" . $dataToSave['nama_petugas_ticket'] . "*,\n\n"
                 . "Anda telah ditugaskan untuk menangani tiket layanan baru dengan informasi sebagai berikut:\n"
@@ -126,10 +138,43 @@ class TicketController extends BaseController
                 . "• Prioritas: *" . $dataToSave['prioritas'] . "*\n\n"
                 . "Mohon segera lakukan peninjauan dan tindak lanjut sesuai prosedur operasional standar. Akses detail lengkap melalui dashboard sistem tiket. Terima kasih atas dedikasi Anda.";
 
+            // Pesan untuk Petugas 2 (jika ada)
+            if (!empty($dataToSave['no_hp_petugas_ticket_2'])) {
+                $agent2Message = "🔔 *Pemberitahuan: Anda Ditugaskan ke Tiket Baru*\n"
+                    . "Yth. Bapak/Ibu *" . $dataToSave['nama_petugas_ticket_2'] . "*,\n\n"
+                    . "Anda juga telah ditugaskan untuk membantu menangani tiket layanan baru dengan informasi sebagai berikut:\n"
+                    . "• Kode Tiket: *" . $dataToSave['code_ticket'] . "*\n"
+                    . "• Pelanggan: *" . $dataToSave['nama_customer_ticket'] . "*\n"
+                    . "• Keluhan: _" . $dataToSave['keluhan'] . "_\n"
+                    . "• Petugas Utama: *" . $dataToSave['nama_petugas_ticket'] . "*\n"
+                    . "• Status Awal: *" . $dataToSave['status'] . "*\n"
+                    . "• Prioritas: *" . $dataToSave['prioritas'] . "*\n\n"
+                    . "Mohon koordinasi dengan petugas utama dan tindak lanjuti sesuai kebutuhan. Terima kasih.";
+                $this->sendWhatsAppMessage($dataToSave['no_hp_petugas_ticket_2'], $agent2Message);
+            }
+
+            // Pesan untuk Grup (Tiket Baru Masuk)
+            $groupMessage = "🚨 *NOTIFIKASI GRUP: Tiket Layanan Baru*\n"
+                . "Tiket baru telah dibuat dengan detail:\n"
+                . "• Kode Tiket: *" . $dataToSave['code_ticket'] . "*\n"
+                . "• Pelanggan: *" . $dataToSave['nama_customer_ticket'] . "*\n"
+                . "• Keluhan: _" . $dataToSave['keluhan'] . "_\n"
+                . "• Petugas Ditugaskan: *" . $dataToSave['nama_petugas_ticket'] . "*";
+            if (!empty($dataToSave['nama_petugas_ticket_2'])) {
+                $groupMessage .= " dan *" . $dataToSave['nama_petugas_ticket_2'] . "*";
+            }
+            $groupMessage .= "\n• Status: *" . $dataToSave['status'] . "*\n"
+                . "• Prioritas: *" . $dataToSave['prioritas'] . "*\n\n"
+                . "Mohon perhatian dari tim terkait untuk memantau dan mendukung penanganan tiket ini.";
+
             // Kirim pesan ke pelanggan
             $this->sendWhatsAppMessage($customerPhoneNumber, $customerMessage);
-            // Kirim pesan ke petugas
+            // Kirim pesan ke petugas 1
             $this->sendWhatsAppMessage($agentPhoneNumber, $agentMessage);
+            // Kirim pesan ke grup (jika nomor grup diatur)
+            if (!empty($this->whatsappGroupNumber)) {
+                $this->sendWhatsAppMessage($this->whatsappGroupNumber, $groupMessage);
+            }
             // --- END WHATSAPP INTEGRATION ---
 
         } else {
@@ -183,11 +228,8 @@ class TicketController extends BaseController
         }
 
         // Hapus rule is_not_unique untuk customer_id dan petugas_id saat update
-        // karena kita tidak selalu mengubah customer/petugas, dan validasi ini bisa mengganggu
-        // jika ID yang sama dipilih lagi. Asumsi ID sudah valid saat dibuat.
         unset($rules['customer_id']);
         unset($rules['petugas_id']);
-
 
         $dataToUpdate = [
             'code_ticket'          => $this->request->getPost('code_ticket'),
@@ -199,14 +241,27 @@ class TicketController extends BaseController
             'deskripsi'            => $this->request->getPost('deskripsi'),
             'status'               => $this->request->getPost('status'),
             'prioritas'            => $this->request->getPost('prioritas'),
-            // 'tanggal_buat'         => ini tidak diupdate dari form, harusnya hanya di set sekali
             'petugas_id'           => $this->request->getPost('petugas_id'),
             'nama_petugas_ticket'  => $this->request->getPost('nama_petugas_ticket'),
             'no_hp_petugas_ticket' => $this->request->getPost('no_hp_petugas_ticket'),
             'role_petugas_ticket'  => $this->request->getPost('role_petugas_ticket'),
         ];
 
-        // Validasi data
+        // Tambahkan data untuk Petugas 2 jika ada
+        if ($this->request->getPost('petugas_id_2')) {
+            $dataToUpdate['petugas_id_2'] = $this->request->getPost('petugas_id_2');
+            $dataToUpdate['nama_petugas_ticket_2'] = $this->request->getPost('nama_petugas_ticket_2');
+            $dataToUpdate['no_hp_petugas_ticket_2'] = $this->request->getPost('no_hp_petugas_ticket_2');
+            $dataToUpdate['role_petugas_ticket_2'] = $this->request->getPost('role_petugas_ticket_2');
+        } else {
+            // Jika petugas 2 tidak dipilih/dihapus, pastikan kolomnya di database di-NULL-kan
+            $dataToUpdate['petugas_id_2'] = null;
+            $dataToUpdate['nama_petugas_ticket_2'] = null;
+            $dataToUpdate['no_hp_petugas_ticket_2'] = null;
+            $dataToUpdate['role_petugas_ticket_2'] = null;
+        }
+
+        // Validasi data (Anda mungkin perlu menambahkan aturan validasi untuk petugas_id_2, dll. di TicketModel)
         if (!$this->validate($rules, $dataToUpdate, $this->ticketModel->validationMessages)) {
             return redirect()->back()->withInput();
         }
@@ -221,12 +276,17 @@ class TicketController extends BaseController
 
             // --- START WHATSAPP INTEGRATION: Send message on ticket update ---
             // Hanya kirim notifikasi jika ada perubahan status atau prioritas
-            if ($dataToUpdate['status'] !== $oldTicket['status'] || $dataToUpdate['prioritas'] !== $oldTicket['prioritas']) {
+            if ($dataToUpdate['status'] !== $oldTicket['status'] || $dataToUpdate['prioritas'] !== $oldTicket['prioritas'] ||
+                $dataToUpdate['petugas_id'] !== $oldTicket['petugas_id'] || $dataToUpdate['petugas_id_2'] !== ($oldTicket['petugas_id_2'] ?? null)) { // Cek perubahan petugas juga
+                
                 $customerPhoneNumber = $dataToUpdate['no_hp_customer_ticket'];
-                $agentPhoneNumber = $dataToUpdate['no_hp_petugas_ticket'];
+                $agentPhoneNumber1 = $dataToUpdate['no_hp_petugas_ticket']; // Nomor HP petugas 1
+                $agentPhoneNumber2 = $dataToUpdate['no_hp_petugas_ticket_2'] ?? null; // Nomor HP petugas 2
 
                 $customerUpdateMessage = "";
-                $agentUpdateMessage = "";
+                $agentUpdateMessage1 = "";
+                $agentUpdateMessage2 = "";
+                $groupUpdateMessage = "";
 
                 // Konversi status ke huruf kecil untuk perbandingan yang konsisten
                 $newStatus = strtolower($dataToUpdate['status']);
@@ -243,10 +303,10 @@ class TicketController extends BaseController
                         . "• Prioritas: *" . $dataToUpdate['prioritas'] . "*\n\n"
                         . "Terima kasih atas kesabaran dan pengertian Anda. Kami akan segera memberikan pembaruan.\n\n"
                         . "Hormat kami,\n\n"
-                        . "Tim Layanan Pelanggan \n*Indomedia Solusi Net*"; // Ganti dengan nama ISP Anda
+                        . "Tim Layanan Pelanggan \n*Indomedia Solusi Net*";
 
-                    // Pesan untuk Petugas (Tiket Open)
-                    $agentUpdateMessage = "📝 *Pembaruan Status Tiket: Menjadi 'Open'*\n"
+                    // Pesan untuk Petugas 1 (Tiket Open)
+                    $agentUpdateMessage1 = "📝 *Pembaruan Status Tiket: Menjadi 'Open'*\n"
                         . "Yth. Bapak/Ibu *" . $dataToUpdate['nama_petugas_ticket'] . "*,\n\n"
                         . "Status tiket dengan Kode Tiket *" . $dataToUpdate['code_ticket'] . "* telah diperbarui menjadi *'Open'*.\n"
                         . "• Pelanggan: *" . $dataToUpdate['nama_customer_ticket'] . "*\n"
@@ -254,6 +314,30 @@ class TicketController extends BaseController
                         . "• Status Terbaru: *" . $dataToUpdate['status'] . "*\n"
                         . "• Prioritas: *" . $dataToUpdate['prioritas'] . "*\n\n"
                         . "Mohon segera lakukan peninjauan dan tindak lanjut. Terima kasih.";
+
+                    // Pesan untuk Petugas 2 (jika ada)
+                    if (!empty($agentPhoneNumber2)) {
+                        $agentUpdateMessage2 = "📝 *Pembaruan Status Tiket: Menjadi 'Open'*\n"
+                            . "Yth. Bapak/Ibu *" . $dataToUpdate['nama_petugas_ticket_2'] . "*,\n\n"
+                            . "Tiket *" . $dataToUpdate['code_ticket'] . "* yang Anda bantu tangani telah diperbarui menjadi *'Open'*.\n"
+                            . "• Pelanggan: *" . $dataToUpdate['nama_customer_ticket'] . "*\n"
+                            . "• Keluhan: _" . $dataToUpdate['keluhan'] . "_\n"
+                            . "• Status Terbaru: *" . $dataToUpdate['status'] . "*\n"
+                            . "• Prioritas: *" . $dataToUpdate['prioritas'] . "*\n\n"
+                            . "Mohon diperhatikan dan koordinasi dengan petugas utama. Terima kasih.";
+                    }
+
+                    // Pesan untuk Grup (Tiket Open)
+                    $groupUpdateMessage = "📊 *Pembaruan Status Grup: Tiket Dibuka*\n"
+                        . "Tiket *" . $dataToUpdate['code_ticket'] . "* (Pelanggan: *" . $dataToUpdate['nama_customer_ticket'] . "*) telah diubah statusnya menjadi *'Open'*.\n"
+                        . "Keluhan: _" . $dataToUpdate['keluhan'] . "_\n"
+                        . "Prioritas: *" . $dataToUpdate['prioritas'] . "*\n"
+                        . "Petugas: *" . $dataToUpdate['nama_petugas_ticket'] . "*";
+                    if (!empty($dataToUpdate['nama_petugas_ticket_2'])) {
+                        $groupUpdateMessage .= " dan *" . $dataToUpdate['nama_petugas_ticket_2'] . "*";
+                    }
+                    $groupUpdateMessage .= "\n\nMohon pantau progressnya.";
+
                 } elseif ($newStatus === 'diproses' && $oldStatus !== 'diproses') {
                     // Pesan untuk Pelanggan (Tiket Progress)
                     $customerUpdateMessage = "🛠️ *Pembaruan Status Tiket Anda: Sedang Diproses*\n"
@@ -264,8 +348,8 @@ class TicketController extends BaseController
                         . "• Prioritas: *" . $dataToUpdate['prioritas'] . "*\n\n"
                         . "Tim kami sedang bekerja untuk menyelesaikannya. Terima kasih atas kepercayaan Anda. Kami akan segera memberikan pembaruan setelah penanganan selesai.";
 
-                    // Pesan untuk Petugas (Tiket Progress)
-                    $agentUpdateMessage = "🔄 *Pembaruan Status Tiket: Menjadi 'Diproses'*\n"
+                    // Pesan untuk Petugas 1 (Tiket Progress)
+                    $agentUpdateMessage1 = "🔄 *Pembaruan Status Tiket: Menjadi 'Diproses'*\n"
                         . "Yth. Bapak/Ibu *" . $dataToUpdate['nama_petugas_ticket'] . "*,\n\n"
                         . "Status tiket dengan Kode Tiket *" . $dataToUpdate['code_ticket'] . "* telah diperbarui menjadi *'Diproses'*.\n"
                         . "• Pelanggan: *" . $dataToUpdate['nama_customer_ticket'] . "*\n"
@@ -273,6 +357,30 @@ class TicketController extends BaseController
                         . "• Status Terbaru: *" . $dataToUpdate['status'] . "*\n"
                         . "• Prioritas: *" . $dataToUpdate['prioritas'] . "*\n\n"
                         . "Pastikan Anda terus memantau dan memperbarui progres penanganan hingga tiket ini dapat diselesaikan. Terima kasih.";
+                    
+                    // Pesan untuk Petugas 2 (jika ada)
+                    if (!empty($agentPhoneNumber2)) {
+                        $agentUpdateMessage2 = "🔄 *Pembaruan Status Tiket: Menjadi 'Diproses'*\n"
+                            . "Yth. Bapak/Ibu *" . $dataToUpdate['nama_petugas_ticket_2'] . "*,\n\n"
+                            . "Tiket *" . $dataToUpdate['code_ticket'] . "* yang Anda bantu tangani telah diperbarui menjadi *'Diproses'*.\n"
+                            . "• Pelanggan: *" . $dataToUpdate['nama_customer_ticket'] . "*\n"
+                            . "• Keluhan: _" . $dataToUpdate['keluhan'] . "_\n"
+                            . "• Status Terbaru: *" . $dataToUpdate['status'] . "*\n"
+                            . "• Prioritas: *" . $dataToUpdate['prioritas'] . "*\n\n"
+                            . "Mohon diperhatikan dan koordinasi dengan petugas utama. Terima kasih.";
+                    }
+
+                    // Pesan untuk Grup (Tiket Progress)
+                    $groupUpdateMessage = "📈 *Pembaruan Status Grup: Tiket Diproses*\n"
+                        . "Tiket *" . $dataToUpdate['code_ticket'] . "* (Pelanggan: *" . $dataToUpdate['nama_customer_ticket'] . "*) telah diubah statusnya menjadi *'Diproses'*.\n"
+                        . "Keluhan: _" . $dataToUpdate['keluhan'] . "_\n"
+                        . "Prioritas: *" . $dataToUpdate['prioritas'] . "*\n"
+                        . "Petugas: *" . $dataToUpdate['nama_petugas_ticket'] . "*";
+                    if (!empty($dataToUpdate['nama_petugas_ticket_2'])) {
+                        $groupUpdateMessage .= " dan *" . $dataToUpdate['nama_petugas_ticket_2'] . "*";
+                    }
+                    $groupUpdateMessage .= "\n\nTim sedang dalam penanganan. Mohon dukungan dan pantau progresnya.";
+
                 } elseif (($newStatus === 'closed' || $newStatus === 'selesai') && $oldStatus !== 'closed' && $oldStatus !== 'selesai') {
                     // Pesan untuk Pelanggan (Tiket Closed)
                     $customerUpdateMessage = "✅ *Tiket Layanan Anda Telah Selesai Ditangani*\n"
@@ -282,19 +390,40 @@ class TicketController extends BaseController
                         . "• Status Akhir: *" . $dataToUpdate['status'] . "*\n\n"
                         . "Terima kasih atas kepercayaan Anda kepada layanan kami. Jika ada hal lain yang perlu dibantu, jangan ragu untuk menghubungi kami kembali.\n\n"
                         . "Hormat kami,\n\n"
-                        . "Tim Layanan Pelanggan \n*Indomedia Solusi Net*"; // Ganti dengan nama ISP Anda
+                        . "Tim Layanan Pelanggan \n*Indomedia Solusi Net*";
 
-                    // Pesan untuk Petugas (Tiket Closed)
-                    $agentUpdateMessage = "🎉 *Pemberitahuan: Tiket Layanan Telah Ditutup*\n"
+                    // Pesan untuk Petugas 1 (Tiket Closed)
+                    $agentUpdateMessage1 = "🎉 *Pemberitahuan: Tiket Layanan Telah Ditutup*\n"
                         . "Yth. Bapak/Ibu *" . $dataToUpdate['nama_petugas_ticket'] . "*,\n\n"
                         . "Tiket dengan Kode Tiket *" . $dataToUpdate['code_ticket'] . "* yang Anda tangani telah *berhasil ditutup*.\n"
                         . "• Pelanggan: *" . $dataToUpdate['nama_customer_ticket'] . "*\n"
                         . "• Keluhan: _" . $dataToUpdate['keluhan'] . "_\n"
                         . "• Status Akhir: *" . $dataToUpdate['status'] . "*\n\n"
                         . "Terima kasih atas kerja keras dan kontribusi Anda dalam menyelesaikan tiket ini. Silakan lanjutkan dengan tugas berikutnya.";
+
+                    // Pesan untuk Petugas 2 (jika ada)
+                    if (!empty($agentPhoneNumber2)) {
+                        $agentUpdateMessage2 = "🎉 *Pemberitahuan: Tiket Layanan Telah Ditutup*\n"
+                            . "Yth. Bapak/Ibu *" . $dataToUpdate['nama_petugas_ticket_2'] . "*,\n\n"
+                            . "Tiket *" . $dataToUpdate['code_ticket'] . "* yang Anda bantu tangani telah *berhasil ditutup*.\n"
+                            . "• Pelanggan: *" . $dataToUpdate['nama_customer_ticket'] . "*\n"
+                            . "• Keluhan: _" . $dataToUpdate['keluhan'] . "_\n"
+                            . "• Status Akhir: *" . $dataToUpdate['status'] . "*\n\n"
+                            . "Terima kasih atas kerja keras dan kontribusi Anda dalam menyelesaikan tiket ini.";
+                    }
+
+                    // Pesan untuk Grup (Tiket Closed)
+                    $groupUpdateMessage = "✅ *Pembaruan Status Grup: Tiket Ditutup*\n"
+                        . "Tiket *" . $dataToUpdate['code_ticket'] . "* (Pelanggan: *" . $dataToUpdate['nama_customer_ticket'] . "*) telah *berhasil ditutup*.\n"
+                        . "Keluhan: _" . $dataToUpdate['keluhan'] . "_\n"
+                        . "Prioritas: *" . $dataToUpdate['prioritas'] . "*\n"
+                        . "Petugas: *" . $dataToUpdate['nama_petugas_ticket'] . "*";
+                    if (!empty($dataToUpdate['nama_petugas_ticket_2'])) {
+                        $groupUpdateMessage .= " dan *" . $dataToUpdate['nama_petugas_ticket_2'] . "*";
+                    }
+                    $groupUpdateMessage .= "\n\nTerima kasih atas kerja sama tim dalam penanganan tiket ini.";
                 } else {
                     // Pesan default untuk perubahan status/prioritas lainnya yang tidak spesifik
-                    // Ini akan tetap dikirim jika hanya prioritas yang berubah atau status berubah ke nilai lain yang tidak spesifik di atas
                     $customerUpdateMessage = "📢 *Pembaruan Tiket Anda*\n"
                         . "Halo *" . $dataToUpdate['nama_customer_ticket'] . "*,\n\n"
                         . "Berikut pembaruan status tiket Anda dengan kode *" . $dataToUpdate['code_ticket'] . "*:\n"
@@ -303,7 +432,7 @@ class TicketController extends BaseController
                         . "📝 Keluhan: _" . $dataToUpdate['keluhan'] . "_\n\n"
                         . "Terima kasih atas kepercayaan dan kesabaran Anda. Kami akan terus memberikan layanan terbaik.";
 
-                    $agentUpdateMessage = "📌 *Pembaruan Tiket Pelanggan*\n"
+                    $agentUpdateMessage1 = "📌 *Pembaruan Tiket Pelanggan*\n"
                         . "Halo *" . $dataToUpdate['nama_petugas_ticket'] . "*,\n\n"
                         . "Berikut detail tiket yang perlu diperbarui:\n"
                         . "• Kode Tiket: *" . $dataToUpdate['code_ticket'] . "*\n"
@@ -313,14 +442,41 @@ class TicketController extends BaseController
                         . "📝 Keluhan: _" . $dataToUpdate['keluhan'] . "_\n"
                         . "📄 Deskripsi Tambahan: " . ($dataToUpdate['deskripsi'] ?: '_Tidak ada deskripsi tambahan_') . "\n\n"
                         . "Silakan segera tindak lanjuti melalui dashboard tiket Anda. Terima kasih atas kerja samanya.";
+                    
+                    if (!empty($agentPhoneNumber2)) {
+                        $agentUpdateMessage2 = "📌 *Pembaruan Tiket Pelanggan*\n"
+                            . "Halo *" . $dataToUpdate['nama_petugas_ticket_2'] . "*,\n\n"
+                            . "Ada pembaruan pada tiket *" . $dataToUpdate['code_ticket'] . "* yang Anda bantu tangani.\n"
+                            . "• Status: *" . $dataToUpdate['status'] . "*\n"
+                            . "• Prioritas: *" . $dataToUpdate['prioritas'] . "*\n\n"
+                            . "Mohon diperhatikan dan koordinasi dengan petugas utama. Terima kasih.";
+                    }
+
+                    $groupUpdateMessage = "ℹ️ *Pembaruan Umum Tiket Grup*\n"
+                        . "Ada pembaruan pada tiket *" . $dataToUpdate['code_ticket'] . "* (Pelanggan: *" . $dataToUpdate['nama_customer_ticket'] . "*).\n"
+                        . "Status terbaru: *" . $dataToUpdate['status'] . "*\n"
+                        . "Prioritas terbaru: *" . $dataToUpdate['prioritas'] . "*\n"
+                        . "Keluhan: _" . $dataToUpdate['keluhan'] . "_\n"
+                        . "Petugas: *" . $dataToUpdate['nama_petugas_ticket'] . "*";
+                    if (!empty($dataToUpdate['nama_petugas_ticket_2'])) {
+                        $groupUpdateMessage .= " dan *" . $dataToUpdate['nama_petugas_ticket_2'] . "*";
+                    }
+                    $groupUpdateMessage .= "\n\nMohon diperhatikan.";
                 }
 
                 // Kirim pesan hanya jika ada pesan yang dibuat
                 if (!empty($customerUpdateMessage)) {
                     $this->sendWhatsAppMessage($customerPhoneNumber, $customerUpdateMessage);
                 }
-                if (!empty($agentUpdateMessage)) {
-                    $this->sendWhatsAppMessage($agentPhoneNumber, $agentUpdateMessage);
+                if (!empty($agentUpdateMessage1)) {
+                    $this->sendWhatsAppMessage($agentPhoneNumber1, $agentUpdateMessage1);
+                }
+                if (!empty($agentUpdateMessage2)) {
+                    $this->sendWhatsAppMessage($agentPhoneNumber2, $agentUpdateMessage2);
+                }
+                // Kirim pesan ke grup (jika nomor grup diatur)
+                if (!empty($this->whatsappGroupNumber) && !empty($groupUpdateMessage)) {
+                    $this->sendWhatsAppMessage($this->whatsappGroupNumber, $groupUpdateMessage);
                 }
             }
             // --- END WHATSAPP INTEGRATION ---
@@ -365,18 +521,21 @@ class TicketController extends BaseController
      * Mengirim pesan ke WhatsApp melalui WhatsApp Gateway API.
      * PENTING: Ganti dengan implementasi API Gateway Anda yang sebenarnya.
      *
-     * @param string $phoneNumber Nomor telepon tujuan (dengan kode negara, cth: "6281234567890")
+     * @param string $phoneNumber Nomor telepon tujuan (dengan kode negara, cth: "6281234567890" atau Group ID)
      * @param string $message Isi pesan yang akan dikirim
      * @return bool True jika pengiriman berhasil dipicu, False jika gagal
      */
     private function sendWhatsAppMessage(string $phoneNumber, string $message): bool
     {
-        // Hapus karakter non-digit dan pastikan format yang benar
-        $phoneNumber = preg_replace('/[^0-9]/', '', $phoneNumber);
-        // Pastikan nomor diawali dengan kode negara tanpa '+' atau '0' di awal jika gateway memerlukannya
-        // Contoh: jika nomor 0812..., ubah jadi 62812...
-        if (substr($phoneNumber, 0, 1) === '0') {
-            $phoneNumber = '62' . substr($phoneNumber, 1); // Asumsi kode negara Indonesia
+        // Hapus karakter non-digit jika bukan Group ID (yang mungkin mengandung '@')
+        // Asumsi Group ID memiliki format 'number-g.us'
+        if (strpos($phoneNumber, '@g.us') === false) {
+            $phoneNumber = preg_replace('/[^0-9]/', '', $phoneNumber);
+            // Pastikan nomor diawali dengan kode negara tanpa '+' atau '0' di awal jika gateway memerlukannya
+            // Contoh: jika nomor 0812..., ubah jadi 62812...
+            if (substr($phoneNumber, 0, 1) === '0') {
+                $phoneNumber = '62' . substr($phoneNumber, 1); // Asumsi kode negara Indonesia
+            }
         }
 
         $payload = [
