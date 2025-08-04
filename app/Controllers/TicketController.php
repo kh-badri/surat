@@ -276,11 +276,9 @@ class TicketController extends BaseController
 
             // --- START WHATSAPP INTEGRATION: Send message on ticket update ---
             // Hanya kirim notifikasi jika ada perubahan status atau prioritas
-            if (
-                $dataToUpdate['status'] !== $oldTicket['status'] || $dataToUpdate['prioritas'] !== $oldTicket['prioritas'] ||
-                $dataToUpdate['petugas_id'] !== $oldTicket['petugas_id'] || $dataToUpdate['petugas_id_2'] !== ($oldTicket['petugas_id_2'] ?? null)
-            ) { // Cek perubahan petugas juga
-
+            if ($dataToUpdate['status'] !== $oldTicket['status'] || $dataToUpdate['prioritas'] !== $oldTicket['prioritas'] ||
+                $dataToUpdate['petugas_id'] !== $oldTicket['petugas_id'] || $dataToUpdate['petugas_id_2'] !== ($oldTicket['petugas_id_2'] ?? null)) { // Cek perubahan petugas juga
+                
                 $customerPhoneNumber = $dataToUpdate['no_hp_customer_ticket'];
                 $agentPhoneNumber1 = $dataToUpdate['no_hp_petugas_ticket']; // Nomor HP petugas 1
                 $agentPhoneNumber2 = $dataToUpdate['no_hp_petugas_ticket_2'] ?? null; // Nomor HP petugas 2
@@ -300,166 +298,168 @@ class TicketController extends BaseController
                     $customerUpdateMessage = "🔔 *Pemberitahuan Status Tiket Anda: Dibuka*\n"
                         . "Yth. Bapak/Ibu *" . $dataToUpdate['nama_customer_ticket'] . "*,\n\n"
                         . "Tiket layanan Anda dengan Kode Tiket *" . $dataToUpdate['code_ticket'] . "* telah *dibuka* dan sedang dalam antrean untuk segera diproses oleh tim kami.\n"
-                        . "• Keluhan: _" . $dataToSave['keluhan'] . "_\n"
-                        . "• Status Terbaru: *" . $dataToSave['status'] . "*\n"
-                        . "• Prioritas: *" . $dataToSave['prioritas'] . "*\n\n"
+                        . "• Keluhan: _" . $dataToUpdate['keluhan'] . "_\n"
+                        . "• Status Terbaru: *" . $dataToUpdate['status'] . "*\n"
+                        . "• Prioritas: *" . $dataToUpdate['prioritas'] . "*\n\n"
                         . "Terima kasih atas kesabaran dan pengertian Anda. Kami akan segera memberikan pembaruan.\n\n"
                         . "Hormat kami,\n\n"
                         . "Tim Layanan Pelanggan \n*Indomedia Solusi Net*";
 
                     // Pesan untuk Petugas 1 (Tiket Open)
-                    $agentUpdateMessage1 = "📝 *Pembaruan Status Tiket: Menjadi 'Open'*\n"
-                        . "Yth. Bapak/Ibu *" . $dataToSave['nama_petugas_ticket'] . "*,\n\n"
-                        . "Status tiket dengan Kode Tiket *" . $dataToSave['code_ticket'] . "* telah diperbarui menjadi *'Open'*.\n"
-                        . "• Pelanggan: *" . $dataToSave['nama_customer_ticket'] . "*\n"
-                        . "• Keluhan: _" . $dataToSave['keluhan'] . "_\n"
-                        . "• Status Terbaru: *" . $dataToSave['status'] . "*\n"
-                        . "• Prioritas: *" . $dataToSave['prioritas'] . "*\n\n"
+                    $agentUpdateMessage1 = "� *Pembaruan Status Tiket: Menjadi 'Open'*\n"
+                        . "Yth. Bapak/Ibu *" . $dataToUpdate['nama_petugas_ticket'] . "*,\n\n"
+                        . "Status tiket dengan Kode Tiket *" . $dataToUpdate['code_ticket'] . "* telah diperbarui menjadi *'Open'*.\n"
+                        . "• Pelanggan: *" . $dataToUpdate['nama_customer_ticket'] . "*\n"
+                        . "• Keluhan: _" . $dataToUpdate['keluhan'] . "_\n"
+                        . "• Status Terbaru: *" . $dataToUpdate['status'] . "*\n"
+                        . "• Prioritas: *" . $dataToUpdate['prioritas'] . "*\n\n"
                         . "Mohon segera lakukan peninjauan dan tindak lanjut. Terima kasih.";
 
                     // Pesan untuk Petugas 2 (jika ada)
                     if (!empty($agentPhoneNumber2)) {
                         $agentUpdateMessage2 = "📝 *Pembaruan Status Tiket: Menjadi 'Open'*\n"
-                            . "Yth. Bapak/Ibu *" . $dataToSave['nama_petugas_ticket_2'] . "*,\n\n"
-                            . "Tiket *" . $dataToSave['code_ticket'] . "* yang Anda bantu tangani telah diperbarui menjadi *'Open'*.\n"
-                            . "• Pelanggan: *" . $dataToSave['nama_customer_ticket'] . "*\n"
-                            . "• Keluhan: _" . $dataToSave['keluhan'] . "_\n"
-                            . "• Status Terbaru: *" . $dataToSave['status'] . "*\n"
-                            . "• Prioritas: *" . $dataToSave['prioritas'] . "*\n\n"
+                            . "Yth. Bapak/Ibu *" . $dataToUpdate['nama_petugas_ticket_2'] . "*,\n\n"
+                            . "Tiket *" . $dataToUpdate['code_ticket'] . "* yang Anda bantu tangani telah diperbarui menjadi *'Open'*.\n"
+                            . "• Pelanggan: *" . $dataToUpdate['nama_customer_ticket'] . "*\n"
+                            . "• Keluhan: _" . $dataToUpdate['keluhan'] . "_\n"
+                            . "• Status Terbaru: *" . $dataToUpdate['status'] . "*\n"
+                            . "• Prioritas: *" . $dataToUpdate['prioritas'] . "*\n\n"
                             . "Mohon diperhatikan dan koordinasi dengan petugas utama. Terima kasih.";
                     }
 
                     // Pesan untuk Grup (Tiket Open)
                     $groupUpdateMessage = "📊 *Pembaruan Status Grup: Tiket Dibuka*\n"
-                        . "Tiket *" . $dataToSave['code_ticket'] . "* (Pelanggan: *" . $dataToSave['nama_customer_ticket'] . "*) telah diubah statusnya menjadi *'Open'*.\n"
-                        . "Keluhan: _" . $dataToSave['keluhan'] . "_\n"
-                        . "Prioritas: *" . $dataToSave['prioritas'] . "*\n"
-                        . "Petugas: *" . $dataToSave['nama_petugas_ticket'] . "*";
-                    if (!empty($dataToSave['nama_petugas_ticket_2'])) {
-                        $groupUpdateMessage .= " dan *" . $dataToSave['nama_petugas_ticket_2'] . "*";
+                        . "Tiket *" . $dataToUpdate['code_ticket'] . "* (Pelanggan: *" . $dataToUpdate['nama_customer_ticket'] . "*) telah diubah statusnya menjadi *'Open'*.\n"
+                        . "Keluhan: _" . $dataToUpdate['keluhan'] . "_\n"
+                        . "Prioritas: *" . $dataToUpdate['prioritas'] . "*\n"
+                        . "Petugas: *" . $dataToUpdate['nama_petugas_ticket'] . "*";
+                    if (!empty($dataToUpdate['nama_petugas_ticket_2'])) {
+                        $groupUpdateMessage .= " dan *" . $dataToUpdate['nama_petugas_ticket_2'] . "*";
                     }
                     $groupUpdateMessage .= "\n\nMohon pantau progressnya.";
+
                 } elseif ($newStatus === 'diproses' && $oldStatus !== 'diproses') {
                     // Pesan untuk Pelanggan (Tiket Progress)
                     $customerUpdateMessage = "🛠️ *Pembaruan Status Tiket Anda: Sedang Diproses*\n"
-                        . "Yth. Bapak/Ibu *" . $dataToSave['nama_customer_ticket'] . "*,\n\n"
-                        . "Tiket layanan Anda dengan Kode Tiket *" . $dataToSave['code_ticket'] . "* saat ini *sedang dalam proses penanganan* oleh tim teknis kami.\n"
-                        . "• Keluhan: _" . $dataToSave['keluhan'] . "_\n"
-                        . "• Status Terbaru: *" . $dataToSave['status'] . "*\n"
-                        . "• Prioritas: *" . $dataToSave['prioritas'] . "*\n\n"
+                        . "Yth. Bapak/Ibu *" . $dataToUpdate['nama_customer_ticket'] . "*,\n\n"
+                        . "Tiket layanan Anda dengan Kode Tiket *" . $dataToUpdate['code_ticket'] . "* saat ini *sedang dalam proses penanganan* oleh tim teknis kami.\n"
+                        . "• Keluhan: _" . $dataToUpdate['keluhan'] . "_\n"
+                        . "• Status Terbaru: *" . $dataToUpdate['status'] . "*\n"
+                        . "• Prioritas: *" . $dataToUpdate['prioritas'] . "*\n\n"
                         . "Tim kami sedang bekerja untuk menyelesaikannya. Terima kasih atas kepercayaan Anda. Kami akan segera memberikan pembaruan setelah penanganan selesai.";
 
                     // Pesan untuk Petugas 1 (Tiket Progress)
                     $agentUpdateMessage1 = "🔄 *Pembaruan Status Tiket: Menjadi 'Diproses'*\n"
-                        . "Yth. Bapak/Ibu *" . $dataToSave['nama_petugas_ticket'] . "*,\n\n"
-                        . "Status tiket dengan Kode Tiket *" . $dataToSave['code_ticket'] . "* telah diperbarui menjadi *'Diproses'*.\n"
-                        . "• Pelanggan: *" . $dataToSave['nama_customer_ticket'] . "*\n"
-                        . "• Keluhan: _" . $dataToSave['keluhan'] . "_\n"
-                        . "• Status Terbaru: *" . $dataToSave['status'] . "*\n"
-                        . "• Prioritas: *" . $dataToSave['prioritas'] . "*\n\n"
+                        . "Yth. Bapak/Ibu *" . $dataToUpdate['nama_petugas_ticket'] . "*,\n\n"
+                        . "Status tiket dengan Kode Tiket *" . $dataToUpdate['code_ticket'] . "* telah diperbarui menjadi *'Diproses'*.\n"
+                        . "• Pelanggan: *" . $dataToUpdate['nama_customer_ticket'] . "*\n"
+                        . "• Keluhan: _" . $dataToUpdate['keluhan'] . "_\n"
+                        . "• Status Terbaru: *" . $dataToUpdate['status'] . "*\n"
+                        . "• Prioritas: *" . $dataToUpdate['prioritas'] . "*\n\n"
                         . "Pastikan Anda terus memantau dan memperbarui progres penanganan hingga tiket ini dapat diselesaikan. Terima kasih.";
-
+                    
                     // Pesan untuk Petugas 2 (jika ada)
                     if (!empty($agentPhoneNumber2)) {
                         $agentUpdateMessage2 = "🔄 *Pembaruan Status Tiket: Menjadi 'Diproses'*\n"
-                            . "Yth. Bapak/Ibu *" . $dataToSave['nama_petugas_ticket_2'] . "*,\n\n"
-                            . "Tiket *" . $dataToSave['code_ticket'] . "* yang Anda bantu tangani telah diperbarui menjadi *'Diproses'*.\n"
-                            . "• Pelanggan: *" . $dataToSave['nama_customer_ticket'] . "*\n"
-                            . "• Keluhan: _" . $dataToSave['keluhan'] . "_\n"
-                            . "• Status Terbaru: *" . $dataToSave['status'] . "*\n"
-                            . "• Prioritas: *" . $dataToSave['prioritas'] . "*\n\n"
+                            . "Yth. Bapak/Ibu *" . $dataToUpdate['nama_petugas_ticket_2'] . "*,\n\n"
+                            . "Tiket *" . $dataToUpdate['code_ticket'] . "* yang Anda bantu tangani telah diperbarui menjadi *'Diproses'*.\n"
+                            . "• Pelanggan: *" . $dataToUpdate['nama_customer_ticket'] . "*\n"
+                            . "• Keluhan: _" . $dataToUpdate['keluhan'] . "_\n"
+                            . "• Status Terbaru: *" . $dataToUpdate['status'] . "*\n"
+                            . "• Prioritas: *" . $dataToUpdate['prioritas'] . "*\n\n"
                             . "Mohon diperhatikan dan koordinasi dengan petugas utama. Terima kasih.";
                     }
 
                     // Pesan untuk Grup (Tiket Progress)
                     $groupUpdateMessage = "📈 *Pembaruan Status Grup: Tiket Diproses*\n"
-                        . "Tiket *" . $dataToSave['code_ticket'] . "* (Pelanggan: *" . $dataToSave['nama_customer_ticket'] . "*) telah diubah statusnya menjadi *'Diproses'*.\n"
-                        . "Keluhan: _" . $dataToSave['keluhan'] . "_\n"
-                        . "Prioritas: *" . $dataToSave['prioritas'] . "*\n"
-                        . "Petugas: *" . $dataToSave['nama_petugas_ticket'] . "*";
-                    if (!empty($dataToSave['nama_petugas_ticket_2'])) {
-                        $groupUpdateMessage .= " dan *" . $dataToSave['nama_petugas_ticket_2'] . "*";
+                        . "Tiket *" . $dataToUpdate['code_ticket'] . "* (Pelanggan: *" . $dataToUpdate['nama_customer_ticket'] . "*) telah diubah statusnya menjadi *'Diproses'*.\n"
+                        . "Keluhan: _" . $dataToUpdate['keluhan'] . "_\n"
+                        . "Prioritas: *" . $dataToUpdate['prioritas'] . "*\n"
+                        . "Petugas: *" . $dataToUpdate['nama_petugas_ticket'] . "*";
+                    if (!empty($dataToUpdate['nama_petugas_ticket_2'])) {
+                        $groupUpdateMessage .= " dan *" . $dataToUpdate['nama_petugas_ticket_2'] . "*";
                     }
                     $groupUpdateMessage .= "\n\nTim sedang dalam penanganan. Mohon dukungan dan pantau progresnya.";
+
                 } elseif (($newStatus === 'closed' || $newStatus === 'selesai') && $oldStatus !== 'closed' && $oldStatus !== 'selesai') {
                     // Pesan untuk Pelanggan (Tiket Closed)
                     $customerUpdateMessage = "✅ *Tiket Layanan Anda Telah Selesai Ditangani*\n"
-                        . "Yth. Bapak/Ibu *" . $dataToSave['nama_customer_ticket'] . "*,\n\n"
-                        . "Dengan ini kami informasikan bahwa tiket layanan Anda dengan Kode Tiket *" . $dataToSave['code_ticket'] . "* telah *berhasil diselesaikan* oleh tim kami.\n"
-                        . "• Keluhan: _" . $dataToSave['keluhan'] . "_\n"
-                        . "• Status Akhir: *" . $dataToSave['status'] . "*\n\n"
+                        . "Yth. Bapak/Ibu *" . $dataToUpdate['nama_customer_ticket'] . "*,\n\n"
+                        . "Dengan ini kami informasikan bahwa tiket layanan Anda dengan Kode Tiket *" . $dataToUpdate['code_ticket'] . "* telah *berhasil diselesaikan* oleh tim kami.\n"
+                        . "• Keluhan: _" . $dataToUpdate['keluhan'] . "_\n"
+                        . "• Status Akhir: *" . $dataToUpdate['status'] . "*\n\n"
                         . "Terima kasih atas kepercayaan Anda kepada layanan kami. Jika ada hal lain yang perlu dibantu, jangan ragu untuk menghubungi kami kembali.\n\n"
                         . "Hormat kami,\n\n"
                         . "Tim Layanan Pelanggan \n*Indomedia Solusi Net*";
 
                     // Pesan untuk Petugas 1 (Tiket Closed)
                     $agentUpdateMessage1 = "🎉 *Pemberitahuan: Tiket Layanan Telah Ditutup*\n"
-                        . "Yth. Bapak/Ibu *" . $dataToSave['nama_petugas_ticket'] . "*,\n\n"
-                        . "Tiket dengan Kode Tiket *" . $dataToSave['code_ticket'] . "* yang Anda tangani telah *berhasil ditutup*.\n"
-                        . "• Pelanggan: *" . $dataToSave['nama_customer_ticket'] . "*\n"
-                        . "• Keluhan: _" . $dataToSave['keluhan'] . "_\n"
-                        . "• Status Akhir: *" . $dataToSave['status'] . "*\n\n"
+                        . "Yth. Bapak/Ibu *" . $dataToUpdate['nama_petugas_ticket'] . "*,\n\n"
+                        . "Tiket dengan Kode Tiket *" . $dataToUpdate['code_ticket'] . "* yang Anda tangani telah *berhasil ditutup*.\n"
+                        . "• Pelanggan: *" . $dataToUpdate['nama_customer_ticket'] . "*\n"
+                        . "• Keluhan: _" . $dataToUpdate['keluhan'] . "_\n"
+                        . "• Status Akhir: *" . $dataToUpdate['status'] . "*\n\n"
                         . "Terima kasih atas kerja keras dan kontribusi Anda dalam menyelesaikan tiket ini. Silakan lanjutkan dengan tugas berikutnya.";
 
                     // Pesan untuk Petugas 2 (jika ada)
                     if (!empty($agentPhoneNumber2)) {
                         $agentUpdateMessage2 = "🎉 *Pemberitahuan: Tiket Layanan Telah Ditutup*\n"
-                            . "Yth. Bapak/Ibu *" . $dataToSave['nama_petugas_ticket_2'] . "*,\n\n"
-                            . "Tiket *" . $dataToSave['code_ticket'] . "* yang Anda bantu tangani telah diperbarui menjadi *'Closed'*.\n"
-                            . "• Pelanggan: *" . $dataToSave['nama_customer_ticket'] . "*\n"
-                            . "• Keluhan: _" . $dataToSave['keluhan'] . "_\n"
-                            . "• Status Akhir: *" . $dataToSave['status'] . "*\n\n"
+                            . "Yth. Bapak/Ibu *" . $dataToUpdate['nama_petugas_ticket_2'] . "*,\n\n"
+                            . "Tiket *" . $dataToUpdate['code_ticket'] . "* yang Anda bantu tangani telah diperbarui menjadi *'Closed'*.\n"
+                            . "• Pelanggan: *" . $dataToUpdate['nama_customer_ticket'] . "*\n"
+                            . "• Keluhan: _" . $dataToUpdate['keluhan'] . "_\n"
+                            . "• Status Akhir: *" . $dataToUpdate['status'] . "*\n\n"
                             . "Terima kasih atas kerja keras dan kontribusi Anda dalam menyelesaikan tiket ini.";
                     }
 
                     // Pesan untuk Grup (Tiket Closed)
                     $groupUpdateMessage = "✅ *Pembaruan Status Grup: Tiket Ditutup*\n"
-                        . "Tiket *" . $dataToSave['code_ticket'] . "* (Pelanggan: *" . $dataToSave['nama_customer_ticket'] . "*) telah *berhasil ditutup*.\n"
-                        . "Keluhan: _" . $dataToSave['keluhan'] . "_\n"
-                        . "Prioritas: *" . $dataToSave['prioritas'] . "*\n"
-                        . "Petugas: *" . $dataToSave['nama_petugas_ticket'] . "*";
-                    if (!empty($dataToSave['nama_petugas_ticket_2'])) {
-                        $groupUpdateMessage .= " dan *" . $dataToSave['nama_petugas_ticket_2'] . "*";
+                        . "Tiket *" . $dataToUpdate['code_ticket'] . "* (Pelanggan: *" . $dataToUpdate['nama_customer_ticket'] . "*) telah *berhasil ditutup*.\n"
+                        . "Keluhan: _" . $dataToUpdate['keluhan'] . "_\n"
+                        . "Prioritas: *" . $dataToUpdate['prioritas'] . "*\n"
+                        . "Petugas: *" . $dataToUpdate['nama_petugas_ticket'] . "*";
+                    if (!empty($dataToUpdate['nama_petugas_ticket_2'])) {
+                        $groupUpdateMessage .= " dan *" . $dataToUpdate['nama_petugas_ticket_2'] . "*";
                     }
                     $groupUpdateMessage .= "\n\nTerima kasih atas kerja sama tim dalam penanganan tiket ini.";
                 } else {
                     // Pesan default untuk perubahan status/prioritas lainnya yang tidak spesifik
                     $customerUpdateMessage = "📢 *Pembaruan Tiket Anda*\n"
-                        . "Halo *" . $dataToSave['nama_customer_ticket'] . "*,\n\n"
-                        . "Berikut pembaruan status tiket Anda dengan kode *" . $dataToSave['code_ticket'] . "*:\n"
-                        . "• Status: *" . $dataToSave['status'] . "*\n"
-                        . "• Prioritas: *" . $dataToSave['prioritas'] . "*\n\n"
-                        . "📝 Keluhan: _" . $dataToSave['keluhan'] . "_\n\n"
+                        . "Halo *" . $dataToUpdate['nama_customer_ticket'] . "*,\n\n"
+                        . "Berikut pembaruan status tiket Anda dengan kode *" . $dataToUpdate['code_ticket'] . "*:\n"
+                        . "• Status: *" . $dataToUpdate['status'] . "*\n"
+                        . "• Prioritas: *" . $dataToUpdate['prioritas'] . "*\n\n"
+                        . "📝 Keluhan: _" . $dataToUpdate['keluhan'] . "_\n\n"
                         . "Terima kasih atas kepercayaan dan kesabaran Anda. Kami akan terus memberikan layanan terbaik.";
 
                     $agentUpdateMessage1 = "📌 *Pembaruan Tiket Pelanggan*\n"
-                        . "Halo *" . $dataToSave['nama_petugas_ticket'] . "*,\n\n"
+                        . "Halo *" . $dataToUpdate['nama_petugas_ticket'] . "*,\n\n"
                         . "Berikut detail tiket yang perlu diperbarui:\n"
-                        . "• Kode Tiket: *" . $dataToSave['code_ticket'] . "*\n"
-                        . "• Status: *" . $dataToSave['status'] . "*\n"
-                        . "• Prioritas: *" . $dataToSave['prioritas'] . "*\n\n"
-                        . "👤 Pelanggan: *" . $dataToSave['nama_customer_ticket'] . "*\n"
-                        . "📝 Keluhan: _" . $dataToSave['keluhan'] . "_\n"
-                        . "📄 Deskripsi Tambahan: " . ($dataToSave['deskripsi'] ?: '_Tidak ada deskripsi tambahan_') . "\n\n"
+                        . "• Kode Tiket: *" . $dataToUpdate['code_ticket'] . "*\n"
+                        . "• Status: *" . $dataToUpdate['status'] . "*\n"
+                        . "• Prioritas: *" . $dataToUpdate['prioritas'] . "*\n\n"
+                        . "👤 Pelanggan: *" . $dataToUpdate['nama_customer_ticket'] . "*\n"
+                        . "📝 Keluhan: _" . $dataToUpdate['keluhan'] . "_\n"
+                        . "📄 Deskripsi Tambahan: " . ($dataToUpdate['deskripsi'] ?: '_Tidak ada deskripsi tambahan_') . "\n\n"
                         . "Silakan segera tindak lanjuti melalui dashboard tiket Anda. Terima kasih atas kerja samanya.";
-
+                    
                     if (!empty($agentPhoneNumber2)) {
                         $agentUpdateMessage2 = "📌 *Pembaruan Tiket Pelanggan*\n"
-                            . "Halo *" . $dataToSave['nama_petugas_ticket_2'] . "*,\n\n"
-                            . "Ada pembaruan pada tiket *" . $dataToSave['code_ticket'] . "* yang Anda bantu tangani.\n"
-                            . "• Status: *" . $dataToSave['status'] . "*\n"
-                            . "• Prioritas: *" . $dataToSave['prioritas'] . "*\n\n"
+                            . "Halo *" . $dataToUpdate['nama_petugas_ticket_2'] . "*,\n\n"
+                            . "Ada pembaruan pada tiket *" . $dataToUpdate['code_ticket'] . "* yang Anda bantu tangani.\n"
+                            . "• Status: *" . $dataToUpdate['status'] . "*\n"
+                            . "• Prioritas: *" . $dataToUpdate['prioritas'] . "*\n\n"
                             . "Mohon diperhatikan dan koordinasi dengan petugas utama. Terima kasih.";
                     }
 
                     $groupUpdateMessage = "ℹ️ *Pembaruan Umum Tiket Grup*\n"
-                        . "Ada pembaruan pada tiket *" . $dataToSave['code_ticket'] . "* (Pelanggan: *" . $dataToSave['nama_customer_ticket'] . "*).\n"
-                        . "Status terbaru: *" . $dataToSave['status'] . "*\n"
-                        . "Prioritas terbaru: *" . $dataToSave['prioritas'] . "*\n"
-                        . "Keluhan: _" . $dataToSave['keluhan'] . "_\n"
-                        . "Petugas: *" . $dataToSave['nama_petugas_ticket'] . "*";
-                    if (!empty($dataToSave['nama_petugas_ticket_2'])) {
-                        $groupUpdateMessage .= " dan *" . $dataToSave['nama_petugas_ticket_2'] . "*";
+                        . "Ada pembaruan pada tiket *" . $dataToUpdate['code_ticket'] . "* (Pelanggan: *" . $dataToUpdate['nama_customer_ticket'] . "*).\n"
+                        . "Status terbaru: *" . $dataToUpdate['status'] . "*\n"
+                        . "Prioritas terbaru: *" . $dataToUpdate['prioritas'] . "*\n"
+                        . "Keluhan: _" . $dataToUpdate['keluhan'] . "_\n"
+                        . "Petugas: *" . $dataToUpdate['nama_petugas_ticket'] . "*";
+                    if (!empty($dataToUpdate['nama_petugas_ticket_2'])) {
+                        $groupUpdateMessage .= " dan *" . $dataToUpdate['nama_petugas_ticket_2'] . "*";
                     }
                     $groupUpdateMessage .= "\n\nMohon diperhatikan.";
                 }
@@ -577,3 +577,4 @@ class TicketController extends BaseController
     }
     // --- END WHATSAPP INTEGRATION: Private Helper Function ---
 }
+�
