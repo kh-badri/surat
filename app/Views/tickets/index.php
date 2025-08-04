@@ -46,8 +46,7 @@
                             <th scope="col" class="px-6 py-3 text-left text-xs font-semibold text-gray-500 uppercase tracking-wider">Keluhan</th>
                             <th scope="col" class="px-6 py-3 text-left text-xs font-semibold text-gray-500 uppercase tracking-wider">Status</th>
                             <th scope="col" class="px-6 py-3 text-left text-xs font-semibold text-gray-500 uppercase tracking-wider">Prioritas</th>
-                            <th scope="col" class="px-6 py-3 text-left text-xs font-semibold text-gray-500 uppercase tracking-wider">Petugas 1</th>
-                            <th scope="col" class="px-6 py-3 text-left text-xs font-semibold text-gray-500 uppercase tracking-wider">Petugas 2</th> <!-- New column for Petugas 2 -->
+                            <th scope="col" class="px-6 py-3 text-left text-xs font-semibold text-gray-500 uppercase tracking-wider">Petugas</th>
                             <th scope="col" class="px-6 py-3 text-left text-xs font-semibold text-gray-500 uppercase tracking-wider">Aksi</th>
                         </tr>
                     </thead>
@@ -88,15 +87,6 @@
                                     <?= esc($ticket['nama_petugas_ticket']) ?> (<?= esc($ticket['role_petugas_ticket']) ?>)<br>
                                     <span class="text-gray-500 text-xs">HP: <?= esc($ticket['no_hp_petugas_ticket']) ?></span>
                                 </td>
-                                <!-- Display Petugas 2 details -->
-                                <td class="px-6 py-4 whitespace-nowrap text-sm text-gray-900">
-                                    <?php if (!empty($ticket['nama_petugas_ticket_2'])): ?>
-                                        <?= esc($ticket['nama_petugas_ticket_2']) ?> (<?= esc($ticket['role_petugas_ticket_2']) ?>)<br>
-                                        <span class="text-gray-500 text-xs">HP: <?= esc($ticket['no_hp_petugas_ticket_2']) ?></span>
-                                    <?php else: ?>
-                                        -
-                                    <?php endif; ?>
-                                </td>
                                 <td class="px-6 py-4 whitespace-nowrap text-sm font-medium">
                                     <div class="flex items-center space-x-3">
                                         <a href="<?= base_url('tickets/edit/' . $ticket['id']) ?>" class="text-amber-600 hover:text-amber-900 transition duration-150 ease-in-out">
@@ -136,10 +126,7 @@
                             <span class="font-medium">Customer:</span> <?= esc($ticket['nama_customer_ticket']) ?> (<?= esc($ticket['no_hp_customer_ticket']) ?>)
                         </p>
                         <p class="text-sm text-gray-700 mb-2">
-                            <span class="font-medium">Petugas 1:</span> <?= esc($ticket['nama_petugas_ticket']) ?> (<?= esc($ticket['role_petugas_ticket']) ?>)
-                            <?php if (!empty($ticket['nama_petugas_ticket_2'])): ?>
-                                <br><span class="font-medium">Petugas 2:</span> <?= esc($ticket['nama_petugas_ticket_2']) ?> (<?= esc($ticket['role_petugas_ticket_2']) ?>)
-                            <?php endif; ?>
+                            <span class="font-medium">Petugas:</span> <?= esc($ticket['nama_petugas_ticket']) ?> (<?= esc($ticket['role_petugas_ticket']) ?>)
                         </p>
                         <div class="flex justify-between items-center text-sm mb-4">
                             <div>
@@ -249,18 +236,9 @@
         content += `No. HP Pelanggan: ${ticketDetails.no_hp_customer_ticket}\n`;
         content += `Alamat Pelanggan: ${ticketDetails.alamat_customer_ticket}\n\n`;
         content += `--- Informasi Petugas ---\n\n`;
-        content += `Petugas 1:\n`;
-        content += `  Nama: ${ticketDetails.nama_petugas_ticket}\n`;
-        content += `  No. HP: ${ticketDetails.no_hp_petugas_ticket}\n`;
-        content += `  Role: ${ticketDetails.role_petugas_ticket}\n`;
-
-        // Add Petugas 2 details if available
-        if (ticketDetails.nama_petugas_ticket_2) {
-            content += `\nPetugas 2:\n`;
-            content += `  Nama: ${ticketDetails.nama_petugas_ticket_2}\n`;
-            content += `  No. HP: ${ticketDetails.no_hp_petugas_ticket_2}\n`;
-            content += `  Role: ${ticketDetails.role_petugas_ticket_2}\n`;
-        }
+        content += `Nama Petugas: ${ticketDetails.nama_petugas_ticket}\n`;
+        content += `No. HP Petugas: ${ticketDetails.no_hp_petugas_ticket}\n`;
+        content += `Role Petugas: ${ticketDetails.role_petugas_ticket}\n`;
 
         document.getElementById('exportContent').value = content;
         document.getElementById('exportModal').classList.remove('hidden');

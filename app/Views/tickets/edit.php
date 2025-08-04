@@ -139,136 +139,60 @@
             </div>
 
             <hr class="border-gray-200 my-6">
-            <div class="flex items-center justify-between mb-4">
-                <h3 class="text-xl font-semibold text-gray-800">Informasi Petugas</h3>
-                <button type="button" id="add-petugas-btn" class="inline-flex items-center px-3 py-1.5 border border-transparent text-sm font-medium rounded-md shadow-sm text-white bg-blue-600 hover:bg-blue-700 focus:outline-none focus:ring-2 focus:ring-offset-2 focus:ring-blue-500 transition duration-300 ease-in-out">
-                    <svg xmlns="http://www.w3.org/2000/svg" class="h-5 w-5 mr-1" viewBox="0 0 20 20" fill="currentColor">
-                        <path fill-rule="evenodd" d="M10 5a1 1 0 011 1v3h3a1 1 0 110 2h-3v3a1 1 0 11-2 0v-3H6a1 1 0 110-2h3V6a1 1 0 011-1z" clip-rule="evenodd" />
-                    </svg>
-                    Tambah Petugas
-                </button>
-            </div>
+            <h3 class="text-xl font-semibold text-gray-800 mb-4">Informasi Petugas</h3>
 
-            <!-- Petugas 1 Block (Default) -->
-            <div class="petugas-block border border-gray-200 rounded-lg p-4 mb-4">
-                <h4 class="text-lg font-medium text-gray-700 mb-3">Petugas 1</h4>
-                <div class="mb-4">
-                    <label for="petugas_id" class="block text-gray-700 text-sm font-bold mb-2">Pilih Petugas:</label>
-                    <select name="petugas_id" id="petugas_id"
-                        class="shadow appearance-none border rounded-lg w-full py-3 px-4 text-gray-700 leading-tight focus:outline-none focus:ring-2 focus:ring-amber-500 focus:border-transparent
+            <div class="mb-4">
+                <label for="petugas_id" class="block text-gray-700 text-sm font-bold mb-2">Pilih Petugas:</label>
+                <select name="petugas_id" id="petugas_id"
+                    class="shadow appearance-none border rounded-lg w-full py-3 px-4 text-gray-700 leading-tight focus:outline-none focus:ring-2 focus:ring-amber-500 focus:border-transparent
                                 <?= $validation->hasError('petugas_id') ? 'border-red-500' : '' ?>" required>
-                        <option value="">-- Pilih Petugas --</option>
-                        <?php foreach ($petugas as $p): ?>
-                            <option value="<?= $p['id_petugas'] ?>"
-                                <?= (old('petugas_id', $ticket['petugas_id']) == $p['id_petugas']) ? 'selected' : '' ?>>
-                                <?= esc($p['nama_petugas']) ?> (<?= esc($p['role']) ?>)
-                            </option>
-                        <?php endforeach; ?>
-                    </select>
-                    <?php if ($validation->hasError('petugas_id')): ?>
-                        <p class="text-red-500 text-xs italic mt-1"><?= $validation->getError('petugas_id') ?></p>
+                    <option value="">-- Pilih Petugas --</option>
+                    <?php foreach ($petugas as $p): ?>
+                        <option value="<?= $p['id_petugas'] ?>"
+                            <?= (old('petugas_id', $ticket['petugas_id']) == $p['id_petugas']) ? 'selected' : '' ?>>
+                            <?= esc($p['nama_petugas']) ?> (<?= esc($p['role']) ?>)
+                        </option>
+                    <?php endforeach; ?>
+                </select>
+                <?php if ($validation->hasError('petugas_id')): ?>
+                    <p class="text-red-500 text-xs italic mt-1"><?= $validation->getError('petugas_id') ?></p>
+                <?php endif; ?>
+            </div>
+
+            <div class="grid grid-cols-1 md:grid-cols-2 gap-6">
+                <div>
+                    <label for="nama_petugas_ticket" class="block text-gray-700 text-sm font-bold mb-2">Nama Petugas:</label>
+                    <input type="text" name="nama_petugas_ticket" id="nama_petugas_ticket"
+                        value="<?= old('nama_petugas_ticket', $ticket['nama_petugas_ticket']) ?>"
+                        class="shadow appearance-none border rounded-lg w-full py-3 px-4 text-gray-700 leading-tight focus:outline-none focus:ring-2 focus:ring-amber-500 focus:border-transparent
+                                <?= $validation->hasError('nama_petugas_ticket') ? 'border-red-500' : '' ?>"
+                        required placeholder="Nama petugas">
+                    <?php if ($validation->hasError('nama_petugas_ticket')): ?>
+                        <p class="text-red-500 text-xs italic mt-1"><?= $validation->getError('nama_petugas_ticket') ?></p>
                     <?php endif; ?>
                 </div>
-
-                <div class="grid grid-cols-1 md:grid-cols-2 gap-6">
-                    <div>
-                        <label for="nama_petugas_ticket" class="block text-gray-700 text-sm font-bold mb-2">Nama Petugas:</label>
-                        <input type="text" name="nama_petugas_ticket" id="nama_petugas_ticket"
-                            value="<?= old('nama_petugas_ticket', $ticket['nama_petugas_ticket']) ?>"
-                            class="shadow appearance-none border rounded-lg w-full py-3 px-4 text-gray-700 leading-tight focus:outline-none focus:ring-2 focus:ring-amber-500 focus:border-transparent
-                                    <?= $validation->hasError('nama_petugas_ticket') ? 'border-red-500' : '' ?>"
-                            required placeholder="Nama petugas">
-                        <?php if ($validation->hasError('nama_petugas_ticket')): ?>
-                            <p class="text-red-500 text-xs italic mt-1"><?= $validation->getError('nama_petugas_ticket') ?></p>
-                        <?php endif; ?>
-                    </div>
-                    <div>
-                        <label for="no_hp_petugas_ticket" class="block text-gray-700 text-sm font-bold mb-2">No. HP Petugas:</label>
-                        <input type="text" name="no_hp_petugas_ticket" id="no_hp_petugas_ticket"
-                            value="<?= old('no_hp_petugas_ticket', $ticket['no_hp_petugas_ticket']) ?>"
-                            class="shadow appearance-none border rounded-lg w-full py-3 px-4 text-gray-700 leading-tight focus:outline-none focus:ring-2 focus:ring-amber-500 focus:border-transparent
-                                    <?= $validation->hasError('no_hp_petugas_ticket') ? 'border-red-500' : '' ?>"
-                            required placeholder="Nomor HP petugas">
-                        <?php if ($validation->hasError('no_hp_petugas_ticket')): ?>
-                            <p class="text-red-500 text-xs italic mt-1"><?= $validation->getError('no_hp_petugas_ticket') ?></p>
-                        <?php endif; ?>
-                    </div>
-                </div>
-                <div class="mb-4">
-                    <label for="role_petugas_ticket" class="block text-gray-700 text-sm font-bold mb-2">Role Petugas:</label>
-                    <input type="text" name="role_petugas_ticket" id="role_petugas_ticket"
-                        value="<?= old('role_petugas_ticket', $ticket['role_petugas_ticket']) ?>"
+                <div>
+                    <label for="no_hp_petugas_ticket" class="block text-gray-700 text-sm font-bold mb-2">No. HP Petugas:</label>
+                    <input type="text" name="no_hp_petugas_ticket" id="no_hp_petugas_ticket"
+                        value="<?= old('no_hp_petugas_ticket', $ticket['no_hp_petugas_ticket']) ?>"
                         class="shadow appearance-none border rounded-lg w-full py-3 px-4 text-gray-700 leading-tight focus:outline-none focus:ring-2 focus:ring-amber-500 focus:border-transparent
-                                <?= $validation->hasError('role_petugas_ticket') ? 'border-red-500' : '' ?>"
-                        required placeholder="Role petugas">
-                    <?php if ($validation->hasError('role_petugas_ticket')): ?>
-                        <p class="text-red-500 text-xs italic mt-1"><?= $validation->getError('role_petugas_ticket') ?></p>
+                                <?= $validation->hasError('no_hp_petugas_ticket') ? 'border-red-500' : '' ?>"
+                        required placeholder="Nomor HP petugas">
+                    <?php if ($validation->hasError('no_hp_petugas_ticket')): ?>
+                        <p class="text-red-500 text-xs italic mt-1"><?= $validation->getError('no_hp_petugas_ticket') ?></p>
                     <?php endif; ?>
                 </div>
             </div>
-
-            <!-- Petugas 2 Block (Hidden by default, shown if ticket has petugas_id_2 or add button clicked) -->
-            <div id="petugas-2-block" class="petugas-block border border-gray-200 rounded-lg p-4 mb-4 <?= empty(old('petugas_id_2', $ticket['petugas_id_2'])) ? 'hidden' : '' ?>">
-                <h4 class="text-lg font-medium text-gray-700 mb-3">Petugas 2</h4>
-                <div class="mb-4">
-                    <label for="petugas_id_2" class="block text-gray-700 text-sm font-bold mb-2">Pilih Petugas:</label>
-                    <select name="petugas_id_2" id="petugas_id_2"
-                        class="shadow appearance-none border rounded-lg w-full py-3 px-4 text-gray-700 leading-tight focus:outline-none focus:ring-2 focus:ring-amber-500 focus:border-transparent
-                                <?= $validation->hasError('petugas_id_2') ? 'border-red-500' : '' ?>">
-                        <option value="">-- Pilih Petugas --</option>
-                        <?php foreach ($petugas as $p): ?>
-                            <option value="<?= $p['id_petugas'] ?>"
-                                <?= (old('petugas_id_2', $ticket['petugas_id_2']) == $p['id_petugas']) ? 'selected' : '' ?>>
-                                <?= esc($p['nama_petugas']) ?> (<?= esc($p['role']) ?>)
-                            </option>
-                        <?php endforeach; ?>
-                    </select>
-                    <?php if ($validation->hasError('petugas_id_2')): ?>
-                        <p class="text-red-500 text-xs italic mt-1"><?= $validation->getError('petugas_id_2') ?></p>
-                    <?php endif; ?>
-                </div>
-
-                <div class="grid grid-cols-1 md:grid-cols-2 gap-6">
-                    <div>
-                        <label for="nama_petugas_ticket_2" class="block text-gray-700 text-sm font-bold mb-2">Nama Petugas:</label>
-                        <input type="text" name="nama_petugas_ticket_2" id="nama_petugas_ticket_2"
-                            value="<?= old('nama_petugas_ticket_2', $ticket['nama_petugas_ticket_2'] ?? '') ?>"
-                            class="shadow appearance-none border rounded-lg w-full py-3 px-4 text-gray-700 leading-tight focus:outline-none focus:ring-2 focus:ring-amber-500 focus:border-transparent
-                                    <?= $validation->hasError('nama_petugas_ticket_2') ? 'border-red-500' : '' ?>"
-                            placeholder="Nama petugas">
-                        <?php if ($validation->hasError('nama_petugas_ticket_2')): ?>
-                            <p class="text-red-500 text-xs italic mt-1"><?= $validation->getError('nama_petugas_ticket_2') ?></p>
-                        <?php endif; ?>
-                    </div>
-                    <div>
-                        <label for="no_hp_petugas_ticket_2" class="block text-gray-700 text-sm font-bold mb-2">No. HP Petugas:</label>
-                        <input type="text" name="no_hp_petugas_ticket_2" id="no_hp_petugas_ticket_2"
-                            value="<?= old('no_hp_petugas_ticket_2', $ticket['no_hp_petugas_ticket_2'] ?? '') ?>"
-                            class="shadow appearance-none border rounded-lg w-full py-3 px-4 text-gray-700 leading-tight focus:outline-none focus:ring-2 focus:ring-amber-500 focus:border-transparent
-                                    <?= $validation->hasError('no_hp_petugas_ticket_2') ? 'border-red-500' : '' ?>"
-                            placeholder="Nomor HP petugas">
-                        <?php if ($validation->hasError('no_hp_petugas_ticket_2')): ?>
-                            <p class="text-red-500 text-xs italic mt-1"><?= $validation->getError('no_hp_petugas_ticket_2') ?></p>
-                        <?php endif; ?>
-                    </div>
-                </div>
-                <div class="mb-4">
-                    <label for="role_petugas_ticket_2" class="block text-gray-700 text-sm font-bold mb-2">Role Petugas:</label>
-                    <input type="text" name="role_petugas_ticket_2" id="role_petugas_ticket_2"
-                        value="<?= old('role_petugas_ticket_2', $ticket['role_petugas_ticket_2'] ?? '') ?>"
-                        class="shadow appearance-none border rounded-lg w-full py-3 px-4 text-gray-700 leading-tight focus:outline-none focus:ring-2 focus:ring-amber-500 focus:border-transparent
-                                <?= $validation->hasError('role_petugas_ticket_2') ? 'border-red-500' : '' ?>"
-                        placeholder="Role petugas">
-                    <?php if ($validation->hasError('role_petugas_ticket_2')): ?>
-                        <p class="text-red-500 text-xs italic mt-1"><?= $validation->getError('role_petugas_ticket_2') ?></p>
-                    <?php endif; ?>
-                </div>
-                <button type="button" id="remove-petugas-2-btn" class="inline-flex items-center px-3 py-1.5 border border-transparent text-sm font-medium rounded-md shadow-sm text-red-700 bg-red-100 hover:bg-red-200 focus:outline-none focus:ring-2 focus:ring-offset-2 focus:ring-red-500">
-                    <svg xmlns="http://www.w3.org/2000/svg" class="h-5 w-5 mr-1" viewBox="0 0 20 20" fill="currentColor">
-                        <path fill-rule="evenodd" d="M9 2a1 1 0 00-.894.553L7.382 4H4a1 1 0 000 2v10a2 2 0 002 2h8a2 2 0 002-2V6a1 1 0 100-2h-3.382l-.724-1.447A1 1 0 0011 2H9zM7 8a1 1 0 011-1h4a1 1 0 110 2H8a1 1 0 01-1-1zm6 4a1 1 0 10-2 0v3a1 1 0 102 0v-3z" clip-rule="evenodd" />
-                    </svg>
-                    Hapus Petugas 2
-                </button>
+            <div class="mb-6">
+                <label for="role_petugas_ticket" class="block text-gray-700 text-sm font-bold mb-2">Role Petugas:</label>
+                <input type="text" name="role_petugas_ticket" id="role_petugas_ticket"
+                    value="<?= old('role_petugas_ticket', $ticket['role_petugas_ticket']) ?>"
+                    class="shadow appearance-none border rounded-lg w-full py-3 px-4 text-gray-700 leading-tight focus:outline-none focus:ring-2 focus:ring-amber-500 focus:border-transparent
+                                <?= $validation->hasError('role_petugas_ticket') ? 'border-red-500' : '' ?>"
+                    required placeholder="Role petugas">
+                <?php if ($validation->hasError('role_petugas_ticket')): ?>
+                    <p class="text-red-500 text-xs italic mt-1"><?= $validation->getError('role_petugas_ticket') ?></p>
+                <?php endif; ?>
             </div>
 
             <div class="flex flex-col sm:flex-row items-center justify-between gap-4 mt-8">
@@ -290,22 +214,13 @@
         const alamatCustomerInput = document.getElementById('alamat_customer_ticket');
         const noHpCustomerInput = document.getElementById('no_hp_customer_ticket');
 
-        const petugasIdSelect1 = document.getElementById('petugas_id'); // Petugas 1
-        const namaPetugasInput1 = document.getElementById('nama_petugas_ticket');
-        const noHpPetugasInput1 = document.getElementById('no_hp_petugas_ticket');
-        const rolePetugasInput1 = document.getElementById('role_petugas_ticket');
+        const petugasIdSelect = document.getElementById('petugas_id');
+        const namaPetugasInput = document.getElementById('nama_petugas_ticket');
+        const noHpPetugasInput = document.getElementById('no_hp_petugas_ticket');
+        const rolePetugasInput = document.getElementById('role_petugas_ticket');
 
-        const petugas2Block = document.getElementById('petugas-2-block');
-        const addPetugasBtn = document.getElementById('add-petugas-btn');
-        const removePetugas2Btn = document.getElementById('remove-petugas-2-btn');
-
-        const petugasIdSelect2 = document.getElementById('petugas_id_2'); // Petugas 2
-        const namaPetugasInput2 = document.getElementById('nama_petugas_ticket_2');
-        const noHpPetugasInput2 = document.getElementById('no_hp_petugas_ticket_2');
-        const rolePetugasInput2 = document.getElementById('role_petugas_ticket_2');
-
-        // Helper to get old() values from PHP into JavaScript
-        // This is necessary because old() only works on the PHP side
+        // Helper untuk mengambil nilai old() dari PHP ke JavaScript
+        // Ini diperlukan karena old() hanya berfungsi di sisi PHP
         const oldInput = {
             customer_id: "<?= old('customer_id') ?>",
             nama_customer_ticket: "<?= old('nama_customer_ticket') ?>",
@@ -314,23 +229,10 @@
             petugas_id: "<?= old('petugas_id') ?>",
             nama_petugas_ticket: "<?= old('nama_petugas_ticket') ?>",
             no_hp_petugas_ticket: "<?= old('no_hp_petugas_ticket') ?>",
-            role_petugas_ticket: "<?= old('role_petugas_ticket') ?>",
-            petugas_id_2: "<?= old('petugas_id_2') ?>",
-            nama_petugas_ticket_2: "<?= old('nama_petugas_ticket_2') ?>",
-            no_hp_petugas_ticket_2: "<?= old('no_hp_petugas_ticket_2') ?>",
-            role_petugas_ticket_2: "<?= old('role_petugas_ticket_2') ?>"
+            role_petugas_ticket: "<?= old('role_petugas_ticket') ?>"
         };
 
-        // Function to display temporary messages (instead of alert)
-        function displayMessage(message, type = 'info') {
-            const messageDiv = document.createElement('div');
-            messageDiv.className = `px-4 py-3 rounded relative mt-4 ${type === 'error' ? 'bg-red-100 border border-red-400 text-red-700' : 'bg-blue-100 border border-blue-400 text-blue-700'}`;
-            messageDiv.innerHTML = `<strong class="font-bold">${type === 'error' ? 'Error!' : 'Info!'}</strong><span class="block sm:inline"> ${message}</span>`;
-            document.querySelector('form').prepend(messageDiv);
-            setTimeout(() => messageDiv.remove(), 5000);
-        }
-
-        // Function to fetch and populate customer details
+        // Fungsi untuk mengisi detail customer
         function fetchCustomerDetails(customerId) {
             if (customerId) {
                 fetch(`<?= base_url('tickets/getcustomerdetails/') ?>${customerId}`)
@@ -350,17 +252,23 @@
                         namaCustomerInput.value = '';
                         alamatCustomerInput.value = '';
                         noHpCustomerInput.value = '';
-                        displayMessage('Gagal mengambil detail customer. Mohon masukkan manual.', 'error');
+                        // Menggunakan modal atau elemen UI lain daripada alert()
+                        const messageDiv = document.createElement('div');
+                        messageDiv.className = 'bg-red-100 border border-red-400 text-red-700 px-4 py-3 rounded relative mt-4';
+                        messageDiv.innerHTML = '<strong class="font-bold">Error!</strong><span class="block sm:inline"> Gagal mengambil detail customer. Mohon masukkan manual.</span>';
+                        document.querySelector('form').prepend(messageDiv);
+                        setTimeout(() => messageDiv.remove(), 5000); // Hapus setelah 5 detik
                     });
             } else {
+                // Clear fields if no customer selected
                 namaCustomerInput.value = '';
                 alamatCustomerInput.value = '';
                 noHpCustomerInput.value = '';
             }
         }
 
-        // Function to fetch and populate petugas details for a specific set of fields
-        function populatePetugasDetails(petugasId, namaInput, noHpInput, roleInput) {
+        // Fungsi untuk mengisi detail petugas
+        function fetchPetugasDetails(petugasId) {
             if (petugasId) {
                 fetch(`<?= base_url('tickets/getpetugasdetails/') ?>${petugasId}`)
                     .then(response => {
@@ -370,106 +278,52 @@
                         return response.json();
                     })
                     .then(data => {
-                        namaInput.value = data.nama_petugas || '';
-                        noHpInput.value = data.no_hp || '';
-                        roleInput.value = data.role || '';
+                        namaPetugasInput.value = data.nama_petugas || '';
+                        noHpPetugasInput.value = data.no_hp || '';
+                        rolePetugasInput.value = data.role || '';
                     })
                     .catch(error => {
                         console.error('Error fetching petugas details:', error);
-                        namaInput.value = '';
-                        noHpInput.value = '';
-                        roleInput.value = '';
-                        displayMessage('Gagal mengambil detail petugas. Mohon masukkan manual.', 'error');
+                        namaPetugasInput.value = '';
+                        noHpPetugasInput.value = '';
+                        rolePetugasInput.value = '';
+                        // Menggunakan modal atau elemen UI lain daripada alert()
+                        const messageDiv = document.createElement('div');
+                        messageDiv.className = 'bg-red-100 border border-red-400 text-red-700 px-4 py-3 rounded relative mt-4';
+                        messageDiv.innerHTML = '<strong class="font-bold">Error!</strong><span class="block sm:inline"> Gagal mengambil detail petugas. Mohon masukkan manual.</span>';
+                        document.querySelector('form').prepend(messageDiv);
+                        setTimeout(() => messageDiv.remove(), 5000); // Hapus setelah 5 detik
                     });
             } else {
-                namaInput.value = '';
-                noHpInput.value = '';
-                roleInput.value = '';
+                // Clear fields if no petugas selected
+                namaPetugasInput.value = '';
+                noHpPetugasInput.value = '';
+                rolePetugasInput.value = '';
             }
         }
 
-        // Event Listeners for Customer
+        // Event listener untuk customer dropdown
         customerIdSelect.addEventListener('change', function() {
             fetchCustomerDetails(this.value);
         });
 
-        // Event Listeners for Petugas 1
-        petugasIdSelect1.addEventListener('change', function() {
-            populatePetugasDetails(this.value, namaPetugasInput1, noHpPetugasInput1, rolePetugasInput1);
+        // Event listener untuk petugas dropdown
+        petugasIdSelect.addEventListener('change', function() {
+            fetchPetugasDetails(this.value);
         });
 
-        // Event Listener for "Tambah Petugas" button
-        addPetugasBtn.addEventListener('click', function() {
-            petugas2Block.classList.remove('hidden');
-            addPetugasBtn.classList.add('hidden'); // Hide "Tambah Petugas" button
-            // Make fields in petugas 2 block required when shown
-            petugasIdSelect2.setAttribute('required', 'required');
-            namaPetugasInput2.setAttribute('required', 'required');
-            noHpPetugasInput2.setAttribute('required', 'required');
-            rolePetugasInput2.setAttribute('required', 'required');
+        // PENTING UNTUK EDIT FORM: Panggil fungsi lookup saat halaman dimuat
+        // Jika ada old input (setelah validasi gagal), gunakan old input
+        // Jika tidak, gunakan nilai dari $ticket yang dimuat pertama kali
+        const initialCustomerId = oldInput.customer_id || customerIdSelect.value;
+        const initialPetugasId = oldInput.petugas_id || petugasIdSelect.value;
 
-            // If there's old data for petugas 2, populate it
-            if (oldInput.petugas_id_2) {
-                petugasIdSelect2.value = oldInput.petugas_id_2;
-                populatePetugasDetails(oldInput.petugas_id_2, namaPetugasInput2, noHpPetugasInput2, rolePetugasInput2);
-            } else if (<?= !empty($ticket['petugas_id_2']) ? 'true' : 'false' ?>) {
-                // If no old input but ticket already has a second petugas, populate from ticket data
-                petugasIdSelect2.value = "<?= $ticket['petugas_id_2'] ?? '' ?>";
-                populatePetugasDetails(petugasIdSelect2.value, namaPetugasInput2, noHpPetugasInput2, rolePetugasInput2);
-            }
-        });
-
-        // Event Listener for "Hapus Petugas 2" button
-        removePetugas2Btn.addEventListener('click', function() {
-            petugas2Block.classList.add('hidden');
-            addPetugasBtn.classList.remove('hidden'); // Show "Tambah Petugas" button again
-            // Clear fields and remove 'required' attribute when hidden
-            petugasIdSelect2.value = '';
-            namaPetugasInput2.value = '';
-            noHpPetugasInput2.value = '';
-            rolePetugasInput2.value = '';
-            petugasIdSelect2.removeAttribute('required');
-            namaPetugasInput2.removeAttribute('required');
-            noHpPetugasInput2.removeAttribute('required');
-            rolePetugasInput2.removeAttribute('required');
-        });
-
-        // Event Listener for Petugas 2 (only if it's visible or was previously filled)
-        petugasIdSelect2.addEventListener('change', function() {
-            populatePetugasDetails(this.value, namaPetugasInput2, noHpPetugasInput2, rolePetugasInput2);
-        });
-
-        // Initial population when page loads (for existing ticket data or old input)
-        // Customer details
-        if (oldInput.customer_id) {
-            fetchCustomerDetails(oldInput.customer_id);
-        } else if (customerIdSelect.value) {
-            fetchCustomerDetails(customerIdSelect.value);
+        // Panggil fetchDetails hanya jika ada nilai yang terpilih
+        if (initialCustomerId) {
+            fetchCustomerDetails(initialCustomerId);
         }
-
-        // Petugas 1 details
-        if (oldInput.petugas_id) {
-            populatePetugasDetails(oldInput.petugas_id, namaPetugasInput1, noHpPetugasInput1, rolePetugasInput1);
-        } else if (petugasIdSelect1.value) {
-            populatePetugasDetails(petugasIdSelect1.value, namaPetugasInput1, noHpPetugasInput1, rolePetugasInput1);
-        }
-
-        // Petugas 2 details (show block and populate if data exists)
-        if (oldInput.petugas_id_2 || <?= !empty($ticket['petugas_id_2']) ? 'true' : 'false' ?>) {
-            petugas2Block.classList.remove('hidden');
-            addPetugasBtn.classList.add('hidden');
-            petugasIdSelect2.setAttribute('required', 'required');
-            namaPetugasInput2.setAttribute('required', 'required');
-            noHpPetugasInput2.setAttribute('required', 'required');
-            rolePetugasInput2.setAttribute('required', 'required');
-
-            if (oldInput.petugas_id_2) {
-                petugasIdSelect2.value = oldInput.petugas_id_2;
-                populatePetugasDetails(oldInput.petugas_id_2, namaPetugasInput2, noHpPetugasInput2, rolePetugasInput2);
-            } else if (<?= !empty($ticket['petugas_id_2']) ? 'true' : 'false' ?>) {
-                petugasIdSelect2.value = "<?= $ticket['petugas_id_2'] ?? '' ?>";
-                populatePetugasDetails(petugasIdSelect2.value, namaPetugasInput2, noHpPetugasInput2, rolePetugasInput2);
-            }
+        if (initialPetugasId) {
+            fetchPetugasDetails(initialPetugasId);
         }
     });
 </script>
