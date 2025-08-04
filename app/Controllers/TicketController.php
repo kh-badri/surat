@@ -381,7 +381,7 @@ class TicketController extends BaseController
 
         $payload = [
             'api_key' => $this->whatsappApiKey,
-            'sender'  => '6282124838685', // Nomor perangkat pengirim dari MPWA V7
+            'sender'  => '6281436069634', // Nomor perangkat pengirim dari MPWA V7
             'number'  => $phoneNumber,
             'message' => $message,
             // Tambahkan parameter lain sesuai dokumentasi WhatsApp Gateway Anda
