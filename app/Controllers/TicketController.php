@@ -33,34 +33,33 @@ class TicketController extends BaseController
         $search = $this->request->getVar('search');
         $status = $this->request->getVar('status');
 
-        $tickets = $this->ticketModel; // Inisialisasi query builder
+        // Inisialisasi query builder
+        $queryBuilder = $this->ticketModel;
 
         // Terapkan filter pencarian jika ada
         if (!empty($search)) {
-            $tickets->like('code_ticket', $search)
+            $queryBuilder->groupStart() // Mulai grup untuk OR conditions
+                ->like('code_ticket', $search)
                 ->orLike('nama_customer_ticket', $search)
                 ->orLike('keluhan', $search)
-                ->orLike('nama_petugas_ticket', $search);
+                ->orLike('nama_petugas_ticket', $search)
+                ->groupEnd(); // Akhiri grup
         }
 
         // Terapkan filter status jika ada
         if (!empty($status)) {
-            $tickets->where('status', $status);
+            $queryBuilder->where('status', $status);
         }
 
         $data = [
             'title' => 'Daftar Tiket',
-            'tickets' => $tickets->findAll(), // Eksekusi query
+            'tickets' => $queryBuilder->findAll(), // Eksekusi query setelah semua kondisi diterapkan
             'active_menu' => 'tickets',
             'search' => $search, // Kirim kembali nilai search ke view
             'status' => $status, // Kirim kembali nilai status ke view
         ];
         return view('tickets/index', $data);
     }
-
-    // Metode create, store, edit, update, delete, getCustomerDetails, getPetugasDetails, sendWhatsAppMessage
-    // tetap sama seperti yang Anda miliki sebelumnya atau seperti yang saya berikan di perbaikan terakhir.
-    // Pastikan Anda hanya memperbarui metode index() ini.
 
     public function create()
     {
@@ -211,7 +210,6 @@ class TicketController extends BaseController
             'role_petugas_ticket' => $this->request->getPost('role_petugas_ticket'),
         ];
 
-        // --- START: Pastikan detail customer/petugas terisi dari database jika ID dipilih ---
         if (!empty($dataToUpdate['customer_id'])) {
             $customer = $this->customerModel->find($dataToUpdate['customer_id']);
             if ($customer) {
@@ -220,10 +218,8 @@ class TicketController extends BaseController
                 $dataToUpdate['no_hp_customer_ticket'] = $customer['no_hp'];
             }
         } else {
-            // Jika customer_id kosong, pastikan juga data detail customernya tidak kosong
-            // Ini penting jika field di frontend menjadi "required" untuk custom input
             if (empty($dataToUpdate['nama_customer_ticket']) || empty($dataToUpdate['no_hp_customer_ticket'])) {
-                // Logika tambahan jika ingin memberi error atau mengelola ini lebih lanjut
+                // Tambahkan pesan error jika diperlukan untuk custom input yang kosong
             }
         }
 
@@ -235,12 +231,10 @@ class TicketController extends BaseController
                 $dataToUpdate['role_petugas_ticket'] = $petugas['role'];
             }
         } else {
-            // Logika tambahan jika ingin memberi error atau mengelola ini lebih lanjut
             if (empty($dataToUpdate['nama_petugas_ticket']) || empty($dataToUpdate['no_hp_petugas_ticket']) || empty($dataToUpdate['role_petugas_ticket'])) {
-                // Logika tambahan jika ingin memberi error atau mengelola ini lebih lanjut
+                // Tambahkan pesan error jika diperlukan untuk custom input yang kosong
             }
         }
-        // --- END: Pastikan detail customer/petugas terisi dari database jika ID dipilih ---
 
         $dataToUpdate['no_hp_customer_ticket'] = (string) $dataToUpdate['no_hp_customer_ticket'];
         $dataToUpdate['no_hp_petugas_ticket'] = (string) $dataToUpdate['no_hp_petugas_ticket'];
@@ -300,7 +294,7 @@ class TicketController extends BaseController
                         . "• Status Terbaru: *" . $dataToUpdate['status'] . "*\n"
                         . "• Prioritas: *" . $dataToUpdate['prioritas'] . "*\n\n"
                         . "Pastikan Anda terus memantau dan memperbarui progres penanganan hingga tiket ini dapat diselesaikan. Terima kasih.";
-                } elseif (($newStatus === 'closed' || $newStatus === 'selesai') && $oldStatus !== 'closed' && $oldStatus !== 'selesai') {
+                } elseif ($newStatus === 'closed' && $oldStatus !== 'closed') { // 'selesai' dihilangkan
                     $customerUpdateMessage = "✅ *Tiket Layanan Anda Telah Selesai Ditangani*\n"
                         . "Yth. Bapak/Ibu *" . $dataToUpdate['nama_customer_ticket'] . "*,\n\n"
                         . "Dengan ini kami informasikan bahwa tiket layanan Anda dengan Kode Tiket *" . $dataToUpdate['code_ticket'] . "* telah *berhasil diselesaikan* oleh tim kami.\n"
