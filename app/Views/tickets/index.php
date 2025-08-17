@@ -17,29 +17,6 @@
             </a>
         </div>
 
-        <!-- Filter and Search Section -->
-        <form action="<?= base_url('tickets') ?>" method="get" id="filterSearchForm" class="mb-8 grid grid-cols-1 md:grid-cols-3 gap-4 items-end">
-            <div class="md:col-span-1">
-                <label for="search" class="block text-sm font-medium text-gray-700 mb-1">Cari Tiket:</label>
-                <input type="text" name="search" id="search" placeholder="Cari berdasarkan kode, keluhan, customer..."
-                    value="<?= esc($search ?? '') ?>"
-                    class="mt-1 block w-full rounded-md border-gray-300 shadow-sm focus:border-amber-500 focus:ring-amber-500 sm:text-sm py-2 px-3">
-            </div>
-            <div class="md:col-span-1">
-                <label for="status_filter" class="block text-sm font-medium text-gray-700 mb-1">Filter Status:</label>
-                <select name="status" id="status_filter"
-                    class="mt-1 block w-full rounded-md border-gray-300 shadow-sm focus:border-amber-500 focus:ring-amber-500 sm:text-sm py-2 px-3">
-                    <option value="">Semua Status</option>
-                    <option value="open" <?= ($status ?? '') === 'open' ? 'selected' : '' ?>>Open</option>
-                    <option value="progress" <?= ($status ?? '') === 'progress' ? 'selected' : '' ?>>Progress</option>
-                    <option value="closed" <?= ($status ?? '') === 'closed' ? 'selected' : '' ?>>Closed</option>
-                    <option value="selesai" <?= ($status ?? '') === 'selesai' ? 'selected' : '' ?>>Selesai</option>
-                </select>
-            </div>
-            <!-- Tombol "Filter & Cari" dihapus karena filter otomatis dengan JS -->
-        </form>
-        <!-- End Filter and Search Section -->
-
         <?php if (empty($tickets)): ?>
             <div class="text-center py-10">
                 <svg class="mx-auto h-12 w-12 text-gray-400" fill="none" viewBox="0 0 24 24" stroke="currentColor" aria-hidden="true">
