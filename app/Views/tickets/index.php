@@ -18,7 +18,7 @@
         </div>
 
         <!-- Filter and Search Section -->
-        <form action="<?= base_url('tickets') ?>" method="get" class="mb-8 grid grid-cols-1 md:grid-cols-3 gap-4 items-end">
+        <form action="<?= base_url('tickets') ?>" method="get" id="filterSearchForm" class="mb-8 grid grid-cols-1 md:grid-cols-3 gap-4 items-end">
             <div class="md:col-span-1">
                 <label for="search" class="block text-sm font-medium text-gray-700 mb-1">Cari Tiket:</label>
                 <input type="text" name="search" id="search" placeholder="Cari berdasarkan kode, keluhan, customer..."
@@ -36,14 +36,7 @@
                     <option value="selesai" <?= ($status ?? '') === 'selesai' ? 'selected' : '' ?>>Selesai</option>
                 </select>
             </div>
-            <div class="md:col-span-1 flex justify-end md:justify-start">
-                <button type="submit" class="w-full md:w-auto inline-flex items-center justify-center px-6 py-2 border border-transparent text-base font-medium rounded-lg shadow-sm text-white bg-blue-600 hover:bg-blue-700 focus:outline-none focus:ring-2 focus:ring-offset-2 focus:ring-blue-500 transition duration-300 ease-in-out transform hover:scale-105">
-                    <svg xmlns="http://www.w3.org/2000/svg" class="h-5 w-5 mr-2" viewBox="0 0 20 20" fill="currentColor">
-                        <path fill-rule="evenodd" d="M.5 9.9a.5.5 0 01.5.5v2.5a.5.5 0 00.5.5h14a.5.5 0 00.5-.5v-2.5a.5.5 0 011 0v2.5A1.5 1.5 0 0115.5 15h-14A1.5 1.5 0 010 13.4v-2.5a.5.5 0 01.5-.5zM7.646 11.854a.5.5 0 00.708 0l3-3a.5.5 0 00-.708-.708L8.5 10.293V3.5a.5.5 0 00-1 0v6.793L5.354 8.146a.5.5 0 10-.708.708l3 3z" clip-rule="evenodd" />
-                    </svg>
-                    Filter & Cari
-                </button>
-            </div>
+            <!-- Tombol "Filter & Cari" dihapus karena filter otomatis dengan JS -->
         </form>
         <!-- End Filter and Search Section -->
 
@@ -128,7 +121,7 @@
                                         <!-- Export to TXT Button -->
                                         <button type="button" class="text-gray-600 hover:text-gray-900 transition duration-150 ease-in-out" onclick="showExportModal(<?= esc(json_encode($ticket), 'attr') ?>)">
                                             <svg xmlns="http://www.w3.org/2000/svg" class="h-5 w-5" viewBox="0 0 20 20" fill="currentColor">
-                                                <path fill-rule="evenodd" d="M.5 9.9a.5.5 0 0 1 .5.5v2.5a.5.5 0 00.5.5h14a.5.5 0 00.5-.5v-2.5a.5.5 0 011 0v2.5A1.5 1.5 0 0115.5 15h-14A1.5 1.5 0 010 13.4v-2.5a.5.5 0 01.5-.5zM7.646 11.854a.5.5 0 00.708 0l3-3a.5.5 0 00-.708-.708L8.5 10.293V3.5a.5.5 0 00-1 0v6.793L5.354 8.146a.5.5 0 10-.708.708l3 3z" clip-rule="evenodd" />
+                                                <path fill-rule="evenodd" d="M.5 9.9a.5.5 0 01.5.5v2.5a.5.5 0 00.5.5h14a.5.5 0 00.5-.5v-2.5a.5.5 0 011 0v2.5A1.5 1.5 0 0115.5 15h-14A1.5 1.5 0 010 13.4v-2.5a.5.5 0 01.5-.5zM7.646 11.854a.5.5 0 00.708 0l3-3a.5.5 0 00-.708-.708L8.5 10.293V3.5a.5.5 0 00-1 0v6.793L5.354 8.146a.5.5 0 10-.708.708l3 3z" clip-rule="evenodd" />
                                             </svg>
                                         </button>
                                         <button type="button" class="text-red-600 hover:text-red-900 transition duration-150 ease-in-out" onclick="showDeleteModal('<?= base_url('tickets/delete/' . $ticket['id']) ?>')">
@@ -295,6 +288,29 @@
             this.textContent = originalText;
         }, 1500);
     });
+
+    // --- Start: Automatic filter/search submission ---
+    document.addEventListener('DOMContentLoaded', function() {
+        const filterSearchForm = document.getElementById('filterSearchForm');
+        const searchInput = document.getElementById('search');
+        const statusFilterSelect = document.getElementById('status_filter');
+        let searchTimeout;
+
+        // Function to submit the form
+        const submitForm = () => {
+            filterSearchForm.submit();
+        };
+
+        // Event listener for status filter change
+        statusFilterSelect.addEventListener('change', submitForm);
+
+        // Event listener for search input (with debounce)
+        searchInput.addEventListener('input', function() {
+            clearTimeout(searchTimeout);
+            searchTimeout = setTimeout(submitForm, 500); // Submit after 500ms of no typing
+        });
+    });
+    // --- End: Automatic filter/search submission ---
 </script>
 
 <?= $this->endSection() ?>
