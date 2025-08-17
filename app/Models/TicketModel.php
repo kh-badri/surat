@@ -38,6 +38,8 @@ class TicketModel extends Model
     // Validation Rules (Default)
     // Aturan yang berlaku untuk semua skenario
     protected $validationRules = [
+        // Rule is_unique di sini akan otomatis mengabaikan record yang sedang di-update
+        // ketika menggunakan $model->save($data) dan $data['id'] disertakan.
         'code_ticket'       => 'required|is_unique[tickets.code_ticket]|max_length[50]',
         'keluhan'           => 'required|max_length[255]',
         'status'            => 'required|in_list[open,progress,closed,selesai]',
