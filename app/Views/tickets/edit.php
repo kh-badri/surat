@@ -129,7 +129,6 @@
                         <option value="open" <?= (old('status', $ticket['status']) == 'open') ? 'selected' : '' ?>>Open</option>
                         <option value="progress" <?= (old('status', $ticket['status']) == 'progress') ? 'selected' : '' ?>>Progress</option>
                         <option value="closed" <?= (old('status', $ticket['status']) == 'closed') ? 'selected' : '' ?>>Closed</option>
-                        <option value="selesai" <?= (old('status', $ticket['status']) == 'selesai') ? 'selected' : '' ?>>Selesai</option>
                     </select>
                     <?php if ($validation->hasError('status')): ?>
                         <p class="text-red-500 text-xs italic mt-1"><?= $validation->getError('status') ?></p>
