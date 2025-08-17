@@ -7,7 +7,7 @@ use CodeIgniter\Model;
 class TicketModel extends Model
 {
     protected $table            = 'tickets';
-    protected $primaryKey       = 'id'; // Primary key untuk tabel tickets itu sendiri
+    protected $primaryKey       = 'id';
     protected $useAutoIncrement = true;
     protected $returnType       = 'array';
     protected $useSoftDeletes   = false;
@@ -35,33 +35,22 @@ class TicketModel extends Model
     protected $createdField  = 'created_at';
     protected $updatedField  = 'updated_at';
 
-    // Validation Rules
+    // Validation Rules (Default)
+    // Aturan yang berlaku untuk semua skenario
     protected $validationRules = [
-        'code_ticket'           => 'required|is_unique[tickets.code_ticket]|max_length[50]',
-        'customer_id'           => 'required|integer|is_not_unique[customer.id]', // Memastikan customer_id ada di tabel customer
-        'nama_customer_ticket'  => 'required|max_length[100]',
-        'no_hp_customer_ticket' => 'required|max_length[20]',
-        'keluhan'               => 'required|max_length[255]',
-        'status'                => 'required|in_list[open,progress,closed]',
-        'prioritas'             => 'required|in_list[low,medium,high,urgent]',
-        'petugas_id'            => 'required|integer|is_not_unique[petugas.id_petugas]', // Memastikan petugas_id ada di tabel petugas
-        'nama_petugas_ticket'   => 'required|max_length[100]',
-        'no_hp_petugas_ticket'  => 'required|max_length[20]',
-        'role_petugas_ticket'   => 'required|max_length[50]', // Role petugas adalah VARCHAR(50)
+        'code_ticket'       => 'required|is_unique[tickets.code_ticket]|max_length[50]',
+        'keluhan'           => 'required|max_length[255]',
+        'status'            => 'required|in_list[open,progress,closed,selesai]',
+        'prioritas'         => 'required|in_list[low,medium,high,urgent]',
+        'petugas_id'        => 'required|integer|is_not_unique[petugas.id_petugas]',
     ];
 
+    // Validation Messages (Default)
     protected $validationMessages = [
         'code_ticket' => [
             'required'  => 'Kode tiket harus ada.',
             'is_unique' => 'Kode tiket ini sudah digunakan.'
         ],
-        'customer_id' => [
-            'required'      => 'Customer harus dipilih.',
-            'integer'       => 'ID Customer tidak valid.',
-            'is_not_unique' => 'Customer tidak ditemukan.'
-        ],
-        'nama_customer_ticket' => ['required' => 'Nama customer harus diisi.'],
-        'no_hp_customer_ticket' => ['required' => 'No. HP customer harus diisi.'],
         'keluhan' => ['required' => 'Keluhan harus diisi.'],
         'status' => ['required' => 'Status harus dipilih.', 'in_list' => 'Status tidak valid.'],
         'prioritas' => ['required' => 'Prioritas harus dipilih.', 'in_list' => 'Prioritas tidak valid.'],
@@ -70,9 +59,23 @@ class TicketModel extends Model
             'integer'       => 'ID Petugas tidak valid.',
             'is_not_unique' => 'Petugas tidak ditemukan.'
         ],
-        'nama_petugas_ticket' => ['required' => 'Nama petugas harus diisi.'],
-        'no_hp_petugas_ticket' => ['required' => 'No. HP petugas harus diisi.'],
-        'role_petugas_ticket' => ['required' => 'Role petugas harus diisi.'],
+    ];
+
+    // Validation Groups for different scenarios
+    // Grup validasi untuk skenario "Pilih Pelanggan"
+    protected $validationGroups = [
+        'createFromCustomer' => [
+            'customer_id' => 'required|integer|is_not_unique[customer.id]',
+            'nama_customer_ticket' => 'permit_empty|max_length[100]',
+            'no_hp_customer_ticket' => 'permit_empty|max_length[20]',
+        ],
+        // Grup validasi untuk skenario "Custom Input Pelanggan"
+        'createFromCustom' => [
+            'customer_id' => 'permit_empty', // Izinkan customer_id kosong
+            'nama_customer_ticket' => 'required|max_length[100]',
+            'alamat_customer_ticket' => 'permit_empty|max_length[255]',
+            'no_hp_customer_ticket' => 'required|max_length[20]',
+        ]
     ];
 
     protected $skipValidation       = false;

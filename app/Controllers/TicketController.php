@@ -15,7 +15,6 @@ class TicketController extends BaseController
 
     // --- START WHATSAPP INTEGRATION CONFIG ---
     // GANTI DENGAN URL API WHATSAPP GATEWAY ANDA YANG SEBENARNYA
-    // Contoh: 'https://your-whatsapp-gateway.com/send'
     private $whatsappApiUrl = 'https://wa.jasaawak.com/send-message';
     // GANTI DENGAN API KEY WHATSAPP GATEWAY ANDA YANG SEBENARNYA
     private $whatsappApiKey = 'OfZd22KyRNNgDdx0TPeGGF1YWgK3LJ';
@@ -29,7 +28,9 @@ class TicketController extends BaseController
         helper(['url', 'form', 'text']); // 'text' helper untuk random_string
     }
 
-    // Menampilkan daftar tiket
+    /**
+     * Menampilkan daftar tiket.
+     */
     public function index()
     {
         $data = [
@@ -40,7 +41,9 @@ class TicketController extends BaseController
         return view('tickets/index', $data);
     }
 
-    // Menampilkan form tambah tiket
+    /**
+     * Menampilkan form tambah tiket.
+     */
     public function create()
     {
         $customers = $this->customerModel->findAll();
@@ -50,12 +53,12 @@ class TicketController extends BaseController
         $codeTicket = 'TKT-' . date('YmdHis') . '-' . random_string('numeric', 4);
         // Opsional: Loop untuk memastikan keunikan jika sangat khawatir
         // while($this->ticketModel->where('code_ticket', $codeTicket)->first()){
-        // $codeTicket = 'TKT-' . date('YmdHis') . '-' . random_string('numeric', 4);
+        //     $codeTicket = 'TKT-' . date('YmdHis') . '-' . random_string('numeric', 4);
         // }
 
         $data = [
             'title' => 'Buat Tiket Baru',
-            'validation' => \Config\Services::validation(),
+            'validation' => \Config\Services::validation(), // Menggunakan service validation untuk ditampilkan di view
             'customers' => $customers,
             'petugas' => $petugas,
             'code_ticket_generated' => $codeTicket,
@@ -64,13 +67,16 @@ class TicketController extends BaseController
         return view('tickets/create', $data);
     }
 
-    // Menyimpan data tiket baru
+    /**
+     * Menyimpan data tiket baru.
+     */
     public function store()
     {
         // Tangkap semua data dari POST
         $dataToSave = [
             'code_ticket' => $this->request->getPost('code_ticket'),
-            'customer_id' => $this->request->getPost('customer_id') ?: null, // Set null jika kosong untuk custom input
+            // Jika customer_id kosong dari select, set null untuk custom input
+            'customer_id' => $this->request->getPost('customer_id') ?: null,
             'nama_customer_ticket' => $this->request->getPost('nama_customer_ticket'),
             'alamat_customer_ticket' => $this->request->getPost('alamat_customer_ticket'),
             'no_hp_customer_ticket' => $this->request->getPost('no_hp_customer_ticket'),
@@ -85,33 +91,20 @@ class TicketController extends BaseController
             'role_petugas_ticket' => $this->request->getPost('role_petugas_ticket'),
         ];
 
-        // Buat rules validasi dinamis berdasarkan mode input customer
-        $rules = $this->ticketModel->validationRules;
+        // Tentukan grup validasi yang akan digunakan
+        // Jika customer_id tidak kosong, berarti menggunakan "pilih pelanggan"
+        // Jika customer_id kosong, berarti menggunakan "custom input pelanggan"
+        $validationGroup = !empty($dataToSave['customer_id']) ? 'createFromCustomer' : 'createFromCustom';
 
-        // Buat rules validasi dinamis berdasarkan mode input customer
-        $rules = $this->ticketModel->validationRules;
-
-        // Jika customer_id kosong (mode custom input), hapus validasi customer_id
-        if (empty($dataToSave['customer_id'])) {
-            unset($rules['customer_id']);
-            // Untuk custom input, petugas_id harus ada dan valid
-            $rules['petugas_id'] = 'required|is_not_unique[petugas.id_petugas]';
-        } else {
-            // Untuk mode pilih customer, validasi normal dengan nama tabel yang benar
-            $rules['customer_id'] = 'required|is_not_unique[customer.id]'; // Ganti 'customers' ke 'customer'
-            $rules['petugas_id'] = 'required|is_not_unique[petugas.id_petugas]';
+        // Lakukan validasi menggunakan grup yang dipilih dari TicketModel
+        if (!$this->ticketModel->validate($dataToSave, $validationGroup)) {
+            // Jika validasi gagal, kembalikan ke form dengan input lama dan error
+            return redirect()->back()->withInput()->with('errors', $this->ticketModel->errors());
         }
 
-        // Validasi data
-        if (!$this->validate($rules, $dataToSave, $this->ticketModel->validationMessages)) {
-            // Jika validasi gagal, kembalikan ke form dengan input lama
-            return redirect()->back()->withInput();
-        }
-
-        // Simpan data ke database
-        $insertResult = $this->ticketModel->insert($dataToSave);
-
-        if ($insertResult !== false) {
+        // Simpan data ke database menggunakan metode save() dari model
+        // Metode save() akan melakukan insert/update dan juga memicu validasi jika belum dilakukan
+        if ($this->ticketModel->save($dataToSave)) {
             session()->setFlashdata('success', 'Tiket baru berhasil dibuat.');
 
             // --- START WHATSAPP INTEGRATION: Send message on new ticket creation ---
@@ -150,13 +143,20 @@ class TicketController extends BaseController
             // --- END WHATSAPP INTEGRATION ---
 
         } else {
+            // Jika save() mengembalikan false (misalnya karena gagal insert ke DB),
+            // meskipun validasi sudah lolos, ini menangkap error database.
             session()->setFlashdata('error', 'Gagal membuat tiket baru. Terjadi kesalahan database.');
+            // Opsional: log $this->ticketModel->db->error() untuk debugging lebih lanjut
+            log_message('error', 'Database Error on Ticket Creation: ' . json_encode($this->ticketModel->errors()));
         }
 
         return redirect()->to(base_url('tickets'));
     }
 
-    // Menampilkan form edit tiket
+    /**
+     * Menampilkan form edit tiket.
+     * @param int $id ID Tiket
+     */
     public function edit($id)
     {
         $ticket = $this->ticketModel->find($id);
@@ -179,7 +179,10 @@ class TicketController extends BaseController
         return view('tickets/edit', $data);
     }
 
-    // Memperbarui data tiket
+    /**
+     * Memperbarui data tiket.
+     * @param int $id ID Tiket
+     */
     public function update($id)
     {
         $oldTicket = $this->ticketModel->find($id);
@@ -188,9 +191,12 @@ class TicketController extends BaseController
             throw new \CodeIgniter\Exceptions\PageNotFoundException('Tiket yang akan diperbarui tidak ditemukan.');
         }
 
+        // Tangkap semua data dari POST
         $dataToUpdate = [
+            'id' => $id, // Penting: tambahkan ID untuk metode save() agar tahu ini adalah update
             'code_ticket' => $this->request->getPost('code_ticket'),
-            'customer_id' => $this->request->getPost('customer_id') ?: null, // Set null jika kosong untuk custom input
+            // Jika customer_id kosong dari select, set null untuk custom input
+            'customer_id' => $this->request->getPost('customer_id') ?: null,
             'nama_customer_ticket' => $this->request->getPost('nama_customer_ticket'),
             'alamat_customer_ticket' => $this->request->getPost('alamat_customer_ticket'),
             'no_hp_customer_ticket' => $this->request->getPost('no_hp_customer_ticket'),
@@ -198,59 +204,28 @@ class TicketController extends BaseController
             'deskripsi' => $this->request->getPost('deskripsi'),
             'status' => $this->request->getPost('status'),
             'prioritas' => $this->request->getPost('prioritas'),
-            // 'tanggal_buat' => ini tidak diupdate dari form, harusnya hanya di set sekali
+            // tanggal_buat tidak diupdate dari form karena hanya di-set sekali saat pembuatan
             'petugas_id' => $this->request->getPost('petugas_id'),
             'nama_petugas_ticket' => $this->request->getPost('nama_petugas_ticket'),
             'no_hp_petugas_ticket' => $this->request->getPost('no_hp_petugas_ticket'),
             'role_petugas_ticket' => $this->request->getPost('role_petugas_ticket'),
         ];
 
-        // Ambil rules dari model
-        $rules = $this->ticketModel->validationRules;
+        // Tentukan grup validasi yang akan digunakan
+        // Jika customer_id tidak kosong, berarti menggunakan "pilih pelanggan"
+        // Jika customer_id kosong, berarti menggunakan "custom input pelanggan"
+        $validationGroup = !empty($dataToUpdate['customer_id']) ? 'createFromCustomer' : 'createFromCustom';
 
-        // Logika penyesuaian validasi untuk code_ticket (is_unique)
-        $currentCodeTicket = $this->request->getPost('code_ticket');
-        if ($currentCodeTicket === $oldTicket['code_ticket']) {
-            $rules['code_ticket'] = 'required|max_length[50]';
-        } else {
-            $rules['code_ticket'] = 'required|is_unique[tickets.code_ticket]|max_length[50]';
+        // Lakukan validasi menggunakan grup yang dipilih dari TicketModel
+        // Parameter kedua (validationGroup) dan ketiga (skipValidation) bisa dihilangkan
+        // karena model sudah diatur untuk menangani is_unique pada update secara otomatis
+        if (!$this->ticketModel->validate($dataToUpdate, $validationGroup)) {
+            return redirect()->back()->withInput()->with('errors', $this->ticketModel->errors());
         }
 
-        // Validasi dinamis untuk customer_id berdasarkan mode input
-        if (empty($dataToUpdate['customer_id'])) {
-            // Mode custom input - tidak perlu validasi customer_id
-            unset($rules['customer_id']);
-            // Petugas_id harus ada dan valid
-            $rules['petugas_id'] = 'required|is_not_unique[petugas.id_petugas]';
-        } else {
-            // Mode pilih customer - validasi customer_id jika berubah
-            if ($dataToUpdate['customer_id'] === $oldTicket['customer_id']) {
-                // Customer_id sama, tidak perlu validasi is_not_unique
-                $rules['customer_id'] = 'required';
-            } else {
-                // Customer_id berubah, validasi is_not_unique dengan nama tabel yang benar
-                $rules['customer_id'] = 'required|is_not_unique[customer.id]'; // Ganti 'customers' ke 'customer'
-            }
-
-            // Validasi petugas_id
-            if ($dataToUpdate['petugas_id'] === $oldTicket['petugas_id']) {
-                $rules['petugas_id'] = 'required';
-            } else {
-                $rules['petugas_id'] = 'required|is_not_unique[petugas.id_petugas]';
-            }
-        }
-
-        // Validasi data
-        if (!$this->validate($rules, $dataToUpdate, $this->ticketModel->validationMessages)) {
-            return redirect()->back()->withInput();
-        }
-
-        // Penting: Lewati validasi internal model karena sudah divalidasi di controller
-        $this->ticketModel->skipValidation(true);
-        $updateResult = $this->ticketModel->update($id, $dataToUpdate);
-        $this->ticketModel->skipValidation(false); // Reset kembali
-
-        if ($updateResult !== false) {
+        // Simpan data ke database menggunakan metode save() dari model
+        // Metode save() akan otomatis mengenali ini sebagai update karena 'id' disertakan
+        if ($this->ticketModel->save($dataToUpdate)) {
             session()->setFlashdata('success', 'Tiket berhasil diperbarui.');
 
             // --- START WHATSAPP INTEGRATION: Send message on ticket update ---
@@ -328,7 +303,6 @@ class TicketController extends BaseController
                         . "Terima kasih atas kerja keras dan kontribusi Anda dalam menyelesaikan tiket ini. Silakan lanjutkan dengan tugas berikutnya.";
                 } else {
                     // Pesan default untuk perubahan status/prioritas lainnya yang tidak spesifik
-                    // Ini akan tetap dikirim jika hanya prioritas yang berubah atau status berubah ke nilai lain yang tidak spesifik di atas
                     $customerUpdateMessage = "📢 *Pembaruan Tiket Anda*\n"
                         . "Halo *" . $dataToUpdate['nama_customer_ticket'] . "*,\n\n"
                         . "Berikut pembaruan status tiket Anda dengan kode *" . $dataToUpdate['code_ticket'] . "*:\n"
@@ -361,12 +335,17 @@ class TicketController extends BaseController
 
         } else {
             session()->setFlashdata('error', 'Gagal memperbarui tiket. Terjadi kesalahan saat menyimpan perubahan.');
+            // Opsional: log $this->ticketModel->db->error() untuk debugging lebih lanjut
+            log_message('error', 'Database Error on Ticket Update: ' . json_encode($this->ticketModel->errors()));
         }
 
         return redirect()->to(base_url('tickets'));
     }
 
-    // Menghapus tiket
+    /**
+     * Menghapus tiket.
+     * @param int $id ID Tiket
+     */
     public function delete($id)
     {
         $this->ticketModel->delete($id);
@@ -376,6 +355,10 @@ class TicketController extends BaseController
 
     // --- AJAX ENDPOINTS UNTUK LOOKUP OTOMATIS ---
 
+    /**
+     * Mengambil detail customer berdasarkan ID untuk AJAX.
+     * @param int $customer_id ID Customer
+     */
     public function getCustomerDetails($customer_id)
     {
         $customer = $this->customerModel->find($customer_id);
@@ -385,6 +368,10 @@ class TicketController extends BaseController
         return $this->response->setJSON(['error' => 'Customer not found'], 404);
     }
 
+    /**
+     * Mengambil detail petugas berdasarkan ID untuk AJAX.
+     * @param int $petugas_id ID Petugas
+     */
     public function getPetugasDetails($petugas_id)
     {
         $petugas = $this->petugasModel->find($petugas_id);
@@ -410,7 +397,7 @@ class TicketController extends BaseController
         // Pastikan nomor diawali dengan kode negara tanpa '+' atau '0' di awal jika gateway memerlukannya
         // Contoh: jika nomor 0812..., ubah jadi 62812...
         if (substr($phoneNumber, 0, 1) === '0') {
-            $phoneNumber = '62' . substr($phoneNumber, 1); // Asumsi kode negara Indonesia
+            $phoneNumber = '62' . substr($phoneNumber, 1); // Asumsi kode negara Indonesia (ganti jika aplikasi digunakan di negara lain)
         }
 
         $payload = [
