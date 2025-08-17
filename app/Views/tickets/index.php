@@ -17,6 +17,36 @@
             </a>
         </div>
 
+        <!-- Filter and Search Section -->
+        <form action="<?= base_url('tickets') ?>" method="get" class="mb-8 grid grid-cols-1 md:grid-cols-3 gap-4 items-end">
+            <div class="md:col-span-1">
+                <label for="search" class="block text-sm font-medium text-gray-700 mb-1">Cari Tiket:</label>
+                <input type="text" name="search" id="search" placeholder="Cari berdasarkan kode, keluhan, customer..."
+                    value="<?= esc($search ?? '') ?>"
+                    class="mt-1 block w-full rounded-md border-gray-300 shadow-sm focus:border-amber-500 focus:ring-amber-500 sm:text-sm py-2 px-3">
+            </div>
+            <div class="md:col-span-1">
+                <label for="status_filter" class="block text-sm font-medium text-gray-700 mb-1">Filter Status:</label>
+                <select name="status" id="status_filter"
+                    class="mt-1 block w-full rounded-md border-gray-300 shadow-sm focus:border-amber-500 focus:ring-amber-500 sm:text-sm py-2 px-3">
+                    <option value="">Semua Status</option>
+                    <option value="open" <?= ($status ?? '') === 'open' ? 'selected' : '' ?>>Open</option>
+                    <option value="progress" <?= ($status ?? '') === 'progress' ? 'selected' : '' ?>>Progress</option>
+                    <option value="closed" <?= ($status ?? '') === 'closed' ? 'selected' : '' ?>>Closed</option>
+                    <option value="selesai" <?= ($status ?? '') === 'selesai' ? 'selected' : '' ?>>Selesai</option>
+                </select>
+            </div>
+            <div class="md:col-span-1 flex justify-end md:justify-start">
+                <button type="submit" class="w-full md:w-auto inline-flex items-center justify-center px-6 py-2 border border-transparent text-base font-medium rounded-lg shadow-sm text-white bg-blue-600 hover:bg-blue-700 focus:outline-none focus:ring-2 focus:ring-offset-2 focus:ring-blue-500 transition duration-300 ease-in-out transform hover:scale-105">
+                    <svg xmlns="http://www.w3.org/2000/svg" class="h-5 w-5 mr-2" viewBox="0 0 20 20" fill="currentColor">
+                        <path fill-rule="evenodd" d="M.5 9.9a.5.5 0 01.5.5v2.5a.5.5 0 00.5.5h14a.5.5 0 00.5-.5v-2.5a.5.5 0 011 0v2.5A1.5 1.5 0 0115.5 15h-14A1.5 1.5 0 010 13.4v-2.5a.5.5 0 01.5-.5zM7.646 11.854a.5.5 0 00.708 0l3-3a.5.5 0 00-.708-.708L8.5 10.293V3.5a.5.5 0 00-1 0v6.793L5.354 8.146a.5.5 0 10-.708.708l3 3z" clip-rule="evenodd" />
+                    </svg>
+                    Filter & Cari
+                </button>
+            </div>
+        </form>
+        <!-- End Filter and Search Section -->
+
         <?php if (empty($tickets)): ?>
             <div class="text-center py-10">
                 <svg class="mx-auto h-12 w-12 text-gray-400" fill="none" viewBox="0 0 24 24" stroke="currentColor" aria-hidden="true">
@@ -68,6 +98,7 @@
                                         if ($ticket['status'] == 'open') echo 'bg-blue-100 text-blue-800';
                                         else if ($ticket['status'] == 'progress') echo 'bg-yellow-100 text-yellow-800';
                                         else if ($ticket['status'] == 'closed') echo 'bg-green-100 text-green-800';
+                                        else if ($ticket['status'] == 'selesai') echo 'bg-purple-100 text-purple-800'; // Added for 'selesai' status
                                         ?> capitalize">
                                         <?= esc($ticket['status']) ?>
                                     </span>
@@ -97,7 +128,7 @@
                                         <!-- Export to TXT Button -->
                                         <button type="button" class="text-gray-600 hover:text-gray-900 transition duration-150 ease-in-out" onclick="showExportModal(<?= esc(json_encode($ticket), 'attr') ?>)">
                                             <svg xmlns="http://www.w3.org/2000/svg" class="h-5 w-5" viewBox="0 0 20 20" fill="currentColor">
-                                                <path fill-rule="evenodd" d="M.5 9.9a.5.5 0 0 1 .5.5v2.5a.5.5 0 0 0 .5.5h14a.5.5 0 0 0 .5-.5v-2.5a.5.5 0 0 1 1 0v2.5A1.5 1.5 0 0 1 15.5 15h-14A1.5 1.5 0 0 1 0 13.4v-2.5a.5.5 0 0 1 .5-.5zM7.646 11.854a.5.5 0 0 0 .708 0l3-3a.5.5 0 0 0-.708-.708L8.5 10.293V3.5a.5.5 0 0 0-1 0v6.793L5.354 8.146a.5.5 0 1 0-.708.708l3 3z" clip-rule="evenodd" />
+                                                <path fill-rule="evenodd" d="M.5 9.9a.5.5 0 0 1 .5.5v2.5a.5.5 0 00.5.5h14a.5.5 0 00.5-.5v-2.5a.5.5 0 011 0v2.5A1.5 1.5 0 0115.5 15h-14A1.5 1.5 0 010 13.4v-2.5a.5.5 0 01.5-.5zM7.646 11.854a.5.5 0 00.708 0l3-3a.5.5 0 00-.708-.708L8.5 10.293V3.5a.5.5 0 00-1 0v6.793L5.354 8.146a.5.5 0 10-.708.708l3 3z" clip-rule="evenodd" />
                                             </svg>
                                         </button>
                                         <button type="button" class="text-red-600 hover:text-red-900 transition duration-150 ease-in-out" onclick="showDeleteModal('<?= base_url('tickets/delete/' . $ticket['id']) ?>')">
@@ -113,6 +144,7 @@
                 </table>
             </div>
 
+            <!-- Mobile View -->
             <div class="md:hidden space-y-4">
                 <?php $no_mobile = 1; ?>
                 <?php foreach ($tickets as $ticket): ?>
@@ -135,6 +167,7 @@
                                     if ($ticket['status'] == 'open') echo 'bg-blue-100 text-blue-800';
                                     else if ($ticket['status'] == 'progress') echo 'bg-yellow-100 text-yellow-800';
                                     else if ($ticket['status'] == 'closed') echo 'bg-green-100 text-green-800';
+                                    else if ($ticket['status'] == 'selesai') echo 'bg-purple-100 text-purple-800'; // Added for 'selesai' status
                                     ?> capitalize">
                                     <?= esc($ticket['status']) ?>
                                 </span>
@@ -161,7 +194,7 @@
                             <!-- Export to TXT Button (Mobile) -->
                             <button type="button" class="inline-flex items-center px-3 py-1.5 border border-transparent text-xs font-medium rounded-md shadow-sm text-gray-700 bg-gray-100 hover:bg-gray-200 focus:outline-none focus:ring-2 focus:ring-offset-2 focus:ring-gray-500" onclick="showExportModal(<?= esc(json_encode($ticket), 'attr') ?>)">
                                 <svg xmlns="http://www.w3.org/2000/svg" class="h-4 w-4 mr-1" viewBox="0 0 20 20" fill="currentColor">
-                                    <path fill-rule="evenodd" d="M.5 9.9a.5.5 0 0 1 .5.5v2.5a.5.5 0 0 0 .5.5h14a.5.5 0 0 0 .5-.5v-2.5a.5.5 0 0 1 1 0v2.5A1.5 1.5 0 0 1 15.5 15h-14A1.5 1.5 0 0 1 0 13.4v-2.5a.5.5 0 0 1 .5-.5zM7.646 11.854a.5.5 0 0 0 .708 0l3-3a.5.5 0 0 0-.708-.708L8.5 10.293V3.5a.5.5 0 0 0-1 0v6.793L5.354 8.146a.5.5 0 1 0-.708.708l3 3z" clip-rule="evenodd" />
+                                    <path fill-rule="evenodd" d="M.5 9.9a.5.5 0 01.5.5v2.5a.5.5 0 00.5.5h14a.5.5 0 00.5-.5v-2.5a.5.5 0 011 0v2.5A1.5 1.5 0 0115.5 15h-14A1.5 1.5 0 010 13.4v-2.5a.5.5 0 01.5-.5zM7.646 11.854a.5.5 0 00.708 0l3-3a.5.5 0 00-.708-.708L8.5 10.293V3.5a.5.5 0 00-1 0v6.793L5.354 8.146a.5.5 0 10-.708.708l3 3z" clip-rule="evenodd" />
                                 </svg>
                                 Export
                             </button>
