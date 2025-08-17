@@ -32,6 +32,7 @@ class PetugasModel extends Model
         'no_hp'         => 'required|max_length[20]',
         'email'         => 'permit_empty|valid_email|is_unique[petugas.email]',
         'role'          => 'required|in_list[teknisi,admin,supervisor,noc]',
+        'status'            => 'required|in_list[open,progress,closed]', // 'selesai' dihilangkan
     ];
     // --- AKHIR BAGIAN YANG DITAMBAHKAN KEMBALI ---
 
