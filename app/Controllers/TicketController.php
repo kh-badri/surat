@@ -91,6 +91,32 @@ class TicketController extends BaseController
             'role_petugas_ticket' => $this->request->getPost('role_petugas_ticket'),
         ];
 
+        // --- START: Pastikan detail customer/petugas terisi dari database jika ID dipilih ---
+        // Ini penting jika field detail di frontend dinonaktifkan (disabled) saat memilih ID,
+        // karena field disabled tidak dikirim via POST.
+        if (!empty($dataToSave['customer_id'])) {
+            $customer = $this->customerModel->find($dataToSave['customer_id']);
+            if ($customer) {
+                $dataToSave['nama_customer_ticket'] = $customer['nama_customer'];
+                $dataToSave['alamat_customer_ticket'] = $customer['alamat'];
+                $dataToSave['no_hp_customer_ticket'] = $customer['no_hp'];
+            }
+        }
+
+        if (!empty($dataToSave['petugas_id'])) {
+            $petugas = $this->petugasModel->find($dataToSave['petugas_id']);
+            if ($petugas) {
+                $dataToSave['nama_petugas_ticket'] = $petugas['nama_petugas'];
+                $dataToSave['no_hp_petugas_ticket'] = $petugas['no_hp'];
+                $dataToSave['role_petugas_ticket'] = $petugas['role'];
+            }
+        }
+        // --- END: Pastikan detail customer/petugas terisi dari database jika ID dipilih ---
+
+        // Pastikan nomor HP selalu berupa string, bahkan jika null dari getPost() atau fetch
+        $dataToSave['no_hp_customer_ticket'] = (string) $dataToSave['no_hp_customer_ticket'];
+        $dataToSave['no_hp_petugas_ticket'] = (string) $dataToSave['no_hp_petugas_ticket'];
+
         // Tentukan grup validasi yang akan digunakan
         // Jika customer_id tidak kosong, berarti menggunakan "pilih pelanggan"
         // Jika customer_id kosong, berarti menggunakan "custom input pelanggan"
@@ -210,6 +236,32 @@ class TicketController extends BaseController
             'no_hp_petugas_ticket' => $this->request->getPost('no_hp_petugas_ticket'),
             'role_petugas_ticket' => $this->request->getPost('role_petugas_ticket'),
         ];
+
+        // --- START: Pastikan detail customer/petugas terisi dari database jika ID dipilih ---
+        // Ini penting jika field detail di frontend dinonaktifkan (disabled) saat memilih ID,
+        // karena field disabled tidak dikirim via POST.
+        if (!empty($dataToUpdate['customer_id'])) {
+            $customer = $this->customerModel->find($dataToUpdate['customer_id']);
+            if ($customer) {
+                $dataToUpdate['nama_customer_ticket'] = $customer['nama_customer'];
+                $dataToUpdate['alamat_customer_ticket'] = $customer['alamat'];
+                $dataToUpdate['no_hp_customer_ticket'] = $customer['no_hp'];
+            }
+        }
+
+        if (!empty($dataToUpdate['petugas_id'])) {
+            $petugas = $this->petugasModel->find($dataToUpdate['petugas_id']);
+            if ($petugas) {
+                $dataToUpdate['nama_petugas_ticket'] = $petugas['nama_petugas'];
+                $dataToUpdate['no_hp_petugas_ticket'] = $petugas['no_hp'];
+                $dataToUpdate['role_petugas_ticket'] = $petugas['role'];
+            }
+        }
+        // --- END: Pastikan detail customer/petugas terisi dari database jika ID dipilih ---
+
+        // Pastikan nomor HP selalu berupa string, bahkan jika null dari getPost() atau fetch
+        $dataToUpdate['no_hp_customer_ticket'] = (string) $dataToUpdate['no_hp_customer_ticket'];
+        $dataToUpdate['no_hp_petugas_ticket'] = (string) $dataToUpdate['no_hp_petugas_ticket'];
 
         // Tentukan grup validasi yang akan digunakan
         // Jika customer_id tidak kosong, berarti menggunakan "pilih pelanggan"
