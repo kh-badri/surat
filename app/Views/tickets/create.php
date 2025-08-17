@@ -101,7 +101,7 @@
                     <textarea name="alamat_customer_ticket" id="alamat_customer_ticket" rows="3"
                         class="shadow appearance-none border rounded-lg w-full py-3 px-4 text-gray-700 leading-tight focus:outline-none focus:ring-2 focus:ring-amber-500 focus:border-transparent
                         <?= $validation->hasError('alamat_customer_ticket') ? 'border-red-500' : '' ?>"
-                        placeholder="Alamat customer"><?= old('alamat_customer_ticket') ?></textarea>
+                        placeholder="Alamat customer" required><?= old('alamat_customer_ticket') ?></textarea>
                     <?php if ($validation->hasError('alamat_customer_ticket')): ?>
                         <p class="text-red-500 text-xs italic mt-1"><?= $validation->getError('alamat_customer_ticket') ?></p>
                     <?php endif; ?>
