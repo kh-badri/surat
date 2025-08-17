@@ -50,8 +50,7 @@ class TicketModel extends Model
     // Validation Messages (Default)
     protected $validationMessages = [
         'code_ticket' => [
-            'required'  => 'Kode tiket harus ada.',
-            'is_unique' => 'Kode tiket ini sudah digunakan.'
+            'required'  => 'Kode tiket harus ada.'
         ],
         'keluhan' => ['required' => 'Keluhan harus diisi.'],
         'status' => ['required' => 'Status harus dipilih.', 'in_list' => 'Status tidak valid.'],
