@@ -88,14 +88,17 @@ class TicketController extends BaseController
         // Buat rules validasi dinamis berdasarkan mode input customer
         $rules = $this->ticketModel->validationRules;
 
-        // Jika customer_id kosong (mode custom input), hapus validasi customer_id dan ubah validasi petugas_id
+        // Buat rules validasi dinamis berdasarkan mode input customer
+        $rules = $this->ticketModel->validationRules;
+
+        // Jika customer_id kosong (mode custom input), hapus validasi customer_id
         if (empty($dataToSave['customer_id'])) {
             unset($rules['customer_id']);
             // Untuk custom input, petugas_id harus ada dan valid
             $rules['petugas_id'] = 'required|is_not_unique[petugas.id_petugas]';
         } else {
-            // Untuk mode pilih customer, validasi normal
-            $rules['customer_id'] = 'required|is_not_unique[customers.id]';
+            // Untuk mode pilih customer, validasi normal dengan nama tabel yang benar
+            $rules['customer_id'] = 'required|is_not_unique[customer.id]';  // Ganti 'customers' ke 'customer'
             $rules['petugas_id'] = 'required|is_not_unique[petugas.id_petugas]';
         }
 
@@ -225,8 +228,8 @@ class TicketController extends BaseController
                 // Customer_id sama, tidak perlu validasi is_not_unique
                 $rules['customer_id'] = 'required';
             } else {
-                // Customer_id berubah, validasi is_not_unique
-                $rules['customer_id'] = 'required|is_not_unique[customers.id]';
+                // Customer_id berubah, validasi is_not_unique dengan nama tabel yang benar
+                $rules['customer_id'] = 'required|is_not_unique[customer.id]';  // Ganti 'customers' ke 'customer'
             }
 
             // Validasi petugas_id
