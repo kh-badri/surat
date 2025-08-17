@@ -8,6 +8,18 @@
             <?= $title ?>
         </h2>
 
+        <?php if (session()->getFlashdata('errors')): ?>
+            <div class="bg-red-100 border border-red-400 text-red-700 px-4 py-3 rounded relative mb-4" role="alert">
+                <strong class="font-bold">Validasi Gagal!</strong>
+                <span class="block sm:inline">Harap perbaiki kesalahan berikut:</span>
+                <ul class="mt-2 list-disc list-inside">
+                    <?php foreach (session()->getFlashdata('errors') as $error): ?>
+                        <li><?= esc($error) ?></li>
+                    <?php endforeach; ?>
+                </ul>
+            </div>
+        <?php endif; ?>
+
         <form action="<?= base_url('tickets/update/' . $ticket['id']) ?>" method="post" class="space-y-6">
             <?= csrf_field() ?>
             <input type="hidden" name="_method" value="PUT">
@@ -34,8 +46,8 @@
                 <label for="customer_id" class="block text-gray-700 text-sm font-bold mb-2">Pilih Customer:</label>
                 <select name="customer_id" id="customer_id"
                     class="shadow appearance-none border rounded-lg w-full py-3 px-4 text-gray-700 leading-tight focus:outline-none focus:ring-2 focus:ring-amber-500 focus:border-transparent
-                                <?= $validation->hasError('customer_id') ? 'border-red-500' : '' ?>" required>
-                    <option value="">-- Pilih Customer --</option>
+                                <?= $validation->hasError('customer_id') ? 'border-red-500' : '' ?>">
+                    <option value="">-- Custom Input Customer --</option>
                     <?php foreach ($customers as $customer): ?>
                         <option value="<?= $customer['id'] ?>"
                             <?= (old('customer_id', $ticket['customer_id']) == $customer['id']) ? 'selected' : '' ?>>
@@ -55,7 +67,7 @@
                         value="<?= old('nama_customer_ticket', $ticket['nama_customer_ticket']) ?>"
                         class="shadow appearance-none border rounded-lg w-full py-3 px-4 text-gray-700 leading-tight focus:outline-none focus:ring-2 focus:ring-amber-500 focus:border-transparent
                                 <?= $validation->hasError('nama_customer_ticket') ? 'border-red-500' : '' ?>"
-                        required placeholder="Nama customer">
+                        placeholder="Nama customer">
                     <?php if ($validation->hasError('nama_customer_ticket')): ?>
                         <p class="text-red-500 text-xs italic mt-1"><?= $validation->getError('nama_customer_ticket') ?></p>
                     <?php endif; ?>
@@ -66,7 +78,7 @@
                         value="<?= old('no_hp_customer_ticket', $ticket['no_hp_customer_ticket']) ?>"
                         class="shadow appearance-none border rounded-lg w-full py-3 px-4 text-gray-700 leading-tight focus:outline-none focus:ring-2 focus:ring-amber-500 focus:border-transparent
                                 <?= $validation->hasError('no_hp_customer_ticket') ? 'border-red-500' : '' ?>"
-                        required placeholder="Nomor HP customer">
+                        placeholder="Nomor HP customer">
                     <?php if ($validation->hasError('no_hp_customer_ticket')): ?>
                         <p class="text-red-500 text-xs italic mt-1"><?= $validation->getError('no_hp_customer_ticket') ?></p>
                     <?php endif; ?>
@@ -117,6 +129,7 @@
                         <option value="open" <?= (old('status', $ticket['status']) == 'open') ? 'selected' : '' ?>>Open</option>
                         <option value="progress" <?= (old('status', $ticket['status']) == 'progress') ? 'selected' : '' ?>>Progress</option>
                         <option value="closed" <?= (old('status', $ticket['status']) == 'closed') ? 'selected' : '' ?>>Closed</option>
+                        <option value="selesai" <?= (old('status', $ticket['status']) == 'selesai') ? 'selected' : '' ?>>Selesai</option>
                     </select>
                     <?php if ($validation->hasError('status')): ?>
                         <p class="text-red-500 text-xs italic mt-1"><?= $validation->getError('status') ?></p>
@@ -166,7 +179,7 @@
                         value="<?= old('nama_petugas_ticket', $ticket['nama_petugas_ticket']) ?>"
                         class="shadow appearance-none border rounded-lg w-full py-3 px-4 text-gray-700 leading-tight focus:outline-none focus:ring-2 focus:ring-amber-500 focus:border-transparent
                                 <?= $validation->hasError('nama_petugas_ticket') ? 'border-red-500' : '' ?>"
-                        required placeholder="Nama petugas">
+                        placeholder="Nama petugas">
                     <?php if ($validation->hasError('nama_petugas_ticket')): ?>
                         <p class="text-red-500 text-xs italic mt-1"><?= $validation->getError('nama_petugas_ticket') ?></p>
                     <?php endif; ?>
@@ -177,7 +190,7 @@
                         value="<?= old('no_hp_petugas_ticket', $ticket['no_hp_petugas_ticket']) ?>"
                         class="shadow appearance-none border rounded-lg w-full py-3 px-4 text-gray-700 leading-tight focus:outline-none focus:ring-2 focus:ring-amber-500 focus:border-transparent
                                 <?= $validation->hasError('no_hp_petugas_ticket') ? 'border-red-500' : '' ?>"
-                        required placeholder="Nomor HP petugas">
+                        placeholder="Nomor HP petugas">
                     <?php if ($validation->hasError('no_hp_petugas_ticket')): ?>
                         <p class="text-red-500 text-xs italic mt-1"><?= $validation->getError('no_hp_petugas_ticket') ?></p>
                     <?php endif; ?>
@@ -189,7 +202,7 @@
                     value="<?= old('role_petugas_ticket', $ticket['role_petugas_ticket']) ?>"
                     class="shadow appearance-none border rounded-lg w-full py-3 px-4 text-gray-700 leading-tight focus:outline-none focus:ring-2 focus:ring-amber-500 focus:border-transparent
                                 <?= $validation->hasError('role_petugas_ticket') ? 'border-red-500' : '' ?>"
-                    required placeholder="Role petugas">
+                    placeholder="Role petugas">
                 <?php if ($validation->hasError('role_petugas_ticket')): ?>
                     <p class="text-red-500 text-xs italic mt-1"><?= $validation->getError('role_petugas_ticket') ?></p>
                 <?php endif; ?>
@@ -222,20 +235,32 @@
         // Helper untuk mengambil nilai old() dari PHP ke JavaScript
         // Ini diperlukan karena old() hanya berfungsi di sisi PHP
         const oldInput = {
-            customer_id: "<?= old('customer_id') ?>",
-            nama_customer_ticket: "<?= old('nama_customer_ticket') ?>",
-            alamat_customer_ticket: "<?= old('alamat_customer_ticket') ?>",
-            no_hp_customer_ticket: "<?= old('no_hp_customer_ticket') ?>",
-            petugas_id: "<?= old('petugas_id') ?>",
-            nama_petugas_ticket: "<?= old('nama_petugas_ticket') ?>",
-            no_hp_petugas_ticket: "<?= old('no_hp_petugas_ticket') ?>",
-            role_petugas_ticket: "<?= old('role_petugas_ticket') ?>"
+            customer_id: "<?= old('customer_id', $ticket['customer_id']) ?>", // Ambil nilai default dari $ticket jika old() kosong
+            nama_customer_ticket: "<?= old('nama_customer_ticket', $ticket['nama_customer_ticket']) ?>",
+            alamat_customer_ticket: "<?= old('alamat_customer_ticket', $ticket['alamat_customer_ticket']) ?>",
+            no_hp_customer_ticket: "<?= old('no_hp_customer_ticket', $ticket['no_hp_customer_ticket']) ?>",
+            petugas_id: "<?= old('petugas_id', $ticket['petugas_id']) ?>",
+            nama_petugas_ticket: "<?= old('nama_petugas_ticket', $ticket['nama_petugas_ticket']) ?>",
+            no_hp_petugas_ticket: "<?= old('no_hp_petugas_ticket', $ticket['no_hp_petugas_ticket']) ?>",
+            role_petugas_ticket: "<?= old('role_petugas_ticket', $ticket['role_petugas_ticket']) ?>"
         };
 
-        // Fungsi untuk mengisi detail customer
-        function fetchCustomerDetails(customerId) {
-            if (customerId) {
-                fetch(`<?= base_url('tickets/getcustomerdetails/') ?>${customerId}`)
+        // Fungsi untuk mengaktifkan/menonaktifkan dan mengisi detail customer
+        function toggleCustomerFields(selectedCustomerId) {
+            const isCustomInput = selectedCustomerId === "" || selectedCustomerId === "0"; // "0" jika value default option adalah 0
+
+            // Atur atribut 'required' dan 'disabled'
+            namaCustomerInput.required = isCustomInput;
+            alamatCustomerInput.required = isCustomInput; // Alamat bisa jadi opsional, sesuaikan dengan kebutuhan Anda
+            noHpCustomerInput.required = isCustomInput;
+
+            namaCustomerInput.disabled = !isCustomInput;
+            alamatCustomerInput.disabled = !isCustomInput;
+            noHpCustomerInput.disabled = !isCustomInput;
+
+            // Jika pilih customer, ambil datanya
+            if (!isCustomInput && selectedCustomerId) {
+                fetch(`<?= base_url('tickets/getcustomerdetails/') ?>${selectedCustomerId}`)
                     .then(response => {
                         if (!response.ok) {
                             throw new Error('Customer not found');
@@ -252,25 +277,32 @@
                         namaCustomerInput.value = '';
                         alamatCustomerInput.value = '';
                         noHpCustomerInput.value = '';
-                        // Menggunakan modal atau elemen UI lain daripada alert()
-                        const messageDiv = document.createElement('div');
-                        messageDiv.className = 'bg-red-100 border border-red-400 text-red-700 px-4 py-3 rounded relative mt-4';
-                        messageDiv.innerHTML = '<strong class="font-bold">Error!</strong><span class="block sm:inline"> Gagal mengambil detail customer. Mohon masukkan manual.</span>';
-                        document.querySelector('form').prepend(messageDiv);
-                        setTimeout(() => messageDiv.remove(), 5000); // Hapus setelah 5 detik
+                        // Tampilkan pesan error di UI
+                        displayMessage('Gagal mengambil detail customer. Mohon masukkan manual.', 'error');
                     });
-            } else {
-                // Clear fields if no customer selected
-                namaCustomerInput.value = '';
-                alamatCustomerInput.value = '';
-                noHpCustomerInput.value = '';
+            } else if (isCustomInput) {
+                // Jika custom input, reset fields ke nilai lama (jika ada dari oldInput) atau kosong
+                namaCustomerInput.value = oldInput.nama_customer_ticket;
+                alamatCustomerInput.value = oldInput.alamat_customer_ticket;
+                noHpCustomerInput.value = oldInput.no_hp_customer_ticket;
             }
         }
 
-        // Fungsi untuk mengisi detail petugas
-        function fetchPetugasDetails(petugasId) {
-            if (petugasId) {
-                fetch(`<?= base_url('tickets/getpetugasdetails/') ?>${petugasId}`)
+        // Fungsi untuk mengaktifkan/menonaktifkan dan mengisi detail petugas
+        function togglePetugasFields(selectedPetugasId) {
+            const isCustomInput = selectedPetugasId === "" || selectedPetugasId === "0";
+
+            // Atur atribut 'required' dan 'disabled'
+            namaPetugasInput.required = isCustomInput;
+            noHpPetugasInput.required = isCustomInput;
+            rolePetugasInput.required = isCustomInput;
+
+            namaPetugasInput.disabled = !isCustomInput;
+            noHpPetugasInput.disabled = !isCustomInput;
+            rolePetugasInput.disabled = !isCustomInput;
+
+            if (!isCustomInput && selectedPetugasId) {
+                fetch(`<?= base_url('tickets/getpetugasdetails/') ?>${selectedPetugasId}`)
                     .then(response => {
                         if (!response.ok) {
                             throw new Error('Petugas not found');
@@ -287,44 +319,40 @@
                         namaPetugasInput.value = '';
                         noHpPetugasInput.value = '';
                         rolePetugasInput.value = '';
-                        // Menggunakan modal atau elemen UI lain daripada alert()
-                        const messageDiv = document.createElement('div');
-                        messageDiv.className = 'bg-red-100 border border-red-400 text-red-700 px-4 py-3 rounded relative mt-4';
-                        messageDiv.innerHTML = '<strong class="font-bold">Error!</strong><span class="block sm:inline"> Gagal mengambil detail petugas. Mohon masukkan manual.</span>';
-                        document.querySelector('form').prepend(messageDiv);
-                        setTimeout(() => messageDiv.remove(), 5000); // Hapus setelah 5 detik
+                        // Tampilkan pesan error di UI
+                        displayMessage('Gagal mengambil detail petugas. Mohon masukkan manual.', 'error');
                     });
-            } else {
-                // Clear fields if no petugas selected
-                namaPetugasInput.value = '';
-                noHpPetugasInput.value = '';
-                rolePetugasInput.value = '';
+            } else if (isCustomInput) {
+                // Jika custom input, reset fields ke nilai lama (jika ada dari oldInput) atau kosong
+                namaPetugasInput.value = oldInput.nama_petugas_ticket;
+                noHpPetugasInput.value = oldInput.no_hp_petugas_ticket;
+                rolePetugasInput.value = oldInput.role_petugas_ticket;
             }
+        }
+
+        // Fungsi untuk menampilkan pesan (pengganti alert())
+        function displayMessage(message, type) {
+            const messageDiv = document.createElement('div');
+            messageDiv.className = `bg-${type === 'error' ? 'red' : 'green'}-100 border border-${type === 'error' ? 'red' : 'green'}-400 text-${type === 'error' ? 'red' : 'green'}-700 px-4 py-3 rounded relative mt-4`;
+            messageDiv.innerHTML = `<strong class="font-bold">${type === 'error' ? 'Error!' : 'Sukses!'}</strong><span class="block sm:inline"> ${message}</span>`;
+            document.querySelector('form').prepend(messageDiv);
+            setTimeout(() => messageDiv.remove(), 5000); // Hapus setelah 5 detik
         }
 
         // Event listener untuk customer dropdown
         customerIdSelect.addEventListener('change', function() {
-            fetchCustomerDetails(this.value);
+            toggleCustomerFields(this.value);
         });
 
         // Event listener untuk petugas dropdown
         petugasIdSelect.addEventListener('change', function() {
-            fetchPetugasDetails(this.value);
+            togglePetugasFields(this.value);
         });
 
         // PENTING UNTUK EDIT FORM: Panggil fungsi lookup saat halaman dimuat
-        // Jika ada old input (setelah validasi gagal), gunakan old input
-        // Jika tidak, gunakan nilai dari $ticket yang dimuat pertama kali
-        const initialCustomerId = oldInput.customer_id || customerIdSelect.value;
-        const initialPetugasId = oldInput.petugas_id || petugasIdSelect.value;
-
-        // Panggil fetchDetails hanya jika ada nilai yang terpilih
-        if (initialCustomerId) {
-            fetchCustomerDetails(initialCustomerId);
-        }
-        if (initialPetugasId) {
-            fetchPetugasDetails(initialPetugasId);
-        }
+        // Menggunakan nilai dari oldInput (jika ada) atau dari data tiket awal
+        toggleCustomerFields(oldInput.customer_id);
+        togglePetugasFields(oldInput.petugas_id);
     });
 </script>
 
