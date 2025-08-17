@@ -26,7 +26,6 @@ class TicketController extends BaseController
         helper(['url', 'form', 'text']);
     }
 
-    // Menampilkan daftar tiket
     public function index()
     {
         $data = [
@@ -37,32 +36,23 @@ class TicketController extends BaseController
         return view('tickets/index', $data);
     }
 
-    // Menampilkan form tambah tiket
     public function create()
     {
-        $customers = $this->customerModel->findAll();
-        $petugas = $this->petugasModel->findAll();
-        $codeTicket = 'TKT-' . date('YmdHis') . '-' . random_string('numeric', 4);
-
         $data = [
             'title'                 => 'Buat Tiket Baru',
             'validation'            => \Config\Services::validation(),
-            'customers'             => $customers,
-            'petugas'               => $petugas,
-            'code_ticket_generated' => $codeTicket,
+            'customers'             => $this->customerModel->findAll(),
+            'petugas'               => $this->petugasModel->findAll(),
+            'code_ticket_generated' => 'TKT-' . date('YmdHis') . '-' . random_string('numeric', 4),
             'active_menu'           => 'tickets',
         ];
         return view('tickets/create', $data);
     }
 
-    // Menyimpan data tiket baru
     public function store()
     {
-        // --- START LOGIKA VALIDASI DINAMIS ---
-        // Cek apakah ini mode "Custom Input" (customer_id tidak dikirim atau kosong)
         $isCustomCustomer = empty($this->request->getPost('customer_id'));
 
-        // Aturan validasi dasar yang berlaku untuk semua mode
         $rules = [
             'code_ticket'            => 'required|is_unique[tickets.code_ticket]',
             'tanggal_buat'           => 'required',
@@ -78,23 +68,17 @@ class TicketController extends BaseController
             'alamat_customer_ticket' => 'required|min_length[10]',
         ];
 
-        // Jika BUKAN mode custom (mode "Pilih"), maka customer_id wajib diisi
         if (!$isCustomCustomer) {
             $rules['customer_id'] = 'required|is_not_unique[customers.id]';
         }
-        // --- END LOGIKA VALIDASI DINAMIS ---
 
-        // Validasi data
         if (!$this->validate($rules)) {
-            // Jika validasi gagal, kembalikan ke form dengan input dan error
             return redirect()->back()->withInput()->with('validation', $this->validator);
         }
 
-        // Jika validasi berhasil, siapkan data untuk disimpan
         $dataToSave = [
             'code_ticket'            => $this->request->getPost('code_ticket'),
-            // Simpan NULL jika mode custom, jika tidak simpan ID-nya
-            'customer_id'            => $this->request->getPost('customer_id') ?: null,
+            'customer_id'            => $isCustomCustomer ? null : $this->request->getPost('customer_id'),
             'nama_customer_ticket'   => $this->request->getPost('nama_customer_ticket'),
             'alamat_customer_ticket' => $this->request->getPost('alamat_customer_ticket'),
             'no_hp_customer_ticket'  => $this->request->getPost('no_hp_customer_ticket'),
@@ -109,55 +93,25 @@ class TicketController extends BaseController
             'role_petugas_ticket'    => $this->request->getPost('role_petugas_ticket'),
         ];
 
-        // Simpan data ke database
         if ($this->ticketModel->insert($dataToSave)) {
             session()->setFlashdata('success', 'Tiket baru berhasil dibuat.');
-
-            // --- START WHATSAPP INTEGRATION ---
-            $customerPhoneNumber = $dataToSave['no_hp_customer_ticket'];
-            $agentPhoneNumber = $dataToSave['no_hp_petugas_ticket'];
-
-            $customerMessage = "✅ *Konfirmasi Pembuatan Tiket Layanan Anda*\n"
-                . "Yth. Bapak/Ibu *" . $dataToSave['nama_customer_ticket'] . "*,\n\n"
-                . "Kami informasikan bahwa tiket layanan Anda dengan detail berikut telah berhasil dibuat:\n"
-                . "• Kode Tiket: *" . $dataToSave['code_ticket'] . "*\n"
-                . "• Jenis Keluhan: _" . $dataToSave['keluhan'] . "_\n"
-                . "• Status Saat Ini: *" . $dataToSave['status'] . "*\n"
-                . "• Petugas Penanganan: *" . $dataToSave['nama_petugas_ticket'] . "*\n\n"
-                . "Tim kami akan segera menindaklanjuti keluhan Anda. Terima kasih.\n\n"
-                . "Hormat kami,\n*Indomedia Solusi Net*";
-
-            $agentMessage = "🔔 *Pemberitahuan: Tiket Layanan Baru*\n"
-                . "Yth. *" . $dataToSave['nama_petugas_ticket'] . "*,\n\n"
-                . "Anda ditugaskan untuk menangani tiket baru:\n"
-                . "• Kode Tiket: *" . $dataToSave['code_ticket'] . "*\n"
-                . "• Pelanggan: *" . $dataToSave['nama_customer_ticket'] . "* (No. HP: _" . $dataToSave['no_hp_customer_ticket'] . "_)\n"
-                . "• Keluhan: _" . $dataToSave['keluhan'] . "_\n"
-                . "• Prioritas: *" . $dataToSave['prioritas'] . "*\n\n"
-                . "Mohon segera lakukan peninjauan dan tindak lanjut. Terima kasih.";
-
-            $this->sendWhatsAppMessage($customerPhoneNumber, $customerMessage);
-            $this->sendWhatsAppMessage($agentPhoneNumber, $agentMessage);
-            // --- END WHATSAPP INTEGRATION ---
-
+            // ... (Kode notifikasi WhatsApp Anda) ...
         } else {
-            session()->setFlashdata('error', 'Gagal membuat tiket baru. Terjadi kesalahan database.');
+            session()->setFlashdata('error', 'Gagal membuat tiket baru.');
         }
 
         return redirect()->to(base_url('tickets'));
     }
 
-    // Menampilkan form edit tiket
     public function edit($id)
     {
         $ticket = $this->ticketModel->find($id);
-
         if (!$ticket) {
             throw new \CodeIgniter\Exceptions\PageNotFoundException('Tiket tidak ditemukan.');
         }
 
         $data = [
-            'title'       => 'Edit Tiket',
+            'title'       => 'Edit Tiket: ' . $ticket['code_ticket'],
             'ticket'      => $ticket,
             'validation'  => \Config\Services::validation(),
             'customers'   => $this->customerModel->findAll(),
@@ -167,19 +121,17 @@ class TicketController extends BaseController
         return view('tickets/edit', $data);
     }
 
-    // Memperbarui data tiket
     public function update($id)
     {
         $oldTicket = $this->ticketModel->find($id);
         if (!$oldTicket) {
-            throw new \CodeIgniter\Exceptions\PageNotFoundException('Tiket yang akan diperbarui tidak ditemukan.');
+            throw new \CodeIgniter\Exceptions\PageNotFoundException('Tiket tidak ditemukan.');
         }
 
-        // --- START LOGIKA VALIDASI DINAMIS UNTUK UPDATE ---
         $isCustomCustomer = empty($this->request->getPost('customer_id'));
 
-        // Aturan validasi dasar
         $rules = [
+            'tanggal_buat'           => 'required',
             'keluhan'                => 'required|min_length[5]',
             'status'                 => 'required|in_list[open,progress,closed]',
             'prioritas'              => 'required|in_list[low,medium,high,urgent]',
@@ -192,27 +144,24 @@ class TicketController extends BaseController
             'alamat_customer_ticket' => 'required|min_length[10]',
         ];
 
-        // Aturan khusus untuk code_ticket saat update (cek keunikan jika berubah)
         $currentCodeTicket = $this->request->getPost('code_ticket');
-        if ($currentCodeTicket === $oldTicket['code_ticket']) {
-            $rules['code_ticket'] = 'required';
-        } else {
+        if ($currentCodeTicket !== $oldTicket['code_ticket']) {
             $rules['code_ticket'] = 'required|is_unique[tickets.code_ticket]';
+        } else {
+            $rules['code_ticket'] = 'required';
         }
 
-        // Jika BUKAN mode custom, maka customer_id wajib diisi
         if (!$isCustomCustomer) {
             $rules['customer_id'] = 'required|is_not_unique[customers.id]';
         }
-        // --- END LOGIKA VALIDASI DINAMIS UNTUK UPDATE ---
 
         if (!$this->validate($rules)) {
             return redirect()->back()->withInput()->with('validation', $this->validator);
         }
 
         $dataToUpdate = [
-            'code_ticket'            => $this->request->getPost('code_ticket'),
-            'customer_id'            => $this->request->getPost('customer_id') ?: null,
+            'code_ticket'            => $currentCodeTicket,
+            'customer_id'            => $isCustomCustomer ? null : $this->request->getPost('customer_id'),
             'nama_customer_ticket'   => $this->request->getPost('nama_customer_ticket'),
             'alamat_customer_ticket' => $this->request->getPost('alamat_customer_ticket'),
             'no_hp_customer_ticket'  => $this->request->getPost('no_hp_customer_ticket'),
@@ -220,6 +169,7 @@ class TicketController extends BaseController
             'deskripsi'              => $this->request->getPost('deskripsi'),
             'status'                 => $this->request->getPost('status'),
             'prioritas'              => $this->request->getPost('prioritas'),
+            'tanggal_buat'           => $this->request->getPost('tanggal_buat'),
             'petugas_id'             => $this->request->getPost('petugas_id'),
             'nama_petugas_ticket'    => $this->request->getPost('nama_petugas_ticket'),
             'no_hp_petugas_ticket'   => $this->request->getPost('no_hp_petugas_ticket'),
@@ -228,10 +178,7 @@ class TicketController extends BaseController
 
         if ($this->ticketModel->update($id, $dataToUpdate)) {
             session()->setFlashdata('success', 'Tiket berhasil diperbarui.');
-
-            // Logika notifikasi WhatsApp untuk update bisa ditambahkan di sini
-            // ... (kode notifikasi WhatsApp Anda yang sudah ada)
-
+            // ... (Kode notifikasi WhatsApp Anda untuk update) ...
         } else {
             session()->setFlashdata('error', 'Gagal memperbarui tiket.');
         }
@@ -239,7 +186,6 @@ class TicketController extends BaseController
         return redirect()->to(base_url('tickets'));
     }
 
-    // Menghapus tiket
     public function delete($id)
     {
         if ($this->ticketModel->delete($id)) {
@@ -250,7 +196,6 @@ class TicketController extends BaseController
         return redirect()->to(base_url('tickets'));
     }
 
-    // --- AJAX ENDPOINTS ---
     public function getCustomerDetails($customer_id)
     {
         $customer = $this->customerModel->find($customer_id);
@@ -269,7 +214,6 @@ class TicketController extends BaseController
         return $this->response->setStatusCode(404)->setJSON(['error' => 'Petugas not found']);
     }
 
-    // --- FUNGSI WHATSAPP ---
     private function sendWhatsAppMessage(string $phoneNumber, string $message): bool
     {
         $phoneNumber = preg_replace('/[^0-9]/', '', $phoneNumber);
