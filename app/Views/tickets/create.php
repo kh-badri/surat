@@ -247,16 +247,26 @@
 
 <script>
     document.addEventListener('DOMContentLoaded', function() {
+        // Function to format date and time to YYYY-MM-DDTHH:mm (24-hour format)
+        function formatDateTime(date) {
+            const year = date.getFullYear();
+            const month = (date.getMonth() + 1).toString().padStart(2, '0');
+            const day = date.getDate().toString().padStart(2, '0');
+            const hours = date.getHours().toString().padStart(2, '0');
+            const minutes = date.getMinutes().toString().padStart(2, '0');
+            return `${year}-${month}-${day}T${hours}:${minutes}`;
+        }
+
         // Set current date and time for tanggal_buat input
         function setCurrentDateTime() {
             const now = new Date();
-            now.setMinutes(now.getMinutes() - now.getTimezoneOffset());
-            const formattedDate = now.toISOString().slice(0, 16);
+            const formattedDate = formatDateTime(now);
             document.getElementById('tanggal_buat').value = formattedDate;
         }
 
-        // Call the function on page load
+        // Call the function on page load and on page focus to keep it updated
         setCurrentDateTime();
+        window.addEventListener('focus', setCurrentDateTime);
 
         // === Bagian Opsi Customer ===
         const btnPilihCustomer = document.getElementById('btnPilihCustomer');
@@ -268,7 +278,6 @@
         const alamatCustomerInput = document.getElementById('alamat_customer_ticket');
         const noHpCustomerInput = document.getElementById('no_hp_customer_ticket');
 
-        // Fungsi untuk mengosongkan input customer
         const clearCustomerFields = () => {
             customerIdSelect.value = '';
             namaCustomerInput.value = '';
@@ -276,7 +285,6 @@
             noHpCustomerInput.value = '';
         };
 
-        // Fungsi untuk mengatur tampilan mode "Pilih Customer"
         const setPilihMode = () => {
             pilihCustomerContainer.style.display = 'block';
             namaCustomerInput.readOnly = true;
@@ -287,7 +295,6 @@
             noHpCustomerInput.classList.add('bg-gray-100');
             customerIdSelect.setAttribute('required', 'required');
 
-            // Styling tombol
             btnPilihCustomer.classList.remove('bg-gray-200', 'text-gray-700');
             btnPilihCustomer.classList.add('bg-amber-600', 'text-white');
             btnCustomCustomer.classList.remove('bg-amber-600', 'text-white');
@@ -302,7 +309,6 @@
             }
         };
 
-        // Fungsi untuk mengatur tampilan mode "Custom Input"
         const setCustomMode = () => {
             clearCustomerFields();
             pilihCustomerContainer.style.display = 'none';
@@ -314,7 +320,6 @@
             noHpCustomerInput.classList.remove('bg-gray-100');
             customerIdSelect.removeAttribute('required');
 
-            // Styling tombol
             btnCustomCustomer.classList.remove('bg-gray-200', 'text-gray-700');
             btnCustomCustomer.classList.add('bg-amber-600', 'text-white');
             btnPilihCustomer.classList.remove('bg-amber-600', 'text-white');
@@ -324,7 +329,6 @@
         btnPilihCustomer.addEventListener('click', setPilihMode);
         btnCustomCustomer.addEventListener('click', setCustomMode);
 
-        // === Bagian Detail Customer dari Select ===
         customerIdSelect.addEventListener('change', function() {
             const customerId = this.value;
             if (customerId) {
@@ -349,7 +353,6 @@
             }
         });
 
-        // === Bagian Detail Petugas ===
         const petugasIdSelect = document.getElementById('petugas_id');
         const namaPetugasInput = document.getElementById('nama_petugas_ticket');
         const noHpPetugasInput = document.getElementById('no_hp_petugas_ticket');
@@ -381,7 +384,6 @@
             }
         });
 
-        // === Inisialisasi & Memuat ulang data jika ada old input ===
         <?php if (old('nama_customer_ticket') && !old('customer_id')): ?>
             setCustomMode();
         <?php else: ?>
