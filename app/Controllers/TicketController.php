@@ -142,7 +142,7 @@ class TicketController extends BaseController
                 . "Yth. Bapak/Ibu *" . $dataToSave['nama_customer_ticket'] . "*,\n\n"
                 . "Kami informasikan bahwa tiket layanan Anda dengan detail berikut telah berhasil dibuat dan tercatat dalam sistem kami:\n"
                 . "• Kode Tiket: *" . $dataToSave['code_ticket'] . "*\n"
-                . "• Jenis Keluhan: _" . $dataToSave['keluhan'] . "_\n"
+                . "• Kategori: _" . $dataToSave['keluhan'] . "_\n"
                 . "• Status Saat Ini: *" . $dataToSave['status'] . "*\n"
                 . "• Prioritas: *" . $dataToSave['prioritas'] . "*\n"
                 . "• Petugas Penanganan: *" . $dataToSave['nama_petugas_ticket'] . "*\n\n"
@@ -156,7 +156,7 @@ class TicketController extends BaseController
                 . "Anda telah ditugaskan untuk menangani tiket layanan baru dengan informasi sebagai berikut:\n"
                 . "• Kode Tiket: *" . $dataToSave['code_ticket'] . "*\n"
                 . "• Pelanggan: *" . $dataToSave['nama_customer_ticket'] . "* (No. HP: _" . $dataToSave['no_hp_customer_ticket'] . "_)\n"
-                . "• Keluhan: _" . $dataToSave['keluhan'] . "_\n"
+                . "• Kategori: _" . $dataToSave['keluhan'] . "_\n"
                 . "• Deskripsi: " . ($dataToSave['deskripsi'] ?: '_Tidak ada deskripsi tambahan_') . "\n"
                 . "• Status Awal: *" . $dataToSave['status'] . "*\n"
                 . "• Prioritas: *" . $dataToSave['prioritas'] . "*\n\n"
@@ -299,7 +299,7 @@ class TicketController extends BaseController
                     $customerUpdateMessage = "🔔 *Pemberitahuan Status Tiket Anda: Dibuka*\n"
                         . "Yth. Bapak/Ibu *" . $dataToUpdate['nama_customer_ticket'] . "*,\n\n"
                         . "Tiket layanan Anda dengan Kode Tiket *" . $dataToUpdate['code_ticket'] . "* telah *dibuka* dan sedang dalam antrean untuk segera diproses oleh tim kami.\n"
-                        . "• Keluhan: _" . $dataToUpdate['keluhan'] . "_\n"
+                        . "• Kategori: _" . $dataToUpdate['keluhan'] . "_\n"
                         . "• Status Terbaru: *" . $dataToUpdate['status'] . "*\n"
                         . "• Prioritas: *" . $dataToUpdate['prioritas'] . "*\n\n"
                         . "Terima kasih atas kesabaran dan pengertian Anda. Kami akan segera memberikan pembaruan.\n\n"
@@ -311,7 +311,7 @@ class TicketController extends BaseController
                         . "Yth. Bapak/Ibu *" . $dataToUpdate['nama_petugas_ticket'] . "*,\n\n"
                         . "Status tiket dengan Kode Tiket *" . $dataToUpdate['code_ticket'] . "* telah diperbarui menjadi *'Open'*.\n"
                         . "• Pelanggan: *" . $dataToUpdate['nama_customer_ticket'] . "*\n"
-                        . "• Keluhan: _" . $dataToUpdate['keluhan'] . "_\n"
+                        . "• Kategori: _" . $dataToUpdate['keluhan'] . "_\n"
                         . "• Status Terbaru: *" . $dataToUpdate['status'] . "*\n"
                         . "• Prioritas: *" . $dataToUpdate['prioritas'] . "*\n\n"
                         . "Mohon segera lakukan peninjauan dan tindak lanjut. Terima kasih.";
@@ -320,7 +320,7 @@ class TicketController extends BaseController
                     $customerUpdateMessage = "🛠️ *Pembaruan Status Tiket Anda: Sedang Diproses*\n"
                         . "Yth. Bapak/Ibu *" . $dataToUpdate['nama_customer_ticket'] . "*,\n\n"
                         . "Tiket layanan Anda dengan Kode Tiket *" . $dataToUpdate['code_ticket'] . "* saat ini *sedang dalam proses penanganan* oleh tim teknis kami.\n"
-                        . "• Keluhan: _" . $dataToUpdate['keluhan'] . "_\n"
+                        . "• Kategori: _" . $dataToUpdate['keluhan'] . "_\n"
                         . "• Status Terbaru: *" . $dataToUpdate['status'] . "*\n"
                         . "• Prioritas: *" . $dataToUpdate['prioritas'] . "*\n\n"
                         . "Tim kami sedang bekerja untuk menyelesaikannya. Terima kasih atas kepercayaan Anda. Kami akan segera memberikan pembaruan setelah penanganan selesai.";
@@ -330,7 +330,7 @@ class TicketController extends BaseController
                         . "Yth. Bapak/Ibu *" . $dataToUpdate['nama_petugas_ticket'] . "*,\n\n"
                         . "Status tiket dengan Kode Tiket *" . $dataToUpdate['code_ticket'] . "* telah diperbarui menjadi *'Diproses'*.\n"
                         . "• Pelanggan: *" . $dataToUpdate['nama_customer_ticket'] . "*\n"
-                        . "• Keluhan: _" . $dataToUpdate['keluhan'] . "_\n"
+                        . "• Kategori: _" . $dataToUpdate['keluhan'] . "_\n"
                         . "• Status Terbaru: *" . $dataToUpdate['status'] . "*\n"
                         . "• Prioritas: *" . $dataToUpdate['prioritas'] . "*\n\n"
                         . "Pastikan Anda terus memantau dan memperbarui progres penanganan hingga tiket ini dapat diselesaikan. Terima kasih.";
@@ -339,7 +339,7 @@ class TicketController extends BaseController
                     $customerUpdateMessage = "✅ *Tiket Layanan Anda Telah Selesai Ditangani*\n"
                         . "Yth. Bapak/Ibu *" . $dataToUpdate['nama_customer_ticket'] . "*,\n\n"
                         . "Dengan ini kami informasikan bahwa tiket layanan Anda dengan Kode Tiket *" . $dataToUpdate['code_ticket'] . "* telah *berhasil diselesaikan* oleh tim kami.\n"
-                        . "• Keluhan: _" . $dataToUpdate['keluhan'] . "_\n"
+                        . "• Kategori: _" . $dataToUpdate['keluhan'] . "_\n"
                         . "• Status Akhir: *" . $dataToUpdate['status'] . "*\n\n"
                         . "Terima kasih atas kepercayaan Anda kepada layanan kami. Jika ada hal lain yang perlu dibantu, jangan ragu untuk menghubungi kami kembali.\n\n"
                         . "Hormat kami,\n\n"
@@ -350,7 +350,7 @@ class TicketController extends BaseController
                         . "Yth. Bapak/Ibu *" . $dataToUpdate['nama_petugas_ticket'] . "*,\n\n"
                         . "Tiket dengan Kode Tiket *" . $dataToUpdate['code_ticket'] . "* yang Anda tangani telah *berhasil ditutup*.\n"
                         . "• Pelanggan: *" . $dataToUpdate['nama_customer_ticket'] . "*\n"
-                        . "• Keluhan: _" . $dataToUpdate['keluhan'] . "_\n"
+                        . "• Kategori: _" . $dataToUpdate['keluhan'] . "_\n"
                         . "• Status Akhir: *" . $dataToUpdate['status'] . "*\n\n"
                         . "Terima kasih atas kerja keras dan kontribusi Anda dalam menyelesaikan tiket ini. Silakan lanjutkan dengan tugas berikutnya.";
                 } else {
@@ -360,7 +360,7 @@ class TicketController extends BaseController
                         . "Berikut pembaruan status tiket Anda dengan kode *" . $dataToUpdate['code_ticket'] . "*:\n"
                         . "• Status: *" . $dataToUpdate['status'] . "*\n"
                         . "• Prioritas: *" . $dataToUpdate['prioritas'] . "*\n\n"
-                        . "📝 Keluhan: _" . $dataToUpdate['keluhan'] . "_\n\n"
+                        . "📝 Kategori: _" . $dataToUpdate['keluhan'] . "_\n\n"
                         . "Terima kasih atas kepercayaan dan kesabaran Anda. Kami akan terus memberikan layanan terbaik.";
 
                     $agentUpdateMessage = "📌 *Pembaruan Tiket Pelanggan*\n"
@@ -370,7 +370,7 @@ class TicketController extends BaseController
                         . "• Status: *" . $dataToUpdate['status'] . "*\n"
                         . "• Prioritas: *" . $dataToUpdate['prioritas'] . "*\n\n"
                         . "👤 Pelanggan: *" . $dataToUpdate['nama_customer_ticket'] . "*\n"
-                        . "📝 Keluhan: _" . $dataToUpdate['keluhan'] . "_\n"
+                        . "📝 Kategori: _" . $dataToUpdate['keluhan'] . "_\n"
                         . "📄 Deskripsi Tambahan: " . ($dataToUpdate['deskripsi'] ?: '_Tidak ada deskripsi tambahan_') . "\n\n"
                         . "Silakan segera tindak lanjuti melalui dashboard tiket Anda. Terima kasih atas kerja samanya.";
                 }

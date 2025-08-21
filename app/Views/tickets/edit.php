@@ -46,7 +46,7 @@
                 <label for="customer_id" class="block text-gray-700 text-sm font-bold mb-2">Pilih Customer:</label>
                 <select name="customer_id" id="customer_id"
                     class="shadow appearance-none border rounded-lg w-full py-3 px-4 text-gray-700 leading-tight focus:outline-none focus:ring-2 focus:ring-amber-500 focus:border-transparent
-                                <?= $validation->hasError('customer_id') ? 'border-red-500' : '' ?>">
+                            <?= $validation->hasError('customer_id') ? 'border-red-500' : '' ?>">
                     <option value="">-- Custom Input Customer --</option>
                     <?php foreach ($customers as $customer): ?>
                         <option value="<?= $customer['id'] ?>"
@@ -99,16 +99,32 @@
             <h3 class="text-xl font-semibold text-gray-800 mb-4">Detail Tiket</h3>
 
             <div class="mb-4">
-                <label for="keluhan" class="block text-gray-700 text-sm font-bold mb-2">Keluhan Singkat:</label>
-                <input type="text" name="keluhan" id="keluhan"
-                    value="<?= old('keluhan', $ticket['keluhan']) ?>"
+                <label for="keluhan" class="block text-gray-700 text-sm font-bold mb-2">Kategori Tiket:</label>
+                <select name="keluhan" id="keluhan"
                     class="shadow appearance-none border rounded-lg w-full py-3 px-4 text-gray-700 leading-tight focus:outline-none focus:ring-2 focus:ring-amber-500 focus:border-transparent
-                                <?= $validation->hasError('keluhan') ? 'border-red-500' : '' ?>"
-                    required placeholder="Contoh: Internet mati, koneksi lambat, tidak bisa login">
+                            <?= $validation->hasError('keluhan') ? 'border-red-500' : '' ?>" required>
+                    <option value="">-- Pilih Kategori --</option>
+                    <?php
+                    $kategori_options = [
+                        'Pemasangan Pelanggan Baru',
+                        'Penarikan Kabel',
+                        'Pemasangan Perangkat',
+                        'Penambahan Perangkat',
+                        'Perbaikan Koneksi',
+                        'Pengecekan Koneksi'
+                    ];
+                    foreach ($kategori_options as $option):
+                    ?>
+                        <option value="<?= esc($option) ?>" <?= old('keluhan', $ticket['keluhan']) == $option ? 'selected' : '' ?>>
+                            <?= esc($option) ?>
+                        </option>
+                    <?php endforeach; ?>
+                </select>
                 <?php if ($validation->hasError('keluhan')): ?>
                     <p class="text-red-500 text-xs italic mt-1"><?= $validation->getError('keluhan') ?></p>
                 <?php endif; ?>
             </div>
+
             <div class="mb-4">
                 <label for="deskripsi" class="block text-gray-700 text-sm font-bold mb-2">Deskripsi Detail (Opsional):</label>
                 <textarea name="deskripsi" id="deskripsi" rows="4"
@@ -200,7 +216,7 @@
                 <input type="text" name="role_petugas_ticket" id="role_petugas_ticket"
                     value="<?= old('role_petugas_ticket', $ticket['role_petugas_ticket']) ?>"
                     class="shadow appearance-none border rounded-lg w-full py-3 px-4 text-gray-700 leading-tight focus:outline-none focus:ring-2 focus:ring-amber-500 focus:border-transparent
-                                <?= $validation->hasError('role_petugas_ticket') ? 'border-red-500' : '' ?>"
+                            <?= $validation->hasError('role_petugas_ticket') ? 'border-red-500' : '' ?>"
                     placeholder="Role petugas">
                 <?php if ($validation->hasError('role_petugas_ticket')): ?>
                     <p class="text-red-500 text-xs italic mt-1"><?= $validation->getError('role_petugas_ticket') ?></p>

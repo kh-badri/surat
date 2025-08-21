@@ -43,7 +43,7 @@
                             <th scope="col" class="px-6 py-3 text-left text-xs font-semibold text-gray-500 uppercase tracking-wider">No.</th>
                             <th scope="col" class="px-6 py-3 text-left text-xs font-semibold text-gray-500 uppercase tracking-wider">Kode Tiket</th>
                             <th scope="col" class="px-6 py-3 text-left text-xs font-semibold text-gray-500 uppercase tracking-wider">Customer</th>
-                            <th scope="col" class="px-6 py-3 text-left text-xs font-semibold text-gray-500 uppercase tracking-wider">Keluhan</th>
+                            <th scope="col" class="px-6 py-3 text-left text-xs font-semibold text-gray-500 uppercase tracking-wider">Kategori Tiket</th>
                             <th scope="col" class="px-6 py-3 text-left text-xs font-semibold text-gray-500 uppercase tracking-wider">Status</th>
                             <th scope="col" class="px-6 py-3 text-left text-xs font-semibold text-gray-500 uppercase tracking-wider">Prioritas</th>
                             <th scope="col" class="px-6 py-3 text-left text-xs font-semibold text-gray-500 uppercase tracking-wider">Petugas</th>
@@ -95,7 +95,6 @@
                                                 <path d="M13.586 3.586a2 2 0 112.828 2.828l-.793.793-2.828-2.828.793-.793zM11.379 5.793L3 14.172V17h2.828l8.38-8.38-2.828-2.829z" />
                                             </svg>
                                         </a>
-                                        <!-- Export to TXT Button -->
                                         <button type="button" class="text-gray-600 hover:text-gray-900 transition duration-150 ease-in-out" onclick="showExportModal(<?= esc(json_encode($ticket), 'attr') ?>)">
                                             <svg xmlns="http://www.w3.org/2000/svg" class="h-5 w-5" viewBox="0 0 20 20" fill="currentColor">
                                                 <path fill-rule="evenodd" d="M.5 9.9a.5.5 0 01.5.5v2.5a.5.5 0 00.5.5h14a.5.5 0 00.5-.5v-2.5a.5.5 0 011 0v2.5A1.5 1.5 0 0115.5 15h-14A1.5 1.5 0 010 13.4v-2.5a.5.5 0 01.5-.5zM7.646 11.854a.5.5 0 00.708 0l3-3a.5.5 0 00-.708-.708L8.5 10.293V3.5a.5.5 0 00-1 0v6.793L5.354 8.146a.5.5 0 10-.708.708l3 3z" clip-rule="evenodd" />
@@ -114,7 +113,6 @@
                 </table>
             </div>
 
-            <!-- Mobile View -->
             <div class="md:hidden space-y-4">
                 <?php $no_mobile = 1; ?>
                 <?php foreach ($tickets as $ticket): ?>
@@ -161,7 +159,6 @@
                                 </svg>
                                 Edit
                             </a>
-                            <!-- Export to TXT Button (Mobile) -->
                             <button type="button" class="inline-flex items-center px-3 py-1.5 border border-transparent text-xs font-medium rounded-md shadow-sm text-gray-700 bg-gray-100 hover:bg-gray-200 focus:outline-none focus:ring-2 focus:ring-offset-2 focus:ring-gray-500" onclick="showExportModal(<?= esc(json_encode($ticket), 'attr') ?>)">
                                 <svg xmlns="http://www.w3.org/2000/svg" class="h-4 w-4 mr-1" viewBox="0 0 20 20" fill="currentColor">
                                     <path fill-rule="evenodd" d="M.5 9.9a.5.5 0 01.5.5v2.5a.5.5 0 00.5.5h14a.5.5 0 00.5-.5v-2.5a.5.5 0 011 0v2.5A1.5 1.5 0 0115.5 15h-14A1.5 1.5 0 010 13.4v-2.5a.5.5 0 01.5-.5zM7.646 11.854a.5.5 0 00.708 0l3-3a.5.5 0 00-.708-.708L8.5 10.293V3.5a.5.5 0 00-1 0v6.793L5.354 8.146a.5.5 0 10-.708.708l3 3z" clip-rule="evenodd" />
@@ -182,7 +179,6 @@
     </div>
 </div>
 
-<!-- Delete Confirmation Modal -->
 <div id="deleteModal" class="fixed inset-0 bg-gray-600 bg-opacity-75 flex items-center justify-center z-50 hidden">
     <div class="bg-white rounded-lg shadow-xl p-6 w-full max-w-sm mx-auto">
         <h3 class="text-lg font-bold text-gray-900 mb-4">Konfirmasi Hapus</h3>
@@ -198,7 +194,6 @@
     </div>
 </div>
 
-<!-- Export to TXT Modal -->
 <div id="exportModal" class="fixed inset-0 bg-gray-600 bg-opacity-75 flex items-center justify-center z-50 hidden">
     <div class="bg-white rounded-lg shadow-xl p-6 w-full max-w-md mx-auto">
         <h3 class="text-lg font-bold text-gray-900 mb-4">Detail Tiket (Teks)</h3>
@@ -268,24 +263,27 @@
 
     // --- Start: Automatic filter/search submission ---
     document.addEventListener('DOMContentLoaded', function() {
+        // Asumsi ada form dengan id filterSearchForm dan input search/select filter
         const filterSearchForm = document.getElementById('filterSearchForm');
-        const searchInput = document.getElementById('search');
-        const statusFilterSelect = document.getElementById('status_filter');
-        let searchTimeout;
+        if (filterSearchForm) {
+            const searchInput = document.getElementById('search');
+            const statusFilterSelect = document.getElementById('status_filter');
+            let searchTimeout;
 
-        // Function to submit the form
-        const submitForm = () => {
-            filterSearchForm.submit();
-        };
+            const submitForm = () => {
+                filterSearchForm.submit();
+            };
 
-        // Event listener for status filter change
-        statusFilterSelect.addEventListener('change', submitForm);
-
-        // Event listener for search input (with debounce)
-        searchInput.addEventListener('input', function() {
-            clearTimeout(searchTimeout);
-            searchTimeout = setTimeout(submitForm, 500); // Submit after 500ms of no typing
-        });
+            if (statusFilterSelect) {
+                statusFilterSelect.addEventListener('change', submitForm);
+            }
+            if (searchInput) {
+                searchInput.addEventListener('input', function() {
+                    clearTimeout(searchTimeout);
+                    searchTimeout = setTimeout(submitForm, 500);
+                });
+            }
+        }
     });
     // --- End: Automatic filter/search submission ---
 </script>

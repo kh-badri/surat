@@ -39,7 +39,6 @@
             <hr class="border-gray-200 my-6">
             <h3 class="text-xl font-semibold text-gray-800 mb-4">Informasi Customer</h3>
 
-            <!-- Tombol Opsi Customer -->
             <div class="flex space-x-2 mb-4">
                 <button type="button" id="btnPilihCustomer" class="px-4 py-2 text-sm font-medium text-white bg-amber-600 rounded-lg hover:bg-amber-700 focus:outline-none focus:ring-2 focus:ring-offset-2 focus:ring-amber-500">
                     Pilih Customer
@@ -49,7 +48,6 @@
                 </button>
             </div>
 
-            <!-- Container untuk Opsi "Pilih Customer" -->
             <div id="pilihCustomerContainer">
                 <div class="mb-4">
                     <label for="customer_id" class="block text-gray-700 text-sm font-bold mb-2">Pilih Customer:</label>
@@ -70,7 +68,6 @@
                 </div>
             </div>
 
-            <!-- Container untuk Form Detail Customer (digunakan oleh kedua opsi) -->
             <div id="detailCustomerContainer">
                 <div class="grid grid-cols-1 md:grid-cols-2 gap-6">
                     <div>
@@ -112,16 +109,32 @@
             <h3 class="text-xl font-semibold text-gray-800 mb-4">Detail Tiket</h3>
 
             <div class="mb-4">
-                <label for="keluhan" class="block text-gray-700 text-sm font-bold mb-2">Keluhan Singkat:</label>
-                <input type="text" name="keluhan" id="keluhan"
-                    value="<?= old('keluhan') ?>"
+                <label for="keluhan" class="block text-gray-700 text-sm font-bold mb-2">Kategori Tiket:</label>
+                <select name="keluhan" id="keluhan"
                     class="shadow appearance-none border rounded-lg w-full py-3 px-4 text-gray-700 leading-tight focus:outline-none focus:ring-2 focus:ring-amber-500 focus:border-transparent
-                            <?= $validation->hasError('keluhan') ? 'border-red-500' : '' ?>"
-                    required placeholder="Contoh: Internet mati, koneksi lambat">
+                            <?= $validation->hasError('keluhan') ? 'border-red-500' : '' ?>" required>
+                    <option value="">-- Pilih Kategori --</option>
+                    <?php
+                    $kategori_options = [
+                        'Pemasangan Pelanggan Baru',
+                        'Penarikan Kabel',
+                        'Pemasangan Perangkat',
+                        'Penambahan Perangkat',
+                        'Perbaikan Koneksi',
+                        'Pengecekan Koneksi'
+                    ];
+                    foreach ($kategori_options as $option):
+                    ?>
+                        <option value="<?= esc($option) ?>" <?= old('keluhan') == $option ? 'selected' : '' ?>>
+                            <?= esc($option) ?>
+                        </option>
+                    <?php endforeach; ?>
+                </select>
                 <?php if ($validation->hasError('keluhan')): ?>
                     <p class="text-red-500 text-xs italic mt-1"><?= $validation->getError('keluhan') ?></p>
                 <?php endif; ?>
             </div>
+
             <div class="mb-4">
                 <label for="deskripsi" class="block text-gray-700 text-sm font-bold mb-2">Deskripsi Detail (Opsional):</label>
                 <textarea name="deskripsi" id="deskripsi" rows="4"
