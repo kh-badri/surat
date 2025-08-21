@@ -225,7 +225,7 @@
         let content = `--- Detail Tiket ---\n\n`;
         content += `Kode Tiket: ${ticketDetails.code_ticket}\n`;
         content += `Tanggal Dibuat: ${ticketDetails.tanggal_buat}\n`;
-        content += `Keluhan: ${ticketDetails.keluhan}\n`;
+        content += `Ketegori: ${ticketDetails.keluhan}\n`;
         content += `Deskripsi: ${ticketDetails.deskripsi || 'Tidak ada deskripsi tambahan'}\n`;
         content += `Status: ${ticketDetails.status}\n`;
         content += `Prioritas: ${ticketDetails.prioritas}\n\n`;
