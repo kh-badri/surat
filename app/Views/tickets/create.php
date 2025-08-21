@@ -24,16 +24,12 @@
                     <?php endif; ?>
                 </div>
                 <div>
-                    <label for="tanggal_buat_date" class="block text-gray-700 text-sm font-bold mb-2">Tanggal Buat:</label>
-                    <div class="flex gap-2">
-                        <input type="date" name="tanggal_buat_date" id="tanggal_buat_date"
-                            class="shadow appearance-none border rounded-lg w-full py-3 px-4 text-gray-700 leading-tight focus:outline-none focus:ring-2 focus:ring-amber-500 focus:border-transparent bg-gray-100 cursor-not-allowed"
-                            required readonly>
-                        <input type="time" name="tanggal_buat_time" id="tanggal_buat_time"
-                            class="shadow appearance-none border rounded-lg w-full py-3 px-4 text-gray-700 leading-tight focus:outline-none focus:ring-2 focus:ring-amber-500 focus:border-transparent bg-gray-100 cursor-not-allowed"
-                            required readonly>
-                    </div>
-                    <input type="hidden" name="tanggal_buat" id="tanggal_buat_hidden" value="<?= old('tanggal_buat') ?>">
+                    <label for="tanggal_buat" class="block text-gray-700 text-sm font-bold mb-2">Tanggal Buat:</label>
+                    <input type="datetime-local" name="tanggal_buat" id="tanggal_buat"
+                        value="<?= old('tanggal_buat') ?>"
+                        class="shadow appearance-none border rounded-lg w-full py-3 px-4 text-gray-700 leading-tight focus:outline-none focus:ring-2 focus:ring-amber-500 focus:border-transparent
+                                <?= $validation->hasError('tanggal_buat') ? 'border-red-500' : '' ?>"
+                        required readonly>
                     <?php if ($validation->hasError('tanggal_buat')): ?>
                         <p class="text-red-500 text-xs italic mt-1"><?= $validation->getError('tanggal_buat') ?></p>
                     <?php endif; ?>
@@ -251,27 +247,16 @@
 
 <script>
     document.addEventListener('DOMContentLoaded', function() {
-        // Function to set current date and time on two separate inputs
+        // Set current date and time for tanggal_buat input
         function setCurrentDateTime() {
             const now = new Date();
-            const year = now.getFullYear();
-            const month = (now.getMonth() + 1).toString().padStart(2, '0');
-            const day = now.getDate().toString().padStart(2, '0');
-            const hours = now.getHours().toString().padStart(2, '0');
-            const minutes = now.getMinutes().toString().padStart(2, '0');
-
-            const formattedDate = `${year}-${month}-${day}`;
-            const formattedTime = `${hours}:${minutes}`;
-            const combinedDateTime = `${formattedDate}T${formattedTime}`;
-
-            document.getElementById('tanggal_buat_date').value = formattedDate;
-            document.getElementById('tanggal_buat_time').value = formattedTime;
-            document.getElementById('tanggal_buat_hidden').value = combinedDateTime;
+            now.setMinutes(now.getMinutes() - now.getTimezoneOffset());
+            const formattedDate = now.toISOString().slice(0, 16);
+            document.getElementById('tanggal_buat').value = formattedDate;
         }
 
-        // Call the function on page load and on page focus to keep it updated
+        // Call the function on page load
         setCurrentDateTime();
-        window.addEventListener('focus', setCurrentDateTime);
 
         // === Bagian Opsi Customer ===
         const btnPilihCustomer = document.getElementById('btnPilihCustomer');
@@ -283,6 +268,7 @@
         const alamatCustomerInput = document.getElementById('alamat_customer_ticket');
         const noHpCustomerInput = document.getElementById('no_hp_customer_ticket');
 
+        // Fungsi untuk mengosongkan input customer
         const clearCustomerFields = () => {
             customerIdSelect.value = '';
             namaCustomerInput.value = '';
@@ -290,6 +276,7 @@
             noHpCustomerInput.value = '';
         };
 
+        // Fungsi untuk mengatur tampilan mode "Pilih Customer"
         const setPilihMode = () => {
             pilihCustomerContainer.style.display = 'block';
             namaCustomerInput.readOnly = true;
@@ -300,6 +287,7 @@
             noHpCustomerInput.classList.add('bg-gray-100');
             customerIdSelect.setAttribute('required', 'required');
 
+            // Styling tombol
             btnPilihCustomer.classList.remove('bg-gray-200', 'text-gray-700');
             btnPilihCustomer.classList.add('bg-amber-600', 'text-white');
             btnCustomCustomer.classList.remove('bg-amber-600', 'text-white');
@@ -314,6 +302,7 @@
             }
         };
 
+        // Fungsi untuk mengatur tampilan mode "Custom Input"
         const setCustomMode = () => {
             clearCustomerFields();
             pilihCustomerContainer.style.display = 'none';
@@ -325,6 +314,7 @@
             noHpCustomerInput.classList.remove('bg-gray-100');
             customerIdSelect.removeAttribute('required');
 
+            // Styling tombol
             btnCustomCustomer.classList.remove('bg-gray-200', 'text-gray-700');
             btnCustomCustomer.classList.add('bg-amber-600', 'text-white');
             btnPilihCustomer.classList.remove('bg-amber-600', 'text-white');
@@ -334,6 +324,7 @@
         btnPilihCustomer.addEventListener('click', setPilihMode);
         btnCustomCustomer.addEventListener('click', setCustomMode);
 
+        // === Bagian Detail Customer dari Select ===
         customerIdSelect.addEventListener('change', function() {
             const customerId = this.value;
             if (customerId) {
@@ -358,6 +349,7 @@
             }
         });
 
+        // === Bagian Detail Petugas ===
         const petugasIdSelect = document.getElementById('petugas_id');
         const namaPetugasInput = document.getElementById('nama_petugas_ticket');
         const noHpPetugasInput = document.getElementById('no_hp_petugas_ticket');
@@ -389,6 +381,7 @@
             }
         });
 
+        // === Inisialisasi & Memuat ulang data jika ada old input ===
         <?php if (old('nama_customer_ticket') && !old('customer_id')): ?>
             setCustomMode();
         <?php else: ?>
