@@ -2,8 +2,8 @@
 
 <?= $this->section('content') ?>
 
-<div class="container mx-auto px-2 py-4 sm:px-2 lg:px-4">
-    <div class="bg-white shadow-xl rounded-xl p-2 md:p-4 lg:p-4">
+<div class="container mx-auto px-2 py-2 sm:px-2 lg:px-2">
+    <div class="bg-white shadow-xl rounded-xl p-4 md:p-4 lg:p-4">
 
         <div class="flex flex-col sm:flex-row sm:justify-between sm:items-center mb-8 gap-4">
             <h2 class="text-3xl font-extrabold text-amber-600 tracking-tight">
