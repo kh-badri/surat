@@ -4,8 +4,8 @@ namespace App\Controllers;
 
 use App\Controllers\BaseController;
 use App\Models\TicketModel;
-use App\Models\CustomerModel; // Perlu model Customer
-use App\Models\PetugasModel; // Perlu model Petugas
+use App\Models\CustomerModel;
+use App\Models\PetugasModel;
 
 class TicketController extends BaseController
 {
@@ -25,18 +25,42 @@ class TicketController extends BaseController
         $this->ticketModel = new TicketModel();
         $this->customerModel = new CustomerModel();
         $this->petugasModel = new PetugasModel();
-        helper(['url', 'form', 'text']); // 'text' helper untuk random_string
+        helper(['url', 'form', 'text']);
     }
 
     /**
      * Menampilkan daftar tiket.
+     * Menerima parameter GET untuk pencarian dan filter.
      */
     public function index()
     {
+        $search = $this->request->getGet('search');
+        $statusFilter = $this->request->getGet('status_filter');
+
+        // Memulai query builder
+        $builder = $this->ticketModel;
+
+        // Menerapkan kondisi pencarian jika ada
+        if ($search) {
+            $builder = $builder->like('code_ticket', $search)
+                ->orLike('nama_customer_ticket', $search)
+                ->orLike('keluhan', $search)
+                ->orLike('nama_petugas_ticket', $search);
+        }
+
+        // Menerapkan kondisi filter status jika ada dan bukan 'all'
+        if ($statusFilter && $statusFilter !== 'all') {
+            $builder = $builder->where('status', $statusFilter);
+        }
+
+        $tickets = $builder->findAll();
+
         $data = [
             'title' => 'Daftar Tiket',
-            'tickets' => $this->ticketModel->findAll(),
+            'tickets' => $tickets,
             'active_menu' => 'tickets',
+            'search_query' => $search,
+            'status_filter_selected' => $statusFilter,
         ];
         return view('tickets/index', $data);
     }
@@ -49,16 +73,11 @@ class TicketController extends BaseController
         $customers = $this->customerModel->findAll();
         $petugas = $this->petugasModel->findAll();
 
-        // Generate Code Ticket Otomatis
         $codeTicket = 'TKT-' . date('YmdHis') . '-' . random_string('numeric', 4);
-        // Opsional: Loop untuk memastikan keunikan jika sangat khawatir
-        // while($this->ticketModel->where('code_ticket', $codeTicket)->first()){
-        //     $codeTicket = 'TKT-' . date('YmdHis') . '-' . random_string('numeric', 4);
-        // }
 
         $data = [
             'title' => 'Buat Tiket Baru',
-            'validation' => \Config\Services::validation(), // Menggunakan service validation untuk ditampilkan di view
+            'validation' => \Config\Services::validation(),
             'customers' => $customers,
             'petugas' => $petugas,
             'code_ticket_generated' => $codeTicket,
@@ -72,10 +91,8 @@ class TicketController extends BaseController
      */
     public function store()
     {
-        // Tangkap semua data dari POST
         $dataToSave = [
             'code_ticket' => $this->request->getPost('code_ticket'),
-            // Jika customer_id kosong dari select, set null untuk custom input
             'customer_id' => $this->request->getPost('customer_id') ?: null,
             'nama_customer_ticket' => $this->request->getPost('nama_customer_ticket'),
             'alamat_customer_ticket' => $this->request->getPost('alamat_customer_ticket'),
@@ -84,16 +101,13 @@ class TicketController extends BaseController
             'deskripsi' => $this->request->getPost('deskripsi'),
             'status' => $this->request->getPost('status'),
             'prioritas' => $this->request->getPost('prioritas'),
-            'tanggal_buat' => date('Y-m-d H:i:s'), // Set tanggal_buat saat ini
+            'tanggal_buat' => date('Y-m-d H:i:s'),
             'petugas_id' => $this->request->getPost('petugas_id'),
             'nama_petugas_ticket' => $this->request->getPost('nama_petugas_ticket'),
             'no_hp_petugas_ticket' => $this->request->getPost('no_hp_petugas_ticket'),
             'role_petugas_ticket' => $this->request->getPost('role_petugas_ticket'),
         ];
 
-        // --- START: Pastikan detail customer/petugas terisi dari database jika ID dipilih ---
-        // Ini penting jika field detail di frontend dinonaktifkan (disabled) saat memilih ID,
-        // karena field disabled tidak dikirim via POST.
         if (!empty($dataToSave['customer_id'])) {
             $customer = $this->customerModel->find($dataToSave['customer_id']);
             if ($customer) {
@@ -111,33 +125,21 @@ class TicketController extends BaseController
                 $dataToSave['role_petugas_ticket'] = $petugas['role'];
             }
         }
-        // --- END: Pastikan detail customer/petugas terisi dari database jika ID dipilih ---
 
-        // Pastikan nomor HP selalu berupa string, bahkan jika null dari getPost() atau fetch
         $dataToSave['no_hp_customer_ticket'] = (string) $dataToSave['no_hp_customer_ticket'];
         $dataToSave['no_hp_petugas_ticket'] = (string) $dataToSave['no_hp_petugas_ticket'];
 
-        // Tentukan grup validasi yang akan digunakan
-        // Jika customer_id tidak kosong, berarti menggunakan "pilih pelanggan"
-        // Jika customer_id kosong, berarti menggunakan "custom input pelanggan"
         $validationGroup = !empty($dataToSave['customer_id']) ? 'createFromCustomer' : 'createFromCustom';
 
-        // Lakukan validasi menggunakan grup yang dipilih dari TicketModel
         if (!$this->ticketModel->validate($dataToSave, $validationGroup)) {
-            // Jika validasi gagal, kembalikan ke form dengan input lama dan error
             return redirect()->back()->withInput()->with('errors', $this->ticketModel->errors());
         }
 
-        // Simpan data ke database menggunakan metode save() dari model
-        // Metode save() akan melakukan insert/update dan juga memicu validasi jika belum dilakukan
         if ($this->ticketModel->save($dataToSave)) {
             session()->setFlashdata('success', 'Tiket baru berhasil dibuat.');
-
-            // --- START WHATSAPP INTEGRATION: Send message on new ticket creation ---
             $customerPhoneNumber = $dataToSave['no_hp_customer_ticket'];
-            $agentPhoneNumber = $dataToSave['no_hp_petugas_ticket']; // Nomor HP petugas yang ditugaskan
+            $agentPhoneNumber = $dataToSave['no_hp_petugas_ticket'];
 
-            // Pesan untuk Pelanggan (Tiket Berhasil Dibuat)
             $customerMessage = "✅ *Konfirmasi Pembuatan Tiket Layanan Anda*\n"
                 . "Yth. Bapak/Ibu *" . $dataToSave['nama_customer_ticket'] . "*,\n\n"
                 . "Kami informasikan bahwa tiket layanan Anda dengan detail berikut telah berhasil dibuat dan tercatat dalam sistem kami:\n"
@@ -148,9 +150,8 @@ class TicketController extends BaseController
                 . "• Petugas Penanganan: *" . $dataToSave['nama_petugas_ticket'] . "*\n\n"
                 . "Tim kami akan segera menindaklanjuti keluhan Anda. Kami berkomitmen penuh untuk memberikan solusi terbaik secepatnya. Terima kasih atas kepercayaan Anda kepada layanan kami.\n\n"
                 . "Hormat kami,\n\n"
-                . "Tim Layanan Pelanggan \n*Indomedia Solusi Net*"; // Ganti dengan nama ISP Anda
+                . "Tim Layanan Pelanggan \n*Indomedia Solusi Net*";
 
-            // Pesan untuk Petugas (Tiket Baru Masuk)
             $agentMessage = "🔔 *Pemberitahuan: Tiket Layanan Baru Telah Diterbitkan*\n"
                 . "Yth. Bapak/Ibu *" . $dataToSave['nama_petugas_ticket'] . "*,\n\n"
                 . "Anda telah ditugaskan untuk menangani tiket layanan baru dengan informasi sebagai berikut:\n"
@@ -162,17 +163,10 @@ class TicketController extends BaseController
                 . "• Prioritas: *" . $dataToSave['prioritas'] . "*\n\n"
                 . "Mohon segera lakukan peninjauan dan tindak lanjut sesuai prosedur operasional standar. Akses detail lengkap melalui dashboard sistem tiket. Terima kasih atas dedikasi Anda.";
 
-            // Kirim pesan ke pelanggan
             $this->sendWhatsAppMessage($customerPhoneNumber, $customerMessage);
-            // Kirim pesan ke petugas
             $this->sendWhatsAppMessage($agentPhoneNumber, $agentMessage);
-            // --- END WHATSAPP INTEGRATION ---
-
         } else {
-            // Jika save() mengembalikan false (misalnya karena gagal insert ke DB),
-            // meskipun validasi sudah lolos, ini menangkap error database.
             session()->setFlashdata('error', 'Gagal membuat tiket baru. Terjadi kesalahan database.');
-            // Opsional: log $this->ticketModel->db->error() untuk debugging lebih lanjut
             log_message('error', 'Database Error on Ticket Creation: ' . json_encode($this->ticketModel->errors()));
         }
 
@@ -217,11 +211,9 @@ class TicketController extends BaseController
             throw new \CodeIgniter\Exceptions\PageNotFoundException('Tiket yang akan diperbarui tidak ditemukan.');
         }
 
-        // Tangkap semua data dari POST
         $dataToUpdate = [
-            'id' => $id, // Penting: tambahkan ID untuk metode save() agar tahu ini adalah update
+            'id' => $id,
             'code_ticket' => $this->request->getPost('code_ticket'),
-            // Jika customer_id kosong dari select, set null untuk custom input
             'customer_id' => $this->request->getPost('customer_id') ?: null,
             'nama_customer_ticket' => $this->request->getPost('nama_customer_ticket'),
             'alamat_customer_ticket' => $this->request->getPost('alamat_customer_ticket'),
@@ -230,16 +222,12 @@ class TicketController extends BaseController
             'deskripsi' => $this->request->getPost('deskripsi'),
             'status' => $this->request->getPost('status'),
             'prioritas' => $this->request->getPost('prioritas'),
-            // tanggal_buat tidak diupdate dari form karena hanya di-set sekali saat pembuatan
             'petugas_id' => $this->request->getPost('petugas_id'),
             'nama_petugas_ticket' => $this->request->getPost('nama_petugas_ticket'),
             'no_hp_petugas_ticket' => $this->request->getPost('no_hp_petugas_ticket'),
             'role_petugas_ticket' => $this->request->getPost('role_petugas_ticket'),
         ];
 
-        // --- START: Pastikan detail customer/petugas terisi dari database jika ID dipilih ---
-        // Ini penting jika field detail di frontend dinonaktifkan (disabled) saat memilih ID,
-        // karena field disabled tidak dikirim via POST.
         if (!empty($dataToUpdate['customer_id'])) {
             $customer = $this->customerModel->find($dataToUpdate['customer_id']);
             if ($customer) {
@@ -257,31 +245,17 @@ class TicketController extends BaseController
                 $dataToUpdate['role_petugas_ticket'] = $petugas['role'];
             }
         }
-        // --- END: Pastikan detail customer/petugas terisi dari database jika ID dipilih ---
 
-        // Pastikan nomor HP selalu berupa string, bahkan jika null dari getPost() atau fetch
         $dataToUpdate['no_hp_customer_ticket'] = (string) $dataToUpdate['no_hp_customer_ticket'];
         $dataToUpdate['no_hp_petugas_ticket'] = (string) $dataToUpdate['no_hp_petugas_ticket'];
-
-        // Tentukan grup validasi yang akan digunakan
-        // Jika customer_id tidak kosong, berarti menggunakan "pilih pelanggan"
-        // Jika customer_id kosong, berarti menggunakan "custom input pelanggan"
         $validationGroup = !empty($dataToUpdate['customer_id']) ? 'createFromCustomer' : 'createFromCustom';
 
-        // Lakukan validasi menggunakan grup yang dipilih dari TicketModel
-        // Parameter kedua (validationGroup) dan ketiga (skipValidation) bisa dihilangkan
-        // karena model sudah diatur untuk menangani is_unique pada update secara otomatis
         if (!$this->ticketModel->validate($dataToUpdate, $validationGroup)) {
             return redirect()->back()->withInput()->with('errors', $this->ticketModel->errors());
         }
 
-        // Simpan data ke database menggunakan metode save() dari model
-        // Metode save() akan otomatis mengenali ini sebagai update karena 'id' disertakan
         if ($this->ticketModel->save($dataToUpdate)) {
             session()->setFlashdata('success', 'Tiket berhasil diperbarui.');
-
-            // --- START WHATSAPP INTEGRATION: Send message on ticket update ---
-            // Hanya kirim notifikasi jika ada perubahan status atau prioritas
             if ($dataToUpdate['status'] !== $oldTicket['status'] || $dataToUpdate['prioritas'] !== $oldTicket['prioritas']) {
                 $customerPhoneNumber = $dataToUpdate['no_hp_customer_ticket'];
                 $agentPhoneNumber = $dataToUpdate['no_hp_petugas_ticket'];
@@ -289,13 +263,10 @@ class TicketController extends BaseController
                 $customerUpdateMessage = "";
                 $agentUpdateMessage = "";
 
-                // Konversi status ke huruf kecil untuk perbandingan yang konsisten
                 $newStatus = strtolower($dataToUpdate['status']);
                 $oldStatus = strtolower($oldTicket['status']);
 
-                // Logika pesan berdasarkan perubahan status
                 if ($newStatus === 'open' && $oldStatus !== 'open') {
-                    // Pesan untuk Pelanggan (Tiket Open)
                     $customerUpdateMessage = "🔔 *Pemberitahuan Status Tiket Anda: Dibuka*\n"
                         . "Yth. Bapak/Ibu *" . $dataToUpdate['nama_customer_ticket'] . "*,\n\n"
                         . "Tiket layanan Anda dengan Kode Tiket *" . $dataToUpdate['code_ticket'] . "* telah *dibuka* dan sedang dalam antrean untuk segera diproses oleh tim kami.\n"
@@ -304,9 +275,8 @@ class TicketController extends BaseController
                         . "• Prioritas: *" . $dataToUpdate['prioritas'] . "*\n\n"
                         . "Terima kasih atas kesabaran dan pengertian Anda. Kami akan segera memberikan pembaruan.\n\n"
                         . "Hormat kami,\n\n"
-                        . "Tim Layanan Pelanggan \n*Indomedia Solusi Net*"; // Ganti dengan nama ISP Anda
+                        . "Tim Layanan Pelanggan \n*Indomedia Solusi Net*";
 
-                    // Pesan untuk Petugas (Tiket Open)
                     $agentUpdateMessage = "📝 *Pembaruan Status Tiket: Menjadi 'Open'*\n"
                         . "Yth. Bapak/Ibu *" . $dataToUpdate['nama_petugas_ticket'] . "*,\n\n"
                         . "Status tiket dengan Kode Tiket *" . $dataToUpdate['code_ticket'] . "* telah diperbarui menjadi *'Open'*.\n"
@@ -316,7 +286,6 @@ class TicketController extends BaseController
                         . "• Prioritas: *" . $dataToUpdate['prioritas'] . "*\n\n"
                         . "Mohon segera lakukan peninjauan dan tindak lanjut. Terima kasih.";
                 } elseif ($newStatus === 'diproses' && $oldStatus !== 'diproses') {
-                    // Pesan untuk Pelanggan (Tiket Progress)
                     $customerUpdateMessage = "🛠️ *Pembaruan Status Tiket Anda: Sedang Diproses*\n"
                         . "Yth. Bapak/Ibu *" . $dataToUpdate['nama_customer_ticket'] . "*,\n\n"
                         . "Tiket layanan Anda dengan Kode Tiket *" . $dataToUpdate['code_ticket'] . "* saat ini *sedang dalam proses penanganan* oleh tim teknis kami.\n"
@@ -325,7 +294,6 @@ class TicketController extends BaseController
                         . "• Prioritas: *" . $dataToUpdate['prioritas'] . "*\n\n"
                         . "Tim kami sedang bekerja untuk menyelesaikannya. Terima kasih atas kepercayaan Anda. Kami akan segera memberikan pembaruan setelah penanganan selesai.";
 
-                    // Pesan untuk Petugas (Tiket Progress)
                     $agentUpdateMessage = "🔄 *Pembaruan Status Tiket: Menjadi 'Diproses'*\n"
                         . "Yth. Bapak/Ibu *" . $dataToUpdate['nama_petugas_ticket'] . "*,\n\n"
                         . "Status tiket dengan Kode Tiket *" . $dataToUpdate['code_ticket'] . "* telah diperbarui menjadi *'Diproses'*.\n"
@@ -335,7 +303,6 @@ class TicketController extends BaseController
                         . "• Prioritas: *" . $dataToUpdate['prioritas'] . "*\n\n"
                         . "Pastikan Anda terus memantau dan memperbarui progres penanganan hingga tiket ini dapat diselesaikan. Terima kasih.";
                 } elseif (($newStatus === 'closed' || $newStatus === 'selesai') && $oldStatus !== 'closed' && $oldStatus !== 'selesai') {
-                    // Pesan untuk Pelanggan (Tiket Closed)
                     $customerUpdateMessage = "✅ *Tiket Layanan Anda Telah Selesai Ditangani*\n"
                         . "Yth. Bapak/Ibu *" . $dataToUpdate['nama_customer_ticket'] . "*,\n\n"
                         . "Dengan ini kami informasikan bahwa tiket layanan Anda dengan Kode Tiket *" . $dataToUpdate['code_ticket'] . "* telah *berhasil diselesaikan* oleh tim kami.\n"
@@ -343,9 +310,8 @@ class TicketController extends BaseController
                         . "• Status Akhir: *" . $dataToUpdate['status'] . "*\n\n"
                         . "Terima kasih atas kepercayaan Anda kepada layanan kami. Jika ada hal lain yang perlu dibantu, jangan ragu untuk menghubungi kami kembali.\n\n"
                         . "Hormat kami,\n\n"
-                        . "Tim Layanan Pelanggan \n*Indomedia Solusi Net*"; // Ganti dengan nama ISP Anda
+                        . "Tim Layanan Pelanggan \n*Indomedia Solusi Net*";
 
-                    // Pesan untuk Petugas (Tiket Closed)
                     $agentUpdateMessage = "🎉 *Pemberitahuan: Tiket Layanan Telah Ditutup*\n"
                         . "Yth. Bapak/Ibu *" . $dataToUpdate['nama_petugas_ticket'] . "*,\n\n"
                         . "Tiket dengan Kode Tiket *" . $dataToUpdate['code_ticket'] . "* yang Anda tangani telah *berhasil ditutup*.\n"
@@ -354,7 +320,6 @@ class TicketController extends BaseController
                         . "• Status Akhir: *" . $dataToUpdate['status'] . "*\n\n"
                         . "Terima kasih atas kerja keras dan kontribusi Anda dalam menyelesaikan tiket ini. Silakan lanjutkan dengan tugas berikutnya.";
                 } else {
-                    // Pesan default untuk perubahan status/prioritas lainnya yang tidak spesifik
                     $customerUpdateMessage = "📢 *Pembaruan Tiket Anda*\n"
                         . "Halo *" . $dataToUpdate['nama_customer_ticket'] . "*,\n\n"
                         . "Berikut pembaruan status tiket Anda dengan kode *" . $dataToUpdate['code_ticket'] . "*:\n"
@@ -375,7 +340,6 @@ class TicketController extends BaseController
                         . "Silakan segera tindak lanjuti melalui dashboard tiket Anda. Terima kasih atas kerja samanya.";
                 }
 
-                // Kirim pesan hanya jika ada pesan yang dibuat
                 if (!empty($customerUpdateMessage)) {
                     $this->sendWhatsAppMessage($customerPhoneNumber, $customerUpdateMessage);
                 }
@@ -383,11 +347,8 @@ class TicketController extends BaseController
                     $this->sendWhatsAppMessage($agentPhoneNumber, $agentUpdateMessage);
                 }
             }
-            // --- END WHATSAPP INTEGRATION ---
-
         } else {
             session()->setFlashdata('error', 'Gagal memperbarui tiket. Terjadi kesalahan saat menyimpan perubahan.');
-            // Opsional: log $this->ticketModel->db->error() untuk debugging lebih lanjut
             log_message('error', 'Database Error on Ticket Update: ' . json_encode($this->ticketModel->errors()));
         }
 
@@ -449,15 +410,14 @@ class TicketController extends BaseController
         // Pastikan nomor diawali dengan kode negara tanpa '+' atau '0' di awal jika gateway memerlukannya
         // Contoh: jika nomor 0812..., ubah jadi 62812...
         if (substr($phoneNumber, 0, 1) === '0') {
-            $phoneNumber = '62' . substr($phoneNumber, 1); // Asumsi kode negara Indonesia (ganti jika aplikasi digunakan di negara lain)
+            $phoneNumber = '62' . substr($phoneNumber, 1);
         }
 
         $payload = [
             'api_key' => $this->whatsappApiKey,
-            'sender' => '6282124838685', // Nomor perangkat pengirim dari MPWA V7
+            'sender' => '6282124838685',
             'number' => $phoneNumber,
             'message' => $message,
-            // Tambahkan parameter lain sesuai dokumentasi WhatsApp Gateway Anda
         ];
 
         $ch = curl_init();
@@ -466,7 +426,7 @@ class TicketController extends BaseController
         curl_setopt($ch, CURLOPT_POSTFIELDS, json_encode($payload));
         curl_setopt($ch, CURLOPT_HTTPHEADER, ['Content-Type: application/json']);
         curl_setopt($ch, CURLOPT_RETURNTRANSFER, true);
-        curl_setopt($ch, CURLOPT_TIMEOUT, 10); // Timeout 10 detik untuk request cURL
+        curl_setopt($ch, CURLOPT_TIMEOUT, 10);
 
         $response = curl_exec($ch);
         $httpCode = curl_getinfo($ch, CURLINFO_HTTP_CODE);
@@ -480,7 +440,6 @@ class TicketController extends BaseController
 
         $result = json_decode($response, true);
 
-        // Sesuaikan logika pengecekan sukses/gagal berdasarkan respons dari WhatsApp Gateway Anda
         if ($httpCode >= 200 && $httpCode < 300 && isset($result['status']) && $result['status'] === 'success') {
             log_message('info', 'WhatsApp message sent successfully to ' . $phoneNumber . ' for ticket.');
             return true;

@@ -17,6 +17,24 @@
             </a>
         </div>
 
+        <form id="filterSearchForm" action="<?= base_url('tickets') ?>" method="get" class="mb-6 flex flex-col sm:flex-row gap-4 items-center">
+            <div class="w-full sm:w-auto flex-grow">
+                <label for="search" class="sr-only">Cari Tiket</label>
+                <input type="text" name="search" id="search" placeholder="Cari Kode, Customer, Keluhan..."
+                    value="<?= esc($search_query ?? '') ?>"
+                    class="shadow-sm focus:ring-amber-500 focus:border-amber-500 block w-full sm:text-sm border-gray-300 rounded-md py-2 px-3">
+            </div>
+            <div class="w-full sm:w-auto">
+                <label for="status_filter" class="sr-only">Filter Status</label>
+                <select id="status_filter" name="status_filter" class="block w-full sm:w-48 py-2 px-3 border border-gray-300 bg-white rounded-md shadow-sm focus:outline-none focus:ring-amber-500 focus:border-amber-500 sm:text-sm">
+                    <option value="all" <?= ($status_filter_selected == 'all' || !isset($status_filter_selected)) ? 'selected' : '' ?>>Semua Status</option>
+                    <option value="open" <?= ($status_filter_selected == 'open') ? 'selected' : '' ?>>Open</option>
+                    <option value="progress" <?= ($status_filter_selected == 'progress') ? 'selected' : '' ?>>Progress</option>
+                    <option value="closed" <?= ($status_filter_selected == 'closed') ? 'selected' : '' ?>>Closed</option>
+                </select>
+            </div>
+        </form>
+
         <?php if (empty($tickets)): ?>
             <div class="text-center py-10">
                 <svg class="mx-auto h-12 w-12 text-gray-400" fill="none" viewBox="0 0 24 24" stroke="currentColor" aria-hidden="true">
@@ -51,8 +69,7 @@
                         </tr>
                     </thead>
                     <tbody class="bg-white divide-y divide-gray-200">
-                        <?php $no = 1; // Inisialisasi counter 
-                        ?>
+                        <?php $no = 1; ?>
                         <?php foreach ($tickets as $ticket): ?>
                             <tr>
                                 <td class="px-6 py-4 whitespace-nowrap text-sm text-gray-900"><?= $no++ ?>.</td>
@@ -68,7 +85,7 @@
                                         if ($ticket['status'] == 'open') echo 'bg-blue-100 text-blue-800';
                                         else if ($ticket['status'] == 'progress') echo 'bg-yellow-100 text-yellow-800';
                                         else if ($ticket['status'] == 'closed') echo 'bg-green-100 text-green-800';
-                                        else if ($ticket['status'] == 'selesai') echo 'bg-purple-100 text-purple-800'; // Added for 'selesai' status
+                                        else if ($ticket['status'] == 'selesai') echo 'bg-purple-100 text-purple-800';
                                         ?> capitalize">
                                         <?= esc($ticket['status']) ?>
                                     </span>
@@ -135,7 +152,7 @@
                                     if ($ticket['status'] == 'open') echo 'bg-blue-100 text-blue-800';
                                     else if ($ticket['status'] == 'progress') echo 'bg-yellow-100 text-yellow-800';
                                     else if ($ticket['status'] == 'closed') echo 'bg-green-100 text-green-800';
-                                    else if ($ticket['status'] == 'selesai') echo 'bg-purple-100 text-purple-800'; // Added for 'selesai' status
+                                    else if ($ticket['status'] == 'selesai') echo 'bg-purple-100 text-purple-800';
                                     ?> capitalize">
                                     <?= esc($ticket['status']) ?>
                                 </span>
@@ -206,7 +223,7 @@
 </div>
 
 <script>
-    let deleteFormAction = ''; // Variable to store the delete URL
+    let deleteFormAction = '';
 
     function showDeleteModal(deleteUrl) {
         deleteFormAction = deleteUrl;
@@ -216,16 +233,15 @@
 
     function hideDeleteModal() {
         document.getElementById('deleteModal').classList.add('hidden');
-        deleteFormAction = ''; // Clear the URL
-        document.getElementById('deleteForm').action = ''; // Clear form action
+        deleteFormAction = '';
+        document.getElementById('deleteForm').action = '';
     }
 
-    // Function to show export modal and populate content
     function showExportModal(ticketDetails) {
         let content = `--- Detail Tiket ---\n\n`;
         content += `Kode Tiket: ${ticketDetails.code_ticket}\n`;
         content += `Tanggal Dibuat: ${ticketDetails.tanggal_buat}\n`;
-        content += `Ketegori: ${ticketDetails.keluhan}\n`;
+        content += `Kategori: ${ticketDetails.keluhan}\n`;
         content += `Deskripsi: ${ticketDetails.deskripsi || 'Tidak ada deskripsi tambahan'}\n`;
         content += `Status: ${ticketDetails.status}\n`;
         content += `Prioritas: ${ticketDetails.prioritas}\n\n`;
@@ -242,18 +258,15 @@
         document.getElementById('exportModal').classList.remove('hidden');
     }
 
-    // Function to hide export modal
     function hideExportModal() {
         document.getElementById('exportModal').classList.add('hidden');
-        document.getElementById('exportContent').value = ''; // Clear content
+        document.getElementById('exportContent').value = '';
     }
 
-    // Copy to clipboard functionality
     document.getElementById('copyExportContent').addEventListener('click', function() {
         const exportContent = document.getElementById('exportContent');
         exportContent.select();
-        document.execCommand('copy'); // Use document.execCommand for broader compatibility in iframes
-        // Optionally, provide feedback to the user
+        document.execCommand('copy');
         const originalText = this.textContent;
         this.textContent = 'Disalin!';
         setTimeout(() => {
@@ -261,31 +274,23 @@
         }, 1500);
     });
 
-    // --- Start: Automatic filter/search submission ---
     document.addEventListener('DOMContentLoaded', function() {
-        // Asumsi ada form dengan id filterSearchForm dan input search/select filter
         const filterSearchForm = document.getElementById('filterSearchForm');
-        if (filterSearchForm) {
-            const searchInput = document.getElementById('search');
-            const statusFilterSelect = document.getElementById('status_filter');
-            let searchTimeout;
+        const searchInput = document.getElementById('search');
+        const statusFilterSelect = document.getElementById('status_filter');
+        let searchTimeout;
 
-            const submitForm = () => {
-                filterSearchForm.submit();
-            };
+        const submitForm = () => {
+            filterSearchForm.submit();
+        };
 
-            if (statusFilterSelect) {
-                statusFilterSelect.addEventListener('change', submitForm);
-            }
-            if (searchInput) {
-                searchInput.addEventListener('input', function() {
-                    clearTimeout(searchTimeout);
-                    searchTimeout = setTimeout(submitForm, 500);
-                });
-            }
-        }
+        statusFilterSelect.addEventListener('change', submitForm);
+
+        searchInput.addEventListener('input', function() {
+            clearTimeout(searchTimeout);
+            searchTimeout = setTimeout(submitForm, 500);
+        });
     });
-    // --- End: Automatic filter/search submission ---
 </script>
 
 <?= $this->endSection() ?>
