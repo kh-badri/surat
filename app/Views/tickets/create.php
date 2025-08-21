@@ -24,12 +24,16 @@
                     <?php endif; ?>
                 </div>
                 <div>
-                    <label for="tanggal_buat" class="block text-gray-700 text-sm font-bold mb-2">Tanggal Buat:</label>
-                    <input type="datetime-local" name="tanggal_buat" id="tanggal_buat"
-                        value="<?= old('tanggal_buat') ?>"
-                        class="shadow appearance-none border rounded-lg w-full py-3 px-4 text-gray-700 leading-tight focus:outline-none focus:ring-2 focus:ring-amber-500 focus:border-transparent
-                                <?= $validation->hasError('tanggal_buat') ? 'border-red-500' : '' ?>"
-                        required readonly>
+                    <label for="tanggal_buat_date" class="block text-gray-700 text-sm font-bold mb-2">Tanggal Buat:</label>
+                    <div class="flex gap-2">
+                        <input type="date" name="tanggal_buat_date" id="tanggal_buat_date"
+                            class="shadow appearance-none border rounded-lg w-full py-3 px-4 text-gray-700 leading-tight focus:outline-none focus:ring-2 focus:ring-amber-500 focus:border-transparent bg-gray-100 cursor-not-allowed"
+                            required readonly>
+                        <input type="time" name="tanggal_buat_time" id="tanggal_buat_time"
+                            class="shadow appearance-none border rounded-lg w-full py-3 px-4 text-gray-700 leading-tight focus:outline-none focus:ring-2 focus:ring-amber-500 focus:border-transparent bg-gray-100 cursor-not-allowed"
+                            required readonly>
+                    </div>
+                    <input type="hidden" name="tanggal_buat" id="tanggal_buat_hidden" value="<?= old('tanggal_buat') ?>">
                     <?php if ($validation->hasError('tanggal_buat')): ?>
                         <p class="text-red-500 text-xs italic mt-1"><?= $validation->getError('tanggal_buat') ?></p>
                     <?php endif; ?>
@@ -247,21 +251,22 @@
 
 <script>
     document.addEventListener('DOMContentLoaded', function() {
-        // Function to format date and time to YYYY-MM-DDTHH:mm (24-hour format)
-        function formatDateTime(date) {
-            const year = date.getFullYear();
-            const month = (date.getMonth() + 1).toString().padStart(2, '0');
-            const day = date.getDate().toString().padStart(2, '0');
-            const hours = date.getHours().toString().padStart(2, '0');
-            const minutes = date.getMinutes().toString().padStart(2, '0');
-            return `${year}-${month}-${day}T${hours}:${minutes}`;
-        }
-
-        // Set current date and time for tanggal_buat input
+        // Function to set current date and time on two separate inputs
         function setCurrentDateTime() {
             const now = new Date();
-            const formattedDate = formatDateTime(now);
-            document.getElementById('tanggal_buat').value = formattedDate;
+            const year = now.getFullYear();
+            const month = (now.getMonth() + 1).toString().padStart(2, '0');
+            const day = now.getDate().toString().padStart(2, '0');
+            const hours = now.getHours().toString().padStart(2, '0');
+            const minutes = now.getMinutes().toString().padStart(2, '0');
+
+            const formattedDate = `${year}-${month}-${day}`;
+            const formattedTime = `${hours}:${minutes}`;
+            const combinedDateTime = `${formattedDate}T${formattedTime}`;
+
+            document.getElementById('tanggal_buat_date').value = formattedDate;
+            document.getElementById('tanggal_buat_time').value = formattedTime;
+            document.getElementById('tanggal_buat_hidden').value = combinedDateTime;
         }
 
         // Call the function on page load and on page focus to keep it updated
