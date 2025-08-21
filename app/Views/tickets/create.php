@@ -26,10 +26,10 @@
                 <div>
                     <label for="tanggal_buat" class="block text-gray-700 text-sm font-bold mb-2">Tanggal Buat:</label>
                     <input type="datetime-local" name="tanggal_buat" id="tanggal_buat"
-                        value="<?= old('tanggal_buat', date('Y-m-d\TH:i')) ?>"
+                        value="<?= old('tanggal_buat') ?>"
                         class="shadow appearance-none border rounded-lg w-full py-3 px-4 text-gray-700 leading-tight focus:outline-none focus:ring-2 focus:ring-amber-500 focus:border-transparent
                                 <?= $validation->hasError('tanggal_buat') ? 'border-red-500' : '' ?>"
-                        required>
+                        required readonly>
                     <?php if ($validation->hasError('tanggal_buat')): ?>
                         <p class="text-red-500 text-xs italic mt-1"><?= $validation->getError('tanggal_buat') ?></p>
                     <?php endif; ?>
@@ -247,6 +247,17 @@
 
 <script>
     document.addEventListener('DOMContentLoaded', function() {
+        // Set current date and time for tanggal_buat input
+        function setCurrentDateTime() {
+            const now = new Date();
+            now.setMinutes(now.getMinutes() - now.getTimezoneOffset());
+            const formattedDate = now.toISOString().slice(0, 16);
+            document.getElementById('tanggal_buat').value = formattedDate;
+        }
+
+        // Call the function on page load
+        setCurrentDateTime();
+
         // === Bagian Opsi Customer ===
         const btnPilihCustomer = document.getElementById('btnPilihCustomer');
         const btnCustomCustomer = document.getElementById('btnCustomCustomer');
@@ -282,11 +293,9 @@
             btnCustomCustomer.classList.remove('bg-amber-600', 'text-white');
             btnCustomCustomer.classList.add('bg-gray-200', 'text-gray-700');
 
-            // Panggil event change untuk mengisi data jika ada customer yang sudah terpilih
             if (customerIdSelect.value) {
                 customerIdSelect.dispatchEvent(new Event('change'));
             } else {
-                // Jika tidak ada yang terpilih, kosongkan field
                 namaCustomerInput.value = '';
                 alamatCustomerInput.value = '';
                 noHpCustomerInput.value = '';
@@ -312,7 +321,6 @@
             btnPilihCustomer.classList.add('bg-gray-200', 'text-gray-700');
         };
 
-        // Event listener untuk tombol
         btnPilihCustomer.addEventListener('click', setPilihMode);
         btnCustomCustomer.addEventListener('click', setCustomMode);
 
@@ -374,15 +382,12 @@
         });
 
         // === Inisialisasi & Memuat ulang data jika ada old input ===
-        // Cek apakah ada old input untuk nama_customer_ticket. Jika ada, kemungkinan besar
-        // terjadi error validasi saat dalam mode custom.
         <?php if (old('nama_customer_ticket') && !old('customer_id')): ?>
             setCustomMode();
         <?php else: ?>
             setPilihMode();
         <?php endif; ?>
 
-        // Trigger event change untuk petugas jika ada old input
         <?php if (old('petugas_id')): ?>
             petugasIdSelect.dispatchEvent(new Event('change'));
         <?php endif; ?>
