@@ -38,7 +38,7 @@
             </div>
         </a>
 
-        <a href="<?= site_url('prodi/create?template=sk_p_skripsi'); ?>" class="group block p-8 bg-white rounded-xl shadow-md hover:shadow-2xl border-b-4 border-transparent hover:border-amber-500 transition-all duration-300 ease-in-out transform hover:-translate-y-2">
+        <a href="<?= site_url('prodi/create?template=sk_pembimbing_skripsi'); ?>" class="group block p-8 bg-white rounded-xl shadow-md hover:shadow-2xl border-b-4 border-transparent hover:border-amber-500 transition-all duration-300 ease-in-out transform hover:-translate-y-2">
             <div class="flex flex-col items-center text-center">
                 <div class="bg-amber-100 text-amber-600 rounded-full p-5 transition-all duration-300 group-hover:scale-110">
                     <i class="fas fa-graduation-cap fa-3x"></i>

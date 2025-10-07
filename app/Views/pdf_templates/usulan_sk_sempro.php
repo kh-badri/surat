@@ -9,8 +9,6 @@
             font-family: 'Times New Roman', Times, serif;
             font-size: 12pt;
             line-height: 1.5;
-            margin: 0;
-            padding: 0;
         }
 
         .container {
@@ -92,16 +90,11 @@
         .clear {
             clear: both;
         }
-
-        .footer-text {
-            margin-top: 30px;
-        }
     </style>
 </head>
 
 <body>
     <div class="container">
-        <!-- KOP SURAT -->
         <div class="kop-surat">
             <?php
             $pathToImage = FCPATH . 'una.png';
@@ -120,7 +113,6 @@
             <p>Gedung Fak. Teknik, Ruang Program Studi Lantai I, Jl. Jend. Ahmad Yani, Kisaran - 21224</p>
         </div>
 
-        <!-- DETAIL SURAT -->
         <table class="content-table">
             <tr>
                 <td style="width: 60%; vertical-align: top;">
@@ -154,8 +146,7 @@
             </tr>
         </table>
 
-        <!-- ISI SURAT -->
-        <div class="footer-text">
+        <div class="footer-text" style="margin-top: 30px;">
             <p>Dengan hormat,</p>
             <p style="text-align: justify;">Sehubungan dengan Permohonan Seminar Proposal Mahasiswa yang ditujukan Kepada Ketua Program Studi Teknik Informatika.</p>
             <p style="text-align: justify;">Setelah dievaluasi, telah memenuhi persyaratan yang telah ditetapkan oleh Program Studi Teknik Informatika untuk dapat diusulkan Dosen Pembanding Seminar Proposal.</p>
@@ -163,7 +154,6 @@
             <p style="text-align: justify;">Demikian disampaikan, atas perhatian dan persetujuan Bapak diucapkan terima kasih.</p>
         </div>
 
-        <!-- TANDA TANGAN -->
         <div class="tanda-tangan">
             Hormat Kami,<br>
             Ka.Prodi Teknik Informatika
@@ -174,10 +164,8 @@
         <div class="clear"></div>
         <p>Cc. File</p>
 
-        <!-- PEMISAH HALAMAN -->
         <div style="page-break-before: always;"></div>
 
-        <!-- KONTEN LAMPIRAN -->
         <p>
             <b>Lampiran</b> : Surat Prodi Teknik Informatika tentang <?= esc($surat['perihal']); ?><br>
             <b>Nomor</b> &nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;: <?= esc($surat['nomor_surat']); ?>
@@ -189,31 +177,33 @@
             <thead>
                 <tr>
                     <th style="width: 5%;">No.</th>
-                    <th style="width: 15%;">NPM</th>
+                    <th style="width: 12%;">NPM</th>
                     <th>Nama Mahasiswa</th>
-                    <th style="width: 25%;">Dosen Pembimbing</th>
-                    <th style="width: 25%;">Dosen Pembanding I / II</th>
+                    <th style="width: 25%;">Judul Skripsi</th>
+                    <th style="width: 18%;">Dosen Pembimbing</th>
+                    <th style="width: 18%;">Dosen Pembanding I/II</th>
                 </tr>
             </thead>
             <tbody>
                 <?php $no = 1; ?>
-                <?php foreach ($mahasiswa as $mhs) : ?>
+                <?php if (!empty($mahasiswa) && is_array($mahasiswa)) : ?>
+                    <?php foreach ($mahasiswa as $mhs) : ?>
+                        <tr>
+                            <td style="text-align: center;"><?= $no++; ?></td>
+                            <td><?= esc($mhs['npm']); ?></td>
+                            <td><?= esc($mhs['nama_mahasiswa']); ?></td>
+                            <td><?= esc($mhs['judul']); ?></td>
+                            <td><?= esc($mhs['dosen_pembimbing']); ?></td>
+                            <td><?= nl2br(esc($mhs['dosen_pembanding'] ?? '')); ?></td>
+                        </tr>
+                    <?php endforeach; ?>
+                <?php else: ?>
                     <tr>
-                        <td style="text-align: center;"><?= $no++; ?></td>
-                        <td><?= esc($mhs['npm']); ?></td>
-                        <td>
-                            <b><?= esc($mhs['nama_mahasiswa']); ?></b><br>
-                            <small><b>Judul:</b> <?= esc($mhs['judul']); ?></small>
-                        </td>
-                        <td><?= esc($mhs['dosen_pembimbing']); ?></td>
-                        <!-- PERBAIKAN DI SINI -->
-                        <td><?= nl2br(esc($mhs['dosen_pembanding'])); ?></td>
+                        <td colspan="7" style="text-align: center;">Tidak ada data mahasiswa.</td>
                     </tr>
-                <?php endforeach; ?>
+                <?php endif; ?>
             </tbody>
         </table>
-
-        <!-- TANDA TANGAN LAMPIRAN -->
         <div class="tanda-tangan">
             Ketua Program Studi<br>
             Teknik Informatika

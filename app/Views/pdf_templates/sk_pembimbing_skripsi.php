@@ -104,7 +104,7 @@
     <div class="container">
         <div class="kop-surat">
             <?php
-            $pathToImage = FCPATH . 'public/una.png'; // Menggunakan path ke folder public
+            $pathToImage = FCPATH . 'public/una.png';
             if (file_exists($pathToImage)) {
                 $type = pathinfo($pathToImage, PATHINFO_EXTENSION);
                 $data = file_get_contents($pathToImage);
@@ -192,23 +192,22 @@
             </thead>
             <tbody>
                 <?php
-                // === PERBAIKAN DI SINI ===
-                // Menggunakan 'detail_mahasiswa' sesuai dengan nama kolom di database
-                $details = json_decode($surat['detail_mahasiswa'] ?? '[]', true);
                 $no = 1;
-                if (is_array($details) && !empty($details)) :
-                    foreach ($details as $detail): ?>
+                // Periksa apakah variabel $mahasiswa ada dan tidak kosong
+                if (!empty($mahasiswa) && is_array($mahasiswa)) :
+                    // Lakukan perulangan langsung pada variabel $mahasiswa
+                    foreach ($mahasiswa as $mhs) : ?>
                         <tr>
                             <td style="text-align: center;"><?= $no++; ?></td>
-                            <td><?= esc($detail['npm'] ?? ''); ?></td>
-                            <td><?= esc($detail['nama'] ?? ''); ?></td>
-                            <td><?= esc($detail['judul'] ?? ''); ?></td>
-                            <td><?= esc($detail['dosen_pembimbing'] ?? ''); ?></td>
+                            <td><?= esc($mhs['npm']); ?></td>
+                            <td><?= esc($mhs['nama_mahasiswa']); ?></td>
+                            <td><?= esc($mhs['judul']); ?></td>
+                            <td><?= esc($mhs['dosen_pembimbing']); ?></td>
                         </tr>
                     <?php endforeach;
-                else: ?>
+                else : ?>
                     <tr>
-                        <td colspan="5" style="text-align: center;">Tidak ada data detail mahasiswa.</td>
+                        <td colspan="5" style="text-align: center;">Tidak ada data mahasiswa.</td>
                     </tr>
                 <?php endif; ?>
             </tbody>
