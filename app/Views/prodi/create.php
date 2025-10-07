@@ -180,11 +180,11 @@
                             <label class="block text-sm font-medium text-gray-700 mb-1">Judul Skripsi</label>
                             <input type="text" name="judul[]" class="w-full px-3 py-2 border border-gray-300 rounded-md" value="${data.judul || ''}">
                         </div>
-                        <div>
+                        <div class="md:col-span-2">
                             <label class="block text-sm font-medium text-gray-700 mb-1">Dosen Pembimbing</label>
                             <input type="text" name="dosen_pembimbing[]" class="w-full px-3 py-2 border border-gray-300 rounded-md" value="${data.dosen_pembimbing || ''}">
                         </div>
-                        <div></div> <div>
+                        <div>
                             <label class="block text-sm font-medium text-gray-700 mb-1">Dosen Penguji I</label>
                             <input type="text" name="dosen_penguji_1[]" class="w-full px-3 py-2 border border-gray-300 rounded-md" value="${data.dosen_penguji_1 || ''}">
                         </div>
