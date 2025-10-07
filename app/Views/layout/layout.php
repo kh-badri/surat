@@ -100,8 +100,8 @@
                     </div>
 
                     <div class="flex items-center">
-                        <img src="<?= base_url('public/inmeet-logo.png') ?>" alt="Logo Perusahaan" class="h-12 w-auto">
-                        <span class="text-xl font-bold text-amber-600">Ticketing App</span>
+                        <img src="<?= base_url('public/una.png') ?>" alt="Logo Perusahaan" class="h-12 w-auto">
+                        <span class="text-xl font-bold text-amber-600">Surat Digital App</span>
                     </div>
                 </div>
             </div>
